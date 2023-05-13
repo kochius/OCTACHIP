@@ -31,7 +31,7 @@ void Emulator::run(const int ticksPerSecond) {
             if (interpreter.soundTimerOn()) {
                 // speaker.play();
             }
-            renderer.draw(interpreter.getFrame());
+            renderer.drawFrame(interpreter.getFrame());
         }
     }
 }
