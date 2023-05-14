@@ -61,3 +61,16 @@ void Interpreter::loadRom(const std::filesystem::path& romPath) {
         throw std::runtime_error("Unable to read file: "s + romPath.string());
     }
 }
+
+void Interpreter::updateTimers() {
+    if (delayTimer > 0) {
+        delayTimer--;
+    }
+    if (soundTimer > 0) {
+        soundTimer--;
+    }
+}
+
+bool Interpreter::soundTimerOn() const {
+    return (soundTimer > 0);
+}

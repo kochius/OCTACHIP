@@ -29,8 +29,8 @@ private:
     std::array<uint16_t, STACK_SIZE> stack{};
     uint16_t pc{};
     uint16_t i{};
-    uint8_t delay_timer{};
-    uint8_t sound_timer{};
+    uint8_t delayTimer{};
+    uint8_t soundTimer{};
     Frame frame;
     Random random;
 };
