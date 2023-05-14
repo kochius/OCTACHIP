@@ -9,9 +9,9 @@ public:
     static constexpr int WIDTH = 64;
     static constexpr int HEIGHT = 32;
 
-    const bool& operator[](const int index) const {
-        return pixels.at(index);
-    }
+    void clearFrame();
+    bool& operator[](const int index);
+    const bool& operator[](const int index) const;
 private:
     std::array<bool, WIDTH * HEIGHT> pixels{};
 };
