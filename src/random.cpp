@@ -7,6 +7,6 @@ Random::Random(Seed seed, int min, int max) :
     engine{seed},
     dist{min, max} {}
 
-uint8_t Random::generateNumber() {
+int Random::generateNumber() {
     return dist(engine);
 }

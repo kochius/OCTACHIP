@@ -5,7 +5,7 @@
 using namespace CHIP8;
 
 Renderer::Renderer(const int width, const int height, 
-    const std::string_view title) :
+    const std::string_view& title) :
         window{nullptr},
         renderer{nullptr},
         width{width},

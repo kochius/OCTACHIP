@@ -10,7 +10,7 @@ namespace CHIP8 {
 class Emulator {
 public:
     Emulator();
-    void loadRom(std::filesystem::path romPath);
+    void loadRom(const std::filesystem::path& romPath);
     void run(const int ticksPerSecond);
 private:
     static constexpr int framesPerSecond = 60;

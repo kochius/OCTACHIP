@@ -11,8 +11,8 @@ namespace CHIP8 {
 
 class Interpreter {
 public:
-    Interpreter();
-    void loadRom(std::filesystem::path romPath);
+    Interpreter(); // done
+    void loadRom(const std::filesystem::path& romPath); // next
     void tick();
     void updateTimers();
     bool soundTimerOn() const;

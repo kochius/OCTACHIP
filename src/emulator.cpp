@@ -10,7 +10,7 @@ Emulator::Emulator() :
     renderer{Frame::WIDTH, Frame::HEIGHT, "CHIP-8"} {
 }
 
-void Emulator::loadRom(std::filesystem::path romPath) {
+void Emulator::loadRom(const std::filesystem::path& romPath) {
     interpreter.loadRom(romPath);
 }
 
