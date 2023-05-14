@@ -6,12 +6,11 @@ namespace CHIP8 {
 
 class Random {
 public:
-    template <typename Seed>
-    Random(Seed seed, int min, int max);
+    Random(unsigned int seed, int min, int max);
     int generateNumber();
 private:
     std::mt19937 engine;
-    std::uniform_int_distribution<int> dist;
+    std::uniform_int_distribution<int> distribution;
 };
 
 }

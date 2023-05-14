@@ -1,12 +1,17 @@
 #include "random.hpp"
 
+#include <stdexcept>
+
 using namespace CHIP8;
 
-template <typename Seed>
-Random::Random(Seed seed, int min, int max) : 
+Random::Random(unsigned int seed, int min, int max) : 
     engine{seed},
-    dist{min, max} {}
+    distribution{min, max} {
+    if (min > max) {
+        throw std::invalid_argument("min must be less than or equal to max");
+    }
+}
 
 int Random::generateNumber() {
-    return dist(engine);
+    return distribution(engine);
 }
