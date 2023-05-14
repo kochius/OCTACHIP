@@ -24,7 +24,7 @@ private:
     static constexpr int STACK_SIZE = 16;
     static constexpr int PROG_START_ADDRESS = 0x200;
 
-    std::array<uint8_t, MEMORY_SIZE> memory();
+    std::array<uint8_t, MEMORY_SIZE> memory{};
     std::array<uint8_t, V_REG_COUNT> v{};
     std::array<uint16_t, STACK_SIZE> stack{};
     uint16_t pc{};

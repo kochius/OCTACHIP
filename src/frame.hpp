@@ -13,7 +13,7 @@ public:
         return pixels.at(index);
     }
 private:
-    std::array<bool, WIDTH * HEIGHT> pixels;
+    std::array<bool, WIDTH * HEIGHT> pixels{};
 };
 
 }
