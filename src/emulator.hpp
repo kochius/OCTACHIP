@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interpreter.hpp"
+#include "io/input.hpp"
 #include "io/renderer.hpp"
 
 #include <filesystem>
@@ -16,7 +17,7 @@ private:
     static constexpr int framesPerSecond = 60;
 
     Interpreter interpreter;
-    // Input input;
+    Input input;
     // Speaker speaker;
     Renderer renderer;
     

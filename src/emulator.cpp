@@ -17,10 +17,9 @@ void Emulator::loadRom(const std::filesystem::path& romPath) {
 void Emulator::run(const int ticksPerSecond) {
     const int ticksPerFrame = ticksPerSecond / framesPerSecond;
     long lastFrameTime = getCurrentTime();
-    while (true) {
-        // input.processInput([&](int key, bool isPressed) {
-        //     interpreter.setKey(key, isPressed);
-        // });
+    bool running = true;
+    while (running) {
+        running = input.processInput();
         long timeElapsed = getCurrentTime() - lastFrameTime;
         if (timeElapsed >= 1000 / framesPerSecond) {
             lastFrameTime = getCurrentTime();
