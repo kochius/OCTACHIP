@@ -1,7 +1,9 @@
 #include "interpreter.hpp"
 
+#include <fstream>
 #include <iterator>
 #include <random>
+#include <stdexcept>
 
 using namespace CHIP8;
 
@@ -30,4 +32,32 @@ Interpreter::Interpreter() :
     };
     std::copy(std::begin(fontSet), std::end(fontSet), 
         std::begin(this->memory) + FONT_START_ADDRESS);
+}
+
+void Interpreter::loadRom(const std::filesystem::path& romPath) {
+    using namespace std::string_literals;
+
+    if (!std::filesystem::exists(romPath)) {
+        throw std::runtime_error("File not found: "s + romPath.string());
+    }
+    
+    std::ifstream romFile{romPath, std::ios_base::in | std::ios_base::binary};
+    if (!romFile) {
+        throw std::runtime_error("Unable to open file: "s + romPath.string());
+    }
+
+    const uintmax_t romSize = std::filesystem::file_size(romPath);
+    constexpr unsigned int MAX_ROM_SIZE = MEMORY_SIZE - PROG_START_ADDRESS;
+    if (romSize > MAX_ROM_SIZE) {
+        const uintmax_t overflow = romSize - MAX_ROM_SIZE;
+        throw std::length_error("File exceeds maximum ROM size by "s + 
+            std::to_string(overflow) + " bytes: "s + romPath.string() + 
+            " (actual size: " + std::to_string(romSize) + ")");
+    }
+
+    romFile.seekg(0, std::ios_base::beg);
+    if (!romFile.read(reinterpret_cast<char*>(this->memory.data() + 
+        PROG_START_ADDRESS), static_cast<std::streamsize>(romSize))) {
+        throw std::runtime_error("Unable to read file: "s + romPath.string());
+    }
 }
