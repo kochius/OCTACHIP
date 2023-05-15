@@ -78,6 +78,10 @@ bool Interpreter::soundTimerOn() const {
     return (registers.soundTimer > 0);
 }
 
+void Interpreter::setKey(int key, bool isPressed) {
+    keypad[key] = isPressed;
+}
+
 const Frame& Interpreter::getFrame() const {
     return frame;
 }

@@ -18,12 +18,9 @@ private:
 
     Interpreter interpreter;
     Input input;
-    // Speaker speaker;
     Renderer renderer;
     
     long getCurrentTime() const;
 };
 
 }
-
-//

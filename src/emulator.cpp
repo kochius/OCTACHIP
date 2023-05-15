@@ -19,7 +19,9 @@ void Emulator::run(const int ticksPerSecond) {
     long lastFrameTime = getCurrentTime();
     bool running = true;
     while (running) {
-        running = input.processInput();
+        running = input.processInput([&](int key, bool isPressed) {
+            interpreter.setKey(key, isPressed);
+        });
         long timeElapsed = getCurrentTime() - lastFrameTime;
         if (timeElapsed >= 1000 / framesPerSecond) {
             lastFrameTime = getCurrentTime();
@@ -27,9 +29,6 @@ void Emulator::run(const int ticksPerSecond) {
                 interpreter.tick();
             }
             interpreter.updateTimers();
-            if (interpreter.soundTimerOn()) {
-                // speaker.play();
-            }
             renderer.drawFrame(interpreter.getFrame());
         }
     }
