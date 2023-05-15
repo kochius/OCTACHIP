@@ -11,6 +11,9 @@ using Memory = std::array<uint8_t, MEMORY_SIZE>;
 static constexpr int STACK_SIZE = 16;
 using Stack = std::array<uint16_t, STACK_SIZE>;
 
+static constexpr int KEY_COUNT = 16;
+using Keypad = std::array<bool, KEY_COUNT>;
+
 struct Registers {
     static constexpr int V_REG_COUNT = 16;
 

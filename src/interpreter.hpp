@@ -26,6 +26,7 @@ private:
     Stack stack{};
     Registers registers;
     Frame frame;
+    Keypad keypad{};
     Random random;
 };
 
