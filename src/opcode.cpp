@@ -28,3 +28,7 @@ uint16_t Opcode::address() const {
 uint8_t Opcode::prefix() const {
     return opcode >> 12;
 }
+
+uint16_t Opcode::full() const {
+    return opcode;
+}

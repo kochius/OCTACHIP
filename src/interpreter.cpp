@@ -1,14 +1,18 @@
 #include "interpreter.hpp"
 
+#include "instructions.hpp"
+#include "opcode.hpp"
+
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <random>
 #include <stdexcept>
+#include <string>
 
 using namespace CHIP8;
 
 Interpreter::Interpreter() :
-    pc{PROG_START_ADDRESS},
     random{std::random_device{}(), 0, 255} {
     constexpr unsigned int FONT_SET_SIZE = 80;
     constexpr unsigned int FONT_START_ADDRESS = 0x50;
@@ -32,6 +36,7 @@ Interpreter::Interpreter() :
     };
     std::copy(std::begin(fontSet), std::end(fontSet), 
         std::begin(this->memory) + FONT_START_ADDRESS);
+    registers.pc = PROG_START_ADDRESS;
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
@@ -63,14 +68,41 @@ void Interpreter::loadRom(const std::filesystem::path& romPath) {
 }
 
 void Interpreter::updateTimers() {
-    if (delayTimer > 0) {
-        delayTimer--;
+    if (registers.delayTimer > 0) {
+        registers.delayTimer--;
     }
-    if (soundTimer > 0) {
-        soundTimer--;
+    if (registers.soundTimer > 0) {
+        registers.soundTimer--;
     }
 }
 
 bool Interpreter::soundTimerOn() const {
-    return (soundTimer > 0);
+    return (registers.soundTimer > 0);
+}
+
+const Frame& Interpreter::getFrame() const {
+    return frame;
+}
+
+void Interpreter::tick() {
+    using namespace std::string_literals;
+    Opcode opcode = memory[registers.pc] << 8 | memory[registers.pc + 1];
+
+    registers.pc += 2;
+
+    switch (opcode.prefix()) {
+        case 0x00: 
+            switch (opcode.byte()) {
+                case 0xE0: CLS(frame); break;
+            }
+            break;
+        case 0x01: JP_addr(opcode, registers); break;
+        case 0x06: LD_Vx_byte(opcode, registers); break;
+        case 0x07: ADD_Vx_byte(opcode, registers); break;
+        case 0x0A: LD_I_addr(opcode, registers); break;
+        case 0x0D: DRW_Vx_Vy_nibble(opcode, memory, registers, frame); break;
+        default:
+            throw std::runtime_error("Invalid opcode: "s + 
+                std::to_string(opcode.full()));
+    }
 }

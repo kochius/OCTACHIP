@@ -13,6 +13,7 @@ public:
     uint8_t byte() const;
     uint16_t address() const;
     uint8_t prefix() const;
+    uint16_t full() const;
 private:
     uint16_t opcode;
 };
