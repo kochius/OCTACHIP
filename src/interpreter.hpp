@@ -20,11 +20,10 @@ public:
     const Frame& getFrame() const;
     void tick();
 private:
-    static constexpr int STACK_SIZE = 16;
     static constexpr int PROG_START_ADDRESS = 0x200;
 
     Memory memory{};
-    std::array<uint16_t, STACK_SIZE> stack{};
+    Stack stack{};
     Registers registers;
     Frame frame;
     Random random;
