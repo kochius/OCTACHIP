@@ -327,7 +327,7 @@ void LD_Vx_DT(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void LD_Vx_K(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
-    for (int keyValue = 0; keyValue < keypad.size(); keyValue++) {
+    for (size_t keyValue = 0; keyValue < keypad.size(); keyValue++) {
         if (keypad[keyValue]) {
             registers.v[opcode.x()] = keyValue;
             return;
