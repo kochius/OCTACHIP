@@ -15,7 +15,7 @@ public:
     void drawPixel(int row, int col);
     void clearRenderer();
 private:
-    static constexpr int renderScale = 10;
+    static constexpr int renderScale = 20;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
