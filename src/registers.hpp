@@ -3,6 +3,8 @@
 #include <array>
 #include <cstdint>
 
+namespace CHIP8 {
+
 struct Registers {
     static constexpr int V_REG_COUNT = 16;
 
@@ -12,3 +14,5 @@ struct Registers {
     uint8_t delayTimer{};
     uint8_t soundTimer{};
 };
+
+}
