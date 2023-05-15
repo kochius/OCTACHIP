@@ -5,6 +5,8 @@
 #include "random.hpp"
 #include "types.hpp"
 
+#include <cstdint>
+
 namespace CHIP8 {
 
 /**
@@ -278,6 +280,141 @@ void DRW_Vx_Vy_nibble(const Opcode& opcode, const Memory& memory,
                 frame[pixel] ^= 1;
             }
         }
+    }
+}
+
+/**
+ * Ex9E - Skip next instruction if key with the value of Vx is pressed.
+ * 
+ * Checks the keyboard, and if the key corresponding to the value of Vx is 
+ * currently in the down position, PC is increased by 2.
+ */
+void SKP_Vx(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+    bool isPressed = keypad[registers.v[opcode.x()]];
+    if (isPressed) {
+        registers.pc += 2;
+    }
+}
+
+/**
+ * ExA1 - Skip next instruction if key with the value of Vx is not pressed.
+ * 
+ * Checks the keyboard, and if the key corresponding to the value of Vx is 
+ * currently in the up position, PC is increased by 2.
+ */
+void SKNP_Vx(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+    bool isPressed = keypad[registers.v[opcode.x()]];
+    if (!isPressed) {
+        registers.pc += 2;
+    }
+}
+
+/**
+ * Fx07 - Set Vx = delay timer value.
+ * 
+ * The value of DT is placed into Vx.
+ */
+void LD_Vx_DT(const Opcode& opcode, Registers& registers) {
+    registers.v[opcode.x()] = registers.delayTimer;
+}
+
+/**
+ * Fx0A - Wait for a key press, store the value of the key in Vx.
+ * 
+ * All execution stops until a key is pressed, then the value of that key is 
+ * stored in Vx.
+ * 
+ * TODO: Implement configurable quirks for this instruction
+ */
+void LD_Vx_K(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+    for (int keyValue = 0; keyValue < keypad.size(); keyValue++) {
+        if (keypad[keyValue]) {
+            registers.v[opcode.x()] = keyValue;
+            return;
+        }
+    }
+    registers.pc -= 2;
+}
+
+/**
+ * Fx15 - Set delay timer = Vx.
+ * 
+ * DT is set equal to the value of Vx.
+ */
+void LD_DT_Vx(const Opcode& opcode, Registers& registers) {
+    registers.delayTimer = registers.v[opcode.x()];
+}
+
+/**
+ * Fx18 - Set sound timer = Vx.
+ * 
+ * ST is set equal to the value of Vx.
+ */
+void LD_ST_Vx(const Opcode& opcode, Registers& registers) {
+    registers.soundTimer = registers.v[opcode.x()];
+}
+
+/**
+ * Fx1E - Set I = I + Vx.
+ * 
+ * The values of I and Vx are added, and the results are stored in I.
+ * 
+ * TODO: Implement configurable quirks for this instruction
+ */
+void ADD_I_Vx(const Opcode& opcode, Registers& registers) {
+    registers.i += registers.v[opcode.x()];
+}
+
+/**
+ * Fx29 - Set I = location of sprite for digit Vx.
+ * 
+ * The value of I is set to the location for the hexadecimal sprite 
+ * corresponding to the value of Vx.
+ */
+void LD_F_Vx(const Opcode& opcode, Registers& registers, 
+    const int fontStartaddress, const int fontCharSize) {
+    uint8_t character = registers.v[opcode.x()] & 0x0F;
+    registers.i = fontStartaddress + fontCharSize * character;
+}
+
+/**
+ * Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2.
+ * 
+ * The interpreter takes the decimal value of Vx, and places the hundreds digit 
+ * in memory at location in I, the tens digit at location I+1, and the ones 
+ * digit at location I+2.
+ */
+void LD_B_Vx(const Opcode& opcode, Memory& memory, Registers& registers) {
+    uint8_t value = registers.v[opcode.x()];
+    for (int j = 2; j >= 0; j--) {
+        memory[registers.i + j] = value % 10;
+        value /= 10;
+    }
+}
+
+/**
+ * Fx55 - Store registers V0 through Vx in memory starting at location I.
+ * 
+ * The interpreter copies the values of registers V0 through Vx into memory, 
+ * starting at the address in I.
+ * 
+ * TODO: Implement configurable quirks for this instruction
+ */
+void LD_I_Vx(const Opcode& opcode, Memory& memory, Registers& registers) {
+    for (int j = 0; j <= opcode.x(); j++) {
+        memory[registers.i + j] = registers.v[j];
+    }
+}
+
+/**
+ * Fx65 - Read registers V0 through Vx from memory starting at location I.
+ * 
+ * The interpreter reads values from memory starting at location I into 
+ * registers V0 through Vx.
+ */
+void LD_Vx_I(const Opcode& opcode, Memory& memory, Registers& registers) {
+    for (int j = 0; j <= opcode.x(); j++) {
+        registers.v[j] = memory[registers.i + j];
     }
 }
 

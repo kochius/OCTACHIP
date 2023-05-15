@@ -21,6 +21,9 @@ public:
     void tick();
 private:
     static constexpr int PROG_START_ADDRESS = 0x200;
+    static constexpr int FONT_START_ADDRESS = 0x50;
+    static constexpr int FONT_CHAR_SIZE = 0x05;
+    static constexpr int FONT_SET_SIZE = 80;
 
     Memory memory{};
     Stack stack{};
