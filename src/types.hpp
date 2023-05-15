@@ -5,6 +5,9 @@
 
 namespace CHIP8 {
 
+static constexpr int MEMORY_SIZE = 4096;
+using Memory = std::array<uint8_t, MEMORY_SIZE>;
+
 struct Registers {
     static constexpr int V_REG_COUNT = 16;
 
