@@ -25,7 +25,7 @@ void CLS(Frame& frame) {
  */
 void RET(Registers& registers, Stack& stack) {
     if (registers.sp <= 0) {
-        throw std::runtime_error("Illegal instruction (RET): empty stack");
+        throw std::runtime_error("RET: can't return with empty stack");
     }
     registers.pc = stack[--registers.sp];
 }
@@ -36,6 +36,11 @@ void RET(Registers& registers, Stack& stack) {
  * The interpreter sets the program counter to nnn.
  */
 void JP_addr(const Opcode& opcode, Registers& registers) {
+    const uint16_t address = opcode.address();
+    if (address >= MEMORY_SIZE) {
+        throw std::runtime_error("JP_addr: address " + std::to_string(address) + 
+            "is out of range");
+    }
     registers.pc = opcode.address();
 }
 
