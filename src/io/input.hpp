@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <unordered_map>
 
 namespace CHIP8 {
