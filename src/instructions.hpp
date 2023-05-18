@@ -25,7 +25,8 @@ void CLS(Frame& frame) {
  */
 void RET(Registers& registers, Stack& stack) {
     if (registers.sp <= 0) {
-        throw std::runtime_error("RET: can't return with empty stack");
+        throw std::runtime_error("RET: Attempted to return from a subroutine, "
+            "but the stack is empty");
     }
     registers.pc = stack[--registers.sp];
 }
@@ -38,8 +39,8 @@ void RET(Registers& registers, Stack& stack) {
 void JP_addr(const Opcode& opcode, Registers& registers) {
     const uint16_t address = opcode.address();
     if (address >= MEMORY_SIZE) {
-        throw std::runtime_error("JP_addr: address " + std::to_string(address) + 
-            "is out of range");
+        throw std::runtime_error("JP_addr: Address " + std::to_string(address) + 
+            " is out of range");
     }
     registers.pc = opcode.address();
 }
@@ -51,8 +52,16 @@ void JP_addr(const Opcode& opcode, Registers& registers) {
  * the top of the stack. The PC is then set to nnn.
  */
 void CALL_addr(const Opcode& opcode, Registers& registers, Stack& stack) {
+    const uint16_t address = opcode.address();
+    if (address >= MEMORY_SIZE) {
+        throw std::runtime_error("JP_addr: Address " + std::to_string(address) + 
+            " is out of range");
+    }
+    if (registers.sp >= STACK_SIZE) {
+        throw std::runtime_error("CALL_addr: Stack overflow error");
+    }
     stack[registers.sp++] = registers.pc;
-    registers.pc = opcode.address();
+    registers.pc = address;
 }
 
 /**
