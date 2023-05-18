@@ -6,6 +6,7 @@
 #include "types.hpp"
 
 #include <cstdint>
+#include <stdexcept>
 
 namespace CHIP8 {
 
@@ -23,6 +24,9 @@ void CLS(Frame& frame) {
  * stack, then subtracts 1 from the stack pointer.
  */
 void RET(Registers& registers, Stack& stack) {
+    if (registers.sp <= 0) {
+        throw std::runtime_error("Illegal instruction (RET): empty stack");
+    }
     registers.pc = stack[--registers.sp];
 }
 
