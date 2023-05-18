@@ -72,6 +72,11 @@ void CALL_addr(const Opcode& opcode, Registers& registers, Stack& stack) {
  */
 void SE_Vx_byte(const Opcode& opcode, Registers& registers) {
     if (registers.v[opcode.x()] == opcode.byte()) {
+        if (registers.pc + 2 >= MEMORY_SIZE) {
+            throw std::out_of_range("SE_Vx_byte: Attempted to increment the "
+                "program counter to an out of range address " + 
+                std::to_string(registers.pc + 2));
+        }
         registers.pc += 2;
     }
 }
