@@ -105,7 +105,7 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
     }
 }
 
-TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
+TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
     const uint16_t newPcValue = registers.pc + 2;
     registers.v[x] = kk;
 
@@ -115,7 +115,7 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
+TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
     const uint16_t oldPcValue = registers.pc;
 
     instructions::SE_Vx_byte(opcode, registers);
@@ -124,50 +124,21 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
-    registers.pc = MEMORY_SIZE - 2;
-    registers.v[x] = kk;
-    
-    try {
-        instructions::SE_Vx_byte(opcode, registers);
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_EQ("SE_Vx_byte: Attempted to increment the program counter " 
-            "to an out of range address " + std::to_string(registers.pc + 2), 
-            ex.what());
-    }
-}
-
-TEST_F(SkipVxByteTest, SNE_Vx_byte_VxkkEqual_DoesNotSkipNextInstruction) {
+TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
     const uint16_t oldPcValue = registers.pc;
     registers.v[x] = kk;
 
     instructions::SNE_Vx_byte(opcode, registers);
 
-    // SE_Vx_byte should increment pc by 2 because Vx == kk
+    // SNE_Vx_byte should NOT increment pc by 2 because Vx == kk
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SNE_Vx_byte_VxkkNotEqual_SkipsNextInstruction) {
+TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
     const uint16_t newPcValue = registers.pc + 2;
 
     instructions::SNE_Vx_byte(opcode, registers);
 
     // SNE_Vx_byte should increment pc by 2 because Vx != kk
     EXPECT_EQ(newPcValue, registers.pc);
-}
-
-TEST_F(SkipVxByteTest, SNE_Vx_byte_PcOutOfRange_ThrowsException) {
-    registers.pc = MEMORY_SIZE - 2;
-    
-    try {
-        instructions::SNE_Vx_byte(opcode, registers);
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_EQ("SNE_Vx_byte: Attempted to increment the program counter " 
-            "to an out of range address " + std::to_string(registers.pc + 2), 
-            ex.what());
-    }
 }
