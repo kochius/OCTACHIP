@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <exception>
 #include <gtest/gtest.h>
 
 #include "src/core/frame.hpp"
@@ -192,4 +191,45 @@ TEST(InstructionTest, SE_Vx_Vy_VxVyNotEqual_DoesNotSkipNextInstruction) {
 
     // SE_Vx_Vy should NOT increment pc by 2 because Vx != Vy
     EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST(InstructionTest, LD_Vx_byte_SetsVxEqualToByte) {
+    const uint16_t x = 0x8;
+    const uint16_t byte = 0x24;
+    Opcode opcode = 0x6000 | (x << 8) | byte;
+    Registers registers;
+
+    instructions::LD_Vx_byte(opcode, registers);
+
+    // LD_Vx_byte should set Vx equal to the lower byte of the opcode
+    EXPECT_EQ(byte, registers.v[x]);
+}
+
+TEST(InstructionTest, ADD_Vx_byte_StoresVxPlusByteInVx) {
+    const uint16_t x = 0x8;
+    const uint16_t byte = 0x24;
+    Opcode opcode = 0x7000 | (x << 8) | byte;
+    Registers registers;
+
+    const uint8_t vxPlusByte = registers.v[x] + byte;
+
+    instructions::ADD_Vx_byte(opcode, registers);
+
+    // ADD_Vx_byte should add byte to Vx and store the result in Vx
+    EXPECT_EQ(vxPlusByte, registers.v[x]);
+}
+
+TEST(InstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8000 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x00;
+    registers.v[y] = 0x38;
+
+    instructions::LD_Vx_Vy(opcode, registers);
+
+    // LD_Vx_Vy should set Vx equal to the value in Vy
+    EXPECT_EQ(registers.v[y], registers.v[x]);
 }
