@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
+#include "fixtures/VxVyInstructionTest.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
 
@@ -161,12 +162,7 @@ TEST(InstructionTest, SNE_Vx_byte_VxNotEqualToByte_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_Vy_VxEqualToVy_SkipsNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x5000 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, SE_Vx_Vy_VxEqualToVy_SkipsNextInstruction) {
     registers.v[x] = 0x42;
     registers.v[y] = registers.v[x];
     const uint16_t newPcValue = registers.pc + 2;
@@ -177,12 +173,8 @@ TEST(InstructionTest, SE_Vx_Vy_VxEqualToVy_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_Vy_VxNotEqualToVy_DoesNotSkipNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x5000 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    SE_Vx_Vy_VxNotEqualToVy_DoesNotSkipNextInstruction) {
     registers.v[x] = 0x42;
     registers.v[y] = 0x55;
     const uint16_t oldPcValue = registers.pc;
@@ -219,12 +211,7 @@ TEST(InstructionTest, ADD_Vx_byte_SetsVxEqualToVxPlusByte) {
     EXPECT_EQ(vxPlusByte, registers.v[x]);
 }
 
-TEST(InstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8000 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
     registers.v[x] = 0x00;
     registers.v[y] = 0x38;
 
@@ -234,12 +221,7 @@ TEST(InstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
     EXPECT_EQ(registers.v[y], registers.v[x]);
 }
 
-TEST(InstructionTest, OR_Vx_Vy_SetsVxEqualToVxOrVy) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8001 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, OR_Vx_Vy_SetsVxEqualToVxOrVy) {
     registers.v[x] = 0x00;
     registers.v[y] = 0x38;
     const uint8_t vxOrVy = registers.v[x] | registers.v[y];
@@ -250,12 +232,7 @@ TEST(InstructionTest, OR_Vx_Vy_SetsVxEqualToVxOrVy) {
     EXPECT_EQ(vxOrVy, registers.v[x]);
 }
 
-TEST(InstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8002 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
     registers.v[x] = 0x00;
     registers.v[y] = 0x38;
     const uint8_t vxAndVy = registers.v[x] & registers.v[y];
@@ -266,12 +243,7 @@ TEST(InstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
     EXPECT_EQ(vxAndVy, registers.v[x]);
 }
 
-TEST(InstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8003 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
     registers.v[x] = 0x00;
     registers.v[y] = 0x38;
     const uint8_t vxXorVy = registers.v[x] ^ registers.v[y];
@@ -282,12 +254,8 @@ TEST(InstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
     EXPECT_EQ(vxXorVy, registers.v[x]);
 }
 
-TEST(InstructionTest, ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8004 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
     registers.v[x] = registers.v[y] = 0x01;
     const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
 
@@ -299,12 +267,7 @@ TEST(InstructionTest, ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
     EXPECT_EQ(0, registers.v[0xF]);
 }
 
-TEST(InstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8004 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
     registers.v[x] = registers.v[y] = 0xFF;
     const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
 
@@ -316,12 +279,8 @@ TEST(InstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
     EXPECT_EQ(1, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8005 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
     registers.v[x] = 0xFF;
     registers.v[y] = 0x01;
     const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
@@ -334,12 +293,8 @@ TEST(InstructionTest, SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
     EXPECT_EQ(1, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8005 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
     registers.v[x] = 0x01;
     registers.v[y] = 0xFF;
     const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
@@ -352,11 +307,7 @@ TEST(InstructionTest, SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
     EXPECT_EQ(0, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SHR_Vx_Vy_LsbOne_DividesVxByTwoAndSetsVF) {
-    const uint16_t x = 0x3;
-    Opcode opcode = 0x8006 | (x << 8);
-    Registers registers;
-    
+TEST_F(VxVyInstructionTest, SHR_Vx_Vy_LsbOne_DividesVxByTwoAndSetsVF) {
     registers.v[x] = 0x01;
     const uint8_t vxDividedByTwo = registers.v[x] >> 1;
 
@@ -368,11 +319,8 @@ TEST(InstructionTest, SHR_Vx_Vy_LsbOne_DividesVxByTwoAndSetsVF) {
     EXPECT_EQ(1, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SHR_Vx_Vy_LsbZero_DividesVxByTwoAndClearsVF) {
-    const uint16_t x = 0x3;
-    Opcode opcode = 0x8006 | (x << 8);
-    Registers registers;
-    
+TEST_F(VxVyInstructionTest, 
+    SHR_Vx_Vy_LsbZero_DividesVxByTwoAndClearsVF) {
     registers.v[x] = 0x10;
     const uint8_t vxDividedByTwo = registers.v[x] >> 1;
 
@@ -384,12 +332,8 @@ TEST(InstructionTest, SHR_Vx_Vy_LsbZero_DividesVxByTwoAndClearsVF) {
     EXPECT_EQ(0, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SUBN_Vx_Vy_NoBorrow_SetsVxEqualToVyMinusVxAndSetsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8007 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    SUBN_Vx_Vy_NoBorrow_SetsVxEqualToVyMinusVxAndSetsVF) {
     registers.v[x] = 0x01;
     registers.v[y] = 0xFF;
     const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
@@ -402,12 +346,8 @@ TEST(InstructionTest, SUBN_Vx_Vy_NoBorrow_SetsVxEqualToVyMinusVxAndSetsVF) {
     EXPECT_EQ(1, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SUBN_Vx_Vy_Borrow_SetsVxEqualToVyMinusVxAndClearsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x8007 | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, 
+    SUBN_Vx_Vy_Borrow_SetsVxEqualToVyMinusVxAndClearsVF) {
     registers.v[x] = 0xFF;
     registers.v[y] = 0x01;
     const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
@@ -420,12 +360,7 @@ TEST(InstructionTest, SUBN_Vx_Vy_Borrow_SetsVxEqualToVyMinusVxAndClearsVF) {
     EXPECT_EQ(0, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SHL_Vx_Vy_MsbOne_MultipliesVxByTwoAndSetsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x800E | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, SHL_Vx_Vy_MsbOne_MultipliesVxByTwoAndSetsVF) {
     registers.v[x] = 0b10000000;
     const uint8_t vxTimesTwo = registers.v[x] << 1;
 
@@ -437,12 +372,7 @@ TEST(InstructionTest, SHL_Vx_Vy_MsbOne_MultipliesVxByTwoAndSetsVF) {
     EXPECT_EQ(1, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SHL_Vx_Vy_MsbZero_MultipliesVxByTwoAndClearsVF) {
-    const uint16_t x = 0x3;
-    const uint16_t y = 0x7;
-    Opcode opcode = 0x800E | (x << 8) | (y << 4);
-    Registers registers;
-
+TEST_F(VxVyInstructionTest, SHL_Vx_Vy_MsbZero_MultipliesVxByTwoAndClearsVF) {
     registers.v[x] = 0b00000001;
     const uint8_t vxTimesTwo = registers.v[x] << 1;
 
