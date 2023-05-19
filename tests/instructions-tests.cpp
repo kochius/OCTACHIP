@@ -16,7 +16,7 @@ TEST(InstructionTest, CLS_ClearsFrame) {
     frame[0] = true;
     frame[FRAME_SIZE - 1] = true;
 
-    CLS(frame);
+    instructions::CLS(frame);
 
     // make sure all pixels are off now
     for (size_t i = 0; i < FRAME_SIZE; i++) {
@@ -30,7 +30,7 @@ TEST(InstructionTest, RET_EmptyStack_ThrowsException) {
 
     // RET should throw an exception if there's nothing to return to
     try {
-        RET(registers, stack);
+        instructions::RET(registers, stack);
         FAIL();
     }
     catch (std::exception& ex) {
@@ -48,9 +48,9 @@ TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
     const Opcode opcode = 0x2000 | address;
     const uint16_t oldPcValue = registers.pc;
     const uint8_t oldSpValue = registers.sp;
-    CALL_addr(opcode, registers, stack);
+    instructions::CALL_addr(opcode, registers, stack);
 
-    RET(registers, stack);
+    instructions::RET(registers, stack);
 
     // RET should restore the previous values to pc and sp
     EXPECT_EQ(oldPcValue, registers.pc);
@@ -62,7 +62,7 @@ TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
     const Opcode opcode = 0x1000 | address;
     Registers registers;
     
-    JP_addr(opcode, registers);
+    instructions::JP_addr(opcode, registers);
 
     // PC should jump to address 0x600
     EXPECT_EQ(address, registers.pc);
@@ -78,7 +78,7 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
     // onto the stack
     try {
         for (size_t i = 0; i <= STACK_SIZE; i++) {
-            CALL_addr(opcode, registers, stack);
+            instructions::CALL_addr(opcode, registers, stack);
         }
         FAIL();
     }
@@ -95,7 +95,7 @@ TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
     const uint16_t oldPcValue = registers.pc;
     const uint16_t newSpValue = registers.sp + 1;
 
-    CALL_addr(opcode, registers, stack);
+    instructions::CALL_addr(opcode, registers, stack);
 
     // old pc value should be pushed onto stack
     // sp should be incremented
@@ -108,7 +108,7 @@ TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
 TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
     const uint16_t oldPcValue = registers.pc;
 
-    SE_Vx_byte(opcode, registers);
+    instructions::SE_Vx_byte(opcode, registers);
 
     // SE_Vx_byte should NOT increment pc by 2 because Vx != kk
     EXPECT_EQ(oldPcValue, registers.pc);
@@ -118,7 +118,7 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
     const uint16_t newPcValue = registers.pc + 2;
     registers.v[x] = kk;
 
-    SE_Vx_byte(opcode, registers);
+    instructions::SE_Vx_byte(opcode, registers);
 
     // SE_Vx_byte should increment pc by 2 because Vx == kk
     EXPECT_EQ(newPcValue, registers.pc);
@@ -129,7 +129,7 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
     registers.v[x] = kk;
     
     try {
-        SE_Vx_byte(opcode, registers);
+        instructions::SE_Vx_byte(opcode, registers);
         FAIL();
     }
     catch (std::exception& ex) {

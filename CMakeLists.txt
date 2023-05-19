@@ -40,6 +40,7 @@ set(SOURCES
     src/main.cpp
     src/emulator.cpp
     src/core/frame.cpp
+    src/core/instructions.cpp
     src/core/interpreter.cpp
     src/core/opcode.cpp
     src/core/random.cpp

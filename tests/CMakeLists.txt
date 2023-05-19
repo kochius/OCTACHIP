@@ -14,6 +14,7 @@ set(HEADERS
 set(SOURCES
     instructions-tests.cpp
     ${PROJECT_SRC_DIR}/src/core/frame.cpp
+    ${PROJECT_SRC_DIR}/src/core/instructions.cpp
     ${PROJECT_SRC_DIR}/src/core/opcode.cpp
     ${PROJECT_SRC_DIR}/src/core/random.cpp
 )
