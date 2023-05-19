@@ -205,7 +205,7 @@ TEST(InstructionTest, LD_Vx_byte_SetsVxEqualToByte) {
     EXPECT_EQ(byte, registers.v[x]);
 }
 
-TEST(InstructionTest, ADD_Vx_byte_StoresVxPlusByteInVx) {
+TEST(InstructionTest, ADD_Vx_byte_SetsVxEqualToVxPlusByte) {
     const uint16_t x = 0x8;
     const uint16_t byte = 0x24;
     Opcode opcode = 0x7000 | (x << 8) | byte;
