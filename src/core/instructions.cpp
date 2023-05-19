@@ -250,7 +250,8 @@ void instructions::JP_V0_addr(const Opcode& opcode, Registers& registers) {
  * The interpreter generates a random number from 0 to 255, which is then ANDed 
  * with the value kk. The results are stored in Vx.
  */
-void instructions::RND_Vx_byte(const Opcode& opcode, Registers& registers, Random& random) {
+void instructions::RND_Vx_byte(const Opcode& opcode, Registers& registers, 
+    Random& random) {
     registers.v[opcode.x()] = random.generateNumber() & opcode.byte();
 }
 
@@ -293,7 +294,8 @@ void instructions::DRW_Vx_Vy_nibble(const Opcode& opcode, const Memory& memory,
  * Checks the keyboard, and if the key corresponding to the value of Vx is 
  * currently in the down position, PC is increased by 2.
  */
-void instructions::SKP_Vx(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+void instructions::SKP_Vx(const Opcode& opcode, Registers& registers, const 
+    Keypad& keypad) {
     bool isPressed = keypad[registers.v[opcode.x()]];
     if (isPressed) {
         registers.pc += 2;
@@ -306,7 +308,8 @@ void instructions::SKP_Vx(const Opcode& opcode, Registers& registers, const Keyp
  * Checks the keyboard, and if the key corresponding to the value of Vx is 
  * currently in the up position, PC is increased by 2.
  */
-void instructions::SKNP_Vx(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+void instructions::SKNP_Vx(const Opcode& opcode, Registers& registers, const 
+    Keypad& keypad) {
     bool isPressed = keypad[registers.v[opcode.x()]];
     if (!isPressed) {
         registers.pc += 2;
@@ -330,7 +333,8 @@ void instructions::LD_Vx_DT(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::LD_Vx_K(const Opcode& opcode, Registers& registers, const Keypad& keypad) {
+void instructions::LD_Vx_K(const Opcode& opcode, Registers& registers, const 
+    Keypad& keypad) {
     for (size_t keyValue = 0; keyValue < keypad.size(); keyValue++) {
         if (keypad[keyValue]) {
             registers.v[opcode.x()] = keyValue;
@@ -388,7 +392,8 @@ void instructions::LD_F_Vx(const Opcode& opcode, Registers& registers,
  * in memory at location in I, the tens digit at location I+1, and the ones 
  * digit at location I+2.
  */
-void instructions::LD_B_Vx(const Opcode& opcode, Memory& memory, Registers& registers) {
+void instructions::LD_B_Vx(const Opcode& opcode, Memory& memory, Registers& 
+    registers) {
     uint8_t value = registers.v[opcode.x()];
     for (int j = 2; j >= 0; j--) {
         memory[registers.i + j] = value % 10;
@@ -404,7 +409,8 @@ void instructions::LD_B_Vx(const Opcode& opcode, Memory& memory, Registers& regi
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::LD_I_Vx(const Opcode& opcode, Memory& memory, Registers& registers) {
+void instructions::LD_I_Vx(const Opcode& opcode, Memory& memory, Registers& 
+    registers) {
     for (int j = 0; j <= opcode.x(); j++) {
         memory[registers.i + j] = registers.v[j];
     }
@@ -416,7 +422,8 @@ void instructions::LD_I_Vx(const Opcode& opcode, Memory& memory, Registers& regi
  * The interpreter reads values from memory starting at location I into 
  * registers V0 through Vx.
  */
-void instructions::LD_Vx_I(const Opcode& opcode, Memory& memory, Registers& registers) {
+void instructions::LD_Vx_I(const Opcode& opcode, Memory& memory, Registers& 
+    registers) {
     for (int j = 0; j <= opcode.x(); j++) {
         registers.v[j] = memory[registers.i + j];
     }
