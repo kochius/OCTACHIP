@@ -2,8 +2,8 @@
 #include <exception>
 #include <gtest/gtest.h>
 
-#include "src/frame.hpp"
-#include "src/instructions.hpp"
+#include "src/core/frame.hpp"
+#include "src/core/instructions.hpp"
 
 using namespace CHIP8;
 

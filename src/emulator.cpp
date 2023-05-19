@@ -1,7 +1,7 @@
-#include "emulator.hpp"
-#include "frame.hpp"
-
 #include <chrono>
+
+#include "emulator.hpp"
+#include "core/frame.hpp"
 
 using namespace CHIP8;
 

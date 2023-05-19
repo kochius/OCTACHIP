@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../frame.hpp"
-
 #include <SDL.h>
 #include <string_view>
+
+#include "../core/frame.hpp"
 
 namespace CHIP8 {
 

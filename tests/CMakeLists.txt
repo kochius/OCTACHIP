@@ -4,9 +4,9 @@ set(TESTS ${CMAKE_PROJECT_NAME}-tests)
 
 set(SOURCES
     instructions-tests.cpp
-    ${PROJECT_SRC_DIR}/src/frame.cpp
-    ${PROJECT_SRC_DIR}/src/opcode.cpp
-    ${PROJECT_SRC_DIR}/src/random.cpp
+    ${PROJECT_SRC_DIR}/src/core/frame.cpp
+    ${PROJECT_SRC_DIR}/src/core/opcode.cpp
+    ${PROJECT_SRC_DIR}/src/core/random.cpp
 )
 
 add_executable(${TESTS} ${HEADERS} ${SOURCES})

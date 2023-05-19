@@ -1,6 +1,6 @@
-#include "renderer.hpp"
-
 #include <stdexcept>
+
+#include "renderer.hpp"
 
 using namespace CHIP8;
 

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "frame.hpp"
-#include "random.hpp"
-#include "types.hpp"
-
 #include <array>
 #include <cstdint>
 #include <filesystem>
+
+#include "frame.hpp"
+#include "random.hpp"
+#include "types.hpp"
 
 namespace CHIP8 {
 

@@ -1,14 +1,13 @@
-#include "interpreter.hpp"
-
-#include "instructions.hpp"
-#include "opcode.hpp"
-
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <random>
 #include <stdexcept>
 #include <string>
+
+#include "instructions.hpp"
+#include "interpreter.hpp"
+#include "opcode.hpp"
 
 using namespace CHIP8;
 

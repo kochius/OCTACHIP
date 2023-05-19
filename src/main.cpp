@@ -1,7 +1,7 @@
-#include "emulator.hpp"
-
 #include <iostream>
 #include <random>
+
+#include "emulator.hpp"
 
 int main() {
     CHIP8::Emulator chip8{};

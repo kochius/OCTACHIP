@@ -1,6 +1,6 @@
-#include "random.hpp"
-
 #include <stdexcept>
+
+#include "random.hpp"
 
 using namespace CHIP8;
 

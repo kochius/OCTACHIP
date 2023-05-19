@@ -26,24 +26,26 @@ FetchContent_MakeAvailable(googletest)
 
 set(HEADERS
     src/emulator.hpp
-    src/frame.hpp
-    src/instructions.hpp
-    src/interpreter.hpp
-    src/opcode.hpp
-    src/random.hpp
-    src/types.hpp
+    src/core/frame.hpp
+    src/core/instructions.hpp
+    src/core/interpreter.hpp
+    src/core/opcode.hpp
+    src/core/random.hpp
+    src/core/types.hpp
     src/io/input.hpp
-    src/io/renderer.hpp)
+    src/io/renderer.hpp
+)
 
 set(SOURCES
     src/main.cpp
     src/emulator.cpp
-    src/frame.cpp
-    src/interpreter.cpp
-    src/opcode.cpp
-    src/random.cpp
+    src/core/frame.cpp
+    src/core/interpreter.cpp
+    src/core/opcode.cpp
+    src/core/random.cpp
     src/io/input.cpp
-    src/io/renderer.cpp)
+    src/io/renderer.cpp
+)
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES})
 

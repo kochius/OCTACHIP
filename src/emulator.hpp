@@ -1,10 +1,10 @@
 #pragma once
 
-#include "interpreter.hpp"
+#include <filesystem>
+
+#include "core/interpreter.hpp"
 #include "io/input.hpp"
 #include "io/renderer.hpp"
-
-#include <filesystem>
 
 namespace CHIP8 {
 
