@@ -233,3 +233,51 @@ TEST(InstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
     // LD_Vx_Vy should set Vx equal to the value in Vy
     EXPECT_EQ(registers.v[y], registers.v[x]);
 }
+
+TEST(InstructionTest, OR_Vx_Vy_SetsVxEqualToVxOrVy) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8001 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x00;
+    registers.v[y] = 0x38;
+    const uint8_t vxOrVy = registers.v[x] | registers.v[y];
+
+    instructions::OR_Vx_Vy(opcode, registers);
+
+    // OR_Vx_Vy should bitwise OR Vx with Vy and store the result in Vx
+    EXPECT_EQ(vxOrVy, registers.v[x]);
+}
+
+TEST(InstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8002 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x00;
+    registers.v[y] = 0x38;
+    const uint8_t vxAndVy = registers.v[x] & registers.v[y];
+
+    instructions::AND_Vx_Vy(opcode, registers);
+
+    // AND_Vx_Vy should bitwise AND Vx with Vy and store the result in Vx
+    EXPECT_EQ(vxAndVy, registers.v[x]);
+}
+
+TEST(InstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8002 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x00;
+    registers.v[y] = 0x38;
+    const uint8_t vxXorVy = registers.v[x] ^ registers.v[y];
+
+    instructions::XOR_Vx_Vy(opcode, registers);
+
+    // XOR_Vx_Vy should bitwise XOR Vx with Vy and store the result in Vx
+    EXPECT_EQ(vxXorVy, registers.v[x]);
+}
