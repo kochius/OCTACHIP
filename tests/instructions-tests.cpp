@@ -43,7 +43,7 @@ TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
     Stack stack;
 
     // Call a subroutine at address 0x400
-    const uint16_t address = 0x400;
+    constexpr uint16_t address = 0x400;
     const Opcode opcode = 0x2000 | address;
     const uint16_t oldPcValue = registers.pc;
     const uint8_t oldSpValue = registers.sp;
@@ -57,7 +57,7 @@ TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
 }
 
 TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
-    const uint16_t address = 0x600;
+    constexpr uint16_t address = 0x600;
     const Opcode opcode = 0x1000 | address;
     Registers registers;
     
@@ -68,7 +68,7 @@ TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
 }
 
 TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
-    const uint16_t address = 0x800;
+    constexpr uint16_t address = 0x800;
     const Opcode opcode = 0x2000 | address;
     Registers registers;
     Stack stack;
@@ -87,7 +87,7 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
 }
 
 TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
-    const uint16_t address = 0x800;
+    constexpr uint16_t address = 0x800;
     const Opcode opcode = 0x2000 | address;
     Registers registers;
     Stack stack;
@@ -131,4 +131,24 @@ TEST(InstructionTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
 
     // SE_Vx_byte should increment pc by 2 because Vx == kk
     EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST(InstructionTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
+    constexpr uint16_t x = 0x5;
+    constexpr uint16_t kk = 0x24;
+    Opcode opcode = 0x3000 | (x << 8) | kk;
+    Registers registers;
+
+    registers.pc = MEMORY_SIZE - 2;
+    registers.v[x] = kk;
+    
+    try {
+        SE_Vx_byte(opcode, registers);
+        FAIL();
+    }
+    catch (std::exception& ex) {
+        EXPECT_EQ("SE_Vx_byte: Attempted to increment the program counter " 
+            "to an out of range address " + std::to_string(registers.pc + 2), 
+            ex.what());
+    }
 }

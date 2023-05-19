@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-set(TESTS ${CMAKE_PROJECT_NAME}_tests)
+set(TESTS ${CMAKE_PROJECT_NAME}-tests)
 
 set(SOURCES
-    instructions_tests.cpp
+    instructions-tests.cpp
     ${PROJECT_SRC_DIR}/src/frame.cpp
     ${PROJECT_SRC_DIR}/src/opcode.cpp
     ${PROJECT_SRC_DIR}/src/random.cpp
