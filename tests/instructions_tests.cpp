@@ -96,9 +96,39 @@ TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
 
     CALL_addr(opcode, registers, stack);
 
-    // old pc value should be pushed onto stack, sp should be incremented, and
+    // old pc value should be pushed onto stack
+    // sp should be incremented
     // pc should jump to the specified address
     EXPECT_EQ(oldPcValue, stack[registers.sp - 1]);
     EXPECT_EQ(newSpValue, registers.sp);
     EXPECT_EQ(address, registers.pc);
+}
+
+TEST(InstructionTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
+    constexpr uint16_t x = 0x5;
+    constexpr uint16_t kk = 0x24;
+    Opcode opcode = 0x3000 | (x << 8) | kk;
+    Registers registers;
+
+    const uint16_t oldPcValue = registers.pc;
+
+    SE_Vx_byte(opcode, registers);
+
+    // SE_Vx_byte should NOT increment pc by 2 because Vx != kk
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST(InstructionTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
+    constexpr uint16_t x = 0x5;
+    constexpr uint16_t kk = 0x24;
+    Opcode opcode = 0x3000 | (x << 8) | kk;
+    Registers registers;
+
+    registers.v[x] = kk;
+    const uint16_t newPcValue = registers.pc + 2;
+
+    SE_Vx_byte(opcode, registers);
+
+    // SE_Vx_byte should increment pc by 2 because Vx == kk
+    EXPECT_EQ(newPcValue, registers.pc);
 }
