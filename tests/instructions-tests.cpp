@@ -142,3 +142,35 @@ TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
     // SNE_Vx_byte should increment pc by 2 because Vx != kk
     EXPECT_EQ(newPcValue, registers.pc);
 }
+
+TEST(TestInstruction, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x5000 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x42;
+    registers.v[y] = registers.v[x];
+    const uint16_t newPcValue = registers.pc + 2;
+
+    instructions::SE_Vx_Vy(opcode, registers);
+
+    // SE_Vx_Vy should increment pc by 2 because Vx == Vy
+    EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST(TestInstruction, SE_Vx_Vy_VxVyNotEqual_DoesNotSkipNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x5000 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x55;
+    const uint16_t oldPcValue = registers.pc;
+
+    instructions::SE_Vx_Vy(opcode, registers);
+
+    // SE_Vx_Vy should NOT increment pc by 2 because Vx != Vy
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
