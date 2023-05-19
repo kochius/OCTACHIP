@@ -36,7 +36,7 @@ set(HEADERS
     src/io/renderer.hpp)
 
 set(SOURCES
-    main.cpp
+    src/main.cpp
     src/emulator.cpp
     src/frame.cpp
     src/interpreter.cpp
