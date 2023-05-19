@@ -269,7 +269,7 @@ TEST(InstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
 TEST(InstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
     const uint16_t x = 0x3;
     const uint16_t y = 0x7;
-    Opcode opcode = 0x8002 | (x << 8) | (y << 4);
+    Opcode opcode = 0x8003 | (x << 8) | (y << 4);
     Registers registers;
 
     registers.v[x] = 0x00;
@@ -280,4 +280,74 @@ TEST(InstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
 
     // XOR_Vx_Vy should bitwise XOR Vx with Vy and store the result in Vx
     EXPECT_EQ(vxXorVy, registers.v[x]);
+}
+
+TEST(InstructionTest, ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8004 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = registers.v[y] = 0x01;
+    const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
+
+    instructions::ADD_Vx_Vy(opcode, registers);
+
+    // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
+    // Because the result is less than 255, the carry register VF is cleared
+    EXPECT_EQ(vxPlusVy, registers.v[x]);
+    EXPECT_EQ(0, registers.v[0xF]);
+}
+
+TEST(InstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8004 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = registers.v[y] = 0xFF;
+    const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
+
+    instructions::ADD_Vx_Vy(opcode, registers);
+
+    // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
+    // Because the result is greater than 255, the carry register VF is set
+    EXPECT_EQ(vxPlusVy, registers.v[x]);
+    EXPECT_EQ(1, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8005 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0xFF;
+    registers.v[y] = 0x01;
+    const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
+
+    instructions::SUB_Vx_Vy(opcode, registers);
+
+    // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
+    // Because the Vx is greater than Vy, the borrow register VF is set
+    EXPECT_EQ(vxMinusVy, registers.v[x]);
+    EXPECT_EQ(1, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8005 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x01;
+    registers.v[y] = 0xFF;
+    const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
+
+    instructions::SUB_Vx_Vy(opcode, registers);
+
+    // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
+    // Because the Vx is less than Vy, the borrow register VF is cleared
+    EXPECT_EQ(vxMinusVy, registers.v[x]);
+    EXPECT_EQ(0, registers.v[0xF]);
 }
