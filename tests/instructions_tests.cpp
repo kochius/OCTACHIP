@@ -23,7 +23,7 @@ TEST(InstructionTest, CLS_ClearsFrame) {
     }
 }
 
-TEST(InstructionTest, RET_ReturnsFromSubroutine) {
+TEST(InstructionTest, RET_EmptyStack_ThrowsException) {
     Registers registers;
     Stack stack;
 
@@ -33,12 +33,18 @@ TEST(InstructionTest, RET_ReturnsFromSubroutine) {
         FAIL();
     }
     catch (std::exception& ex) {
-        EXPECT_STREQ("RET: Attempted to return from a subroutine, but the stack "
-            "is empty", ex.what());
+        EXPECT_STREQ("RET: Attempted to return from a subroutine, but the stack"
+            " is empty", ex.what());
     }
+}
+
+TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
+    Registers registers;
+    Stack stack;
 
     // Call a subroutine at address 0x400
-    const Opcode opcode = 0x2400;
+    const uint16_t address = 0x400;
+    const Opcode opcode = 0x2000 | address;
     const uint16_t oldPcValue = registers.pc;
     const uint8_t oldSpValue = registers.sp;
     CALL_addr(opcode, registers, stack);
@@ -61,7 +67,26 @@ TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
     EXPECT_EQ(address, registers.pc);
 }
 
-TEST(InstructionTest, CALL_addr_CallsSubroutineNNN) {
+TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
+    const uint16_t address = 0x800;
+    const Opcode opcode = 0x2000 | address;
+    Registers registers;
+    Stack stack;
+
+    // CALL_addr should throw an exception when too many addresses are pushed
+    // onto the stack
+    try {
+        for (size_t i = 0; i <= STACK_SIZE; i++) {
+            CALL_addr(opcode, registers, stack);
+        }
+        FAIL();
+    }
+    catch (std::exception& ex) {
+        EXPECT_STREQ("CALL_addr: Stack overflow error", ex.what());
+    }
+}
+
+TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
     const uint16_t address = 0x800;
     const Opcode opcode = 0x2000 | address;
     Registers registers;
@@ -76,16 +101,4 @@ TEST(InstructionTest, CALL_addr_CallsSubroutineNNN) {
     EXPECT_EQ(oldPcValue, stack[registers.sp - 1]);
     EXPECT_EQ(newSpValue, registers.sp);
     EXPECT_EQ(address, registers.pc);
-
-    // CALL_addr should throw an exception when too many addresses are pushed
-    // onto the stack
-    try {
-        for (size_t i = newSpValue; i <= STACK_SIZE; i++) {
-            CALL_addr(opcode, registers, stack);
-        }
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_STREQ("CALL_addr: Stack overflow error", ex.what());
-    }
 }
