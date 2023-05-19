@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.22.1)
 
 set(TESTS ${CMAKE_PROJECT_NAME}-tests)
 
+set(HEADERS
+    fixtures.hpp
+    ${PROJECT_SRC_DIR}/src/core/frame.hpp
+    ${PROJECT_SRC_DIR}/src/core/instructions.hpp
+    ${PROJECT_SRC_DIR}/src/core/opcode.hpp
+    ${PROJECT_SRC_DIR}/src/core/random.hpp
+    ${PROJECT_SRC_DIR}/src/core/types.hpp
+)
+
 set(SOURCES
     instructions-tests.cpp
     ${PROJECT_SRC_DIR}/src/core/frame.cpp

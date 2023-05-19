@@ -2,6 +2,7 @@
 #include <exception>
 #include <gtest/gtest.h>
 
+#include "fixtures.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
 
@@ -104,12 +105,7 @@ TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
     EXPECT_EQ(address, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
-    constexpr uint16_t x = 0x5;
-    constexpr uint16_t kk = 0x24;
-    Opcode opcode = 0x3000 | (x << 8) | kk;
-    Registers registers;
-
+TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
     const uint16_t oldPcValue = registers.pc;
 
     SE_Vx_byte(opcode, registers);
@@ -118,14 +114,9 @@ TEST(InstructionTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
-    constexpr uint16_t x = 0x5;
-    constexpr uint16_t kk = 0x24;
-    Opcode opcode = 0x3000 | (x << 8) | kk;
-    Registers registers;
-
-    registers.v[x] = kk;
+TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
     const uint16_t newPcValue = registers.pc + 2;
+    registers.v[x] = kk;
 
     SE_Vx_byte(opcode, registers);
 
@@ -133,12 +124,7 @@ TEST(InstructionTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
-    constexpr uint16_t x = 0x5;
-    constexpr uint16_t kk = 0x24;
-    Opcode opcode = 0x3000 | (x << 8) | kk;
-    Registers registers;
-
+TEST_F(SkipVxByteTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
     registers.pc = MEMORY_SIZE - 2;
     registers.v[x] = kk;
     
