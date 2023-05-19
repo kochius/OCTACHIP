@@ -383,3 +383,24 @@ TEST_F(VxVyInstructionTest, SHL_Vx_Vy_MsbZero_MultipliesVxByTwoAndClearsVF) {
     EXPECT_EQ(vxTimesTwo, registers.v[x]);
     EXPECT_EQ(0, registers.v[0xF]);
 }
+
+TEST_F(VxVyInstructionTest, SNE_Vx_Vy_VxEqualToVy_DoesNotSkipNextInstruction) {
+    registers.v[x] = registers.v[y] = 0xFF;
+    const uint16_t oldPcValue = registers.pc;
+
+    instructions::SNE_Vx_Vy(opcode, registers);
+
+    // SNE_Vx_Vy should NOT increment pc by 2 because Vx == Vy
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST_F(VxVyInstructionTest, SNE_Vx_Vy_VxNotEqualToVy_SkipsNextInstruction) {
+    registers.v[x] = 0x01;
+    registers.v[y] = 0xFF;
+    const uint16_t newPcValue = registers.pc + 2;
+
+    instructions::SNE_Vx_Vy(opcode, registers);
+
+    // SNE_Vx_Vy should increment pc by 2 because Vx != Vy
+    EXPECT_EQ(newPcValue, registers.pc);
+}
