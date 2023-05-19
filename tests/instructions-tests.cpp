@@ -103,7 +103,7 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
     }
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SE_Vx_byte_VxEqualToByte_SkipsNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t kk = 0x24;
     Opcode opcode = 0x3000 | (x << 8) | kk;
@@ -118,7 +118,7 @@ TEST(InstructionTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SE_Vx_byte_VxNotEqualToByte_DoesNotSkipNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t kk = 0x24;
     Opcode opcode = 0x3000 | (x << 8) | kk;
@@ -132,7 +132,7 @@ TEST(InstructionTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SNE_Vx_byte_VxEqualToByte_DoesNotSkipNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t kk = 0x24;
     Opcode opcode = 0x4000 | (x << 8) | kk;
@@ -147,7 +147,7 @@ TEST(InstructionTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SNE_Vx_byte_VxNotEqualToByte_SkipsNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t kk = 0x24;
     Opcode opcode = 0x4000 | (x << 8) | kk;
@@ -161,7 +161,7 @@ TEST(InstructionTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SE_Vx_Vy_VxEqualToVy_SkipsNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t y = 0x7;
     Opcode opcode = 0x5000 | (x << 8) | (y << 4);
@@ -177,7 +177,7 @@ TEST(InstructionTest, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_Vy_VxVyNotEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SE_Vx_Vy_VxNotEqualToVy_DoesNotSkipNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t y = 0x7;
     Opcode opcode = 0x5000 | (x << 8) | (y << 4);
@@ -294,7 +294,7 @@ TEST(InstructionTest, ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
     instructions::ADD_Vx_Vy(opcode, registers);
 
     // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
-    // Because the result is less than 255, the carry register VF is cleared
+    // Because the result is less than 255, VF is cleared
     EXPECT_EQ(vxPlusVy, registers.v[x]);
     EXPECT_EQ(0, registers.v[0xF]);
 }
@@ -311,7 +311,7 @@ TEST(InstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
     instructions::ADD_Vx_Vy(opcode, registers);
 
     // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
-    // Because the result is greater than 255, the carry register VF is set
+    // Because the result is greater than 255, VF is set
     EXPECT_EQ(vxPlusVy, registers.v[x]);
     EXPECT_EQ(1, registers.v[0xF]);
 }
@@ -329,7 +329,7 @@ TEST(InstructionTest, SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
     instructions::SUB_Vx_Vy(opcode, registers);
 
     // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
-    // Because the Vx is greater than Vy, the borrow register VF is set
+    // Because the Vx is greater than Vy, VF is set
     EXPECT_EQ(vxMinusVy, registers.v[x]);
     EXPECT_EQ(1, registers.v[0xF]);
 }
@@ -347,7 +347,109 @@ TEST(InstructionTest, SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
     instructions::SUB_Vx_Vy(opcode, registers);
 
     // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
-    // Because the Vx is less than Vy, the borrow register VF is cleared
+    // Because the Vx is less than Vy, VF is cleared
     EXPECT_EQ(vxMinusVy, registers.v[x]);
+    EXPECT_EQ(0, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SHR_Vx_Vy_LsbOne_DividesVxByTwoAndSetsVF) {
+    const uint16_t x = 0x3;
+    Opcode opcode = 0x8006 | (x << 8);
+    Registers registers;
+    
+    registers.v[x] = 0x01;
+    const uint8_t vxDividedByTwo = registers.v[x] >> 1;
+
+    instructions::SHR_Vx_Vy(opcode, registers);
+
+    // SHR_Vx_Vy should divide Vx by two and store the result in Vx
+    // Because the least significant bit is 1, VF is set
+    EXPECT_EQ(vxDividedByTwo, registers.v[x]);
+    EXPECT_EQ(1, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SHR_Vx_Vy_LsbZero_DividesVxByTwoAndClearsVF) {
+    const uint16_t x = 0x3;
+    Opcode opcode = 0x8006 | (x << 8);
+    Registers registers;
+    
+    registers.v[x] = 0x10;
+    const uint8_t vxDividedByTwo = registers.v[x] >> 1;
+
+    instructions::SHR_Vx_Vy(opcode, registers);
+
+    // SHR_Vx_Vy should divide Vx by two and store the result in Vx
+    // Because the least significant bit is 0, VF is cleared
+    EXPECT_EQ(vxDividedByTwo, registers.v[x]);
+    EXPECT_EQ(0, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SUBN_Vx_Vy_NoBorrow_SetsVxEqualToVyMinusVxAndSetsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8007 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0x01;
+    registers.v[y] = 0xFF;
+    const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
+
+    instructions::SUBN_Vx_Vy(opcode, registers);
+
+    // SUBN_Vx_Vy should subtract Vx from Vy and store the result in Vx
+    // Because the Vx is less than Vy, VF is set
+    EXPECT_EQ(vyMinusVx, registers.v[x]);
+    EXPECT_EQ(1, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SUBN_Vx_Vy_Borrow_SetsVxEqualToVyMinusVxAndClearsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x8007 | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0xFF;
+    registers.v[y] = 0x01;
+    const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
+
+    instructions::SUBN_Vx_Vy(opcode, registers);
+
+    // SUBN_Vx_Vy should subtract Vx from Vy and store the result in Vx
+    // Because the Vx is greater than Vy, VF is cleared
+    EXPECT_EQ(vyMinusVx, registers.v[x]);
+    EXPECT_EQ(0, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SHL_Vx_Vy_MsbOne_MultipliesVxByTwoAndSetsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x800E | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0b10000000;
+    const uint8_t vxTimesTwo = registers.v[x] << 1;
+
+    instructions::SHL_Vx_Vy(opcode, registers);
+
+    // SHL_Vx_Vy should multiply Vx by 2 and store the result in Vx
+    // Because the most significant bit of Vx is 1, VF is set
+    EXPECT_EQ(vxTimesTwo, registers.v[x]);
+    EXPECT_EQ(1, registers.v[0xF]);
+}
+
+TEST(InstructionTest, SHL_Vx_Vy_MsbZero_MultipliesVxByTwoAndClearsVF) {
+    const uint16_t x = 0x3;
+    const uint16_t y = 0x7;
+    Opcode opcode = 0x800E | (x << 8) | (y << 4);
+    Registers registers;
+
+    registers.v[x] = 0b00000001;
+    const uint8_t vxTimesTwo = registers.v[x] << 1;
+
+    instructions::SHL_Vx_Vy(opcode, registers);
+
+    // SHL_Vx_Vy should multiply Vx by 2 and store the result in Vx
+    // Because the most significant bit of Vx is 0, VF is cleared
+    EXPECT_EQ(vxTimesTwo, registers.v[x]);
     EXPECT_EQ(0, registers.v[0xF]);
 }
