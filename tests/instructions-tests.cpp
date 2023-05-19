@@ -24,21 +24,6 @@ TEST(InstructionTest, CLS_ClearsFrame) {
     }
 }
 
-TEST(InstructionTest, RET_EmptyStack_ThrowsException) {
-    Registers registers;
-    Stack stack;
-
-    // RET should throw an exception if there's nothing to return to
-    try {
-        instructions::RET(registers, stack);
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_STREQ("RET: Attempted to return from a subroutine, but the stack"
-            " is empty", ex.what());
-    }
-}
-
 TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
     Registers registers;
     Stack stack;
@@ -57,6 +42,21 @@ TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
     EXPECT_EQ(oldSpValue, registers.sp);
 }
 
+TEST(InstructionTest, RET_EmptyStack_ThrowsException) {
+    Registers registers;
+    Stack stack;
+
+    // RET should throw an exception if there's nothing to return to
+    try {
+        instructions::RET(registers, stack);
+        FAIL();
+    }
+    catch (std::exception& ex) {
+        EXPECT_STREQ("RET: Attempted to return from a subroutine, but the stack"
+            " is empty", ex.what());
+    }
+}
+
 TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
     constexpr uint16_t address = 0x600;
     const Opcode opcode = 0x1000 | address;
@@ -65,6 +65,24 @@ TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
     instructions::JP_addr(opcode, registers);
 
     // PC should jump to address 0x600
+    EXPECT_EQ(address, registers.pc);
+}
+
+TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
+    constexpr uint16_t address = 0x800;
+    const Opcode opcode = 0x2000 | address;
+    Registers registers;
+    Stack stack;
+    const uint16_t oldPcValue = registers.pc;
+    const uint16_t newSpValue = registers.sp + 1;
+
+    instructions::CALL_addr(opcode, registers, stack);
+
+    // old pc value should be pushed onto stack
+    // sp should be incremented
+    // pc should jump to the specified address
+    EXPECT_EQ(oldPcValue, stack[registers.sp - 1]);
+    EXPECT_EQ(newSpValue, registers.sp);
     EXPECT_EQ(address, registers.pc);
 }
 
@@ -87,22 +105,14 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
     }
 }
 
-TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
-    constexpr uint16_t address = 0x800;
-    const Opcode opcode = 0x2000 | address;
-    Registers registers;
-    Stack stack;
-    const uint16_t oldPcValue = registers.pc;
-    const uint16_t newSpValue = registers.sp + 1;
+TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
+    const uint16_t newPcValue = registers.pc + 2;
+    registers.v[x] = kk;
 
-    instructions::CALL_addr(opcode, registers, stack);
+    instructions::SE_Vx_byte(opcode, registers);
 
-    // old pc value should be pushed onto stack
-    // sp should be incremented
-    // pc should jump to the specified address
-    EXPECT_EQ(oldPcValue, stack[registers.sp - 1]);
-    EXPECT_EQ(newSpValue, registers.sp);
-    EXPECT_EQ(address, registers.pc);
+    // SE_Vx_byte should increment pc by 2 because Vx == kk
+    EXPECT_EQ(newPcValue, registers.pc);
 }
 
 TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
@@ -112,16 +122,6 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkNotEqual_DoesNotSkipNextInstruction) {
 
     // SE_Vx_byte should NOT increment pc by 2 because Vx != kk
     EXPECT_EQ(oldPcValue, registers.pc);
-}
-
-TEST_F(SkipVxByteTest, SE_Vx_byte_VxkkEqual_SkipsNextInstruction) {
-    const uint16_t newPcValue = registers.pc + 2;
-    registers.v[x] = kk;
-
-    instructions::SE_Vx_byte(opcode, registers);
-
-    // SE_Vx_byte should increment pc by 2 because Vx == kk
-    EXPECT_EQ(newPcValue, registers.pc);
 }
 
 TEST_F(SkipVxByteTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
@@ -134,6 +134,39 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_PcOutOfRange_ThrowsException) {
     }
     catch (std::exception& ex) {
         EXPECT_EQ("SE_Vx_byte: Attempted to increment the program counter " 
+            "to an out of range address " + std::to_string(registers.pc + 2), 
+            ex.what());
+    }
+}
+
+TEST_F(SkipVxByteTest, SNE_Vx_byte_VxkkEqual_DoesNotSkipNextInstruction) {
+    const uint16_t oldPcValue = registers.pc;
+    registers.v[x] = kk;
+
+    instructions::SNE_Vx_byte(opcode, registers);
+
+    // SE_Vx_byte should increment pc by 2 because Vx == kk
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST_F(SkipVxByteTest, SNE_Vx_byte_VxkkNotEqual_SkipsNextInstruction) {
+    const uint16_t newPcValue = registers.pc + 2;
+
+    instructions::SNE_Vx_byte(opcode, registers);
+
+    // SNE_Vx_byte should increment pc by 2 because Vx != kk
+    EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST_F(SkipVxByteTest, SNE_Vx_byte_PcOutOfRange_ThrowsException) {
+    registers.pc = MEMORY_SIZE - 2;
+    
+    try {
+        instructions::SNE_Vx_byte(opcode, registers);
+        FAIL();
+    }
+    catch (std::exception& ex) {
+        EXPECT_EQ("SNE_Vx_byte: Attempted to increment the program counter " 
             "to an out of range address " + std::to_string(registers.pc + 2), 
             ex.what());
     }
