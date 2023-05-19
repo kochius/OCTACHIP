@@ -2,7 +2,6 @@
 #include <exception>
 #include <gtest/gtest.h>
 
-#include "fixtures.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
 
@@ -105,7 +104,12 @@ TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
     }
 }
 
-TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t kk = 0x24;
+    Opcode opcode = 0x3000 | (x << 8) | kk;
+    Registers registers;
+
     const uint16_t newPcValue = registers.pc + 2;
     registers.v[x] = kk;
 
@@ -115,7 +119,12 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t kk = 0x24;
+    Opcode opcode = 0x3000 | (x << 8) | kk;
+    Registers registers;
+
     const uint16_t oldPcValue = registers.pc;
 
     instructions::SE_Vx_byte(opcode, registers);
@@ -124,7 +133,12 @@ TEST_F(SkipVxByteTest, SE_Vx_byte_VxByteNotEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t kk = 0x24;
+    Opcode opcode = 0x4000 | (x << 8) | kk;
+    Registers registers;
+
     const uint16_t oldPcValue = registers.pc;
     registers.v[x] = kk;
 
@@ -134,7 +148,12 @@ TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteEqual_DoesNotSkipNextInstruction) {
     EXPECT_EQ(oldPcValue, registers.pc);
 }
 
-TEST_F(SkipVxByteTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
+    const uint16_t x = 0x5;
+    const uint16_t kk = 0x24;
+    Opcode opcode = 0x4000 | (x << 8) | kk;
+    Registers registers;
+
     const uint16_t newPcValue = registers.pc + 2;
 
     instructions::SNE_Vx_byte(opcode, registers);
