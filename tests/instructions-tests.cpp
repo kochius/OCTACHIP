@@ -162,7 +162,7 @@ TEST(InstructionTest, SNE_Vx_byte_VxByteNotEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(TestInstruction, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
+TEST(InstructionTest, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t y = 0x7;
     Opcode opcode = 0x5000 | (x << 8) | (y << 4);
@@ -178,7 +178,7 @@ TEST(TestInstruction, SE_Vx_Vy_VxVyEqual_SkipsNextInstruction) {
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
-TEST(TestInstruction, SE_Vx_Vy_VxVyNotEqual_DoesNotSkipNextInstruction) {
+TEST(InstructionTest, SE_Vx_Vy_VxVyNotEqual_DoesNotSkipNextInstruction) {
     const uint16_t x = 0x5;
     const uint16_t y = 0x7;
     Opcode opcode = 0x5000 | (x << 8) | (y << 4);
