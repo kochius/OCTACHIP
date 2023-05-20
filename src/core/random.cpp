@@ -4,7 +4,7 @@
 
 using namespace CHIP8;
 
-Random::Random(unsigned int seed, int min, int max) : 
+Random::Random(unsigned int seed, uint8_t min, uint8_t max) : 
     engine{seed},
     distribution{min, max} {
     if (min > max) {
@@ -12,6 +12,6 @@ Random::Random(unsigned int seed, int min, int max) :
     }
 }
 
-int Random::generateNumber() {
+uint8_t Random::generateNumber() {
     return distribution(engine);
 }
