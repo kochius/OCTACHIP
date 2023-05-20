@@ -1,7 +1,8 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "fixtures/VxVyInstructionTest.hpp"
+#include "fixtures.hpp"
+#include "mocks.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
 
@@ -403,4 +404,42 @@ TEST_F(VxVyInstructionTest, SNE_Vx_Vy_VxNotEqualToVy_SkipsNextInstruction) {
 
     // SNE_Vx_Vy should increment pc by 2 because Vx != Vy
     EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST(InstructionTest, LD_I_addr_SetIEqualToAddress) {
+    const uint16_t address = 0x0FFF;
+    Opcode opcode = 0xA000 | address;
+    Registers registers;
+
+    instructions::LD_I_addr(opcode, registers);
+
+    // LD_I_addr should set i equal to the specified address
+    EXPECT_EQ(address, registers.i);
+}
+
+TEST(InstructionTest, JP_V0_addr_SetPcEqualToV0PlusAddress) {
+    const uint16_t address = 0x0500;
+    Opcode opcode = 0xB000 | address;
+    Registers registers;
+
+    registers.v[0] = 0x8;
+    const uint16_t newPcValue = registers.v[0] + address;
+
+    instructions::JP_V0_addr(opcode, registers);
+
+    EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST(InstructionTest, RND_Vx_byte_SetVxEqualToRndAndByte) {
+    const uint16_t x = 0x8;
+    const uint16_t byte = 0x10;
+    Opcode opcode = 0xC000 | (x << 8) | byte;
+    Registers registers;
+
+    MockRandom random;
+    const uint8_t result = random.generateNumber() & byte;
+
+    instructions::RND_Vx_byte(opcode, registers, random);
+
+    EXPECT_EQ(result, registers.v[x]);
 }
