@@ -534,3 +534,67 @@ TEST(InstructionTest, DRW_Vx_Vy_nibble_RepeatDraw_ClearsSpriteFromScreen) {
     // Toggled the pixels off, so the VF flag register should be set
     EXPECT_EQ(1, registers.v[0xF]);
 }
+
+TEST(InstructionTest, SKP_Vx_VxPressed_SkipsNextInstruction) {
+    const uint16_t x = 0x2;
+    Opcode opcode = 0xE09E | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x8;
+    const uint16_t newPcValue = registers.pc + 2;
+
+    Keypad keypad;
+    keypad[registers.v[x]] = true;
+
+    instructions::SKP_Vx(opcode, registers, keypad);
+
+    EXPECT_EQ(newPcValue, registers.pc);
+}
+
+TEST(InstructionTest, SKP_Vx_VxNotPressed_DoesNotSkipNextInstruction) {
+    const uint16_t x = 0x2;
+    Opcode opcode = 0xE09E | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x8;
+    const uint16_t oldPcValue = registers.pc;
+
+    Keypad keypad;
+    keypad[registers.v[x]] = false;
+
+    instructions::SKP_Vx(opcode, registers, keypad);
+
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST(InstructionTest, SKNP_Vx_VxPressed_DoesNotSkipNextInstruction) {
+    const uint16_t x = 0x2;
+    Opcode opcode = 0xE09E | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x8;
+    const uint16_t oldPcValue = registers.pc;
+
+    Keypad keypad;
+    keypad[registers.v[x]] = true;
+
+    instructions::SKNP_Vx(opcode, registers, keypad);
+
+    EXPECT_EQ(oldPcValue, registers.pc);
+}
+
+TEST(InstructionTest, SKNP_Vx_VxNotPressed_SkipsNextInstruction) {
+    const uint16_t x = 0x2;
+    Opcode opcode = 0xE09E | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x8;
+    const uint16_t newPcValue = registers.pc + 2;
+
+    Keypad keypad;
+    keypad[registers.v[x]] = false;
+
+    instructions::SKNP_Vx(opcode, registers, keypad);
+
+    EXPECT_EQ(newPcValue, registers.pc);
+}
