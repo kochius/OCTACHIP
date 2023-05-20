@@ -5,6 +5,8 @@
 #include "mocks.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
+#include "src/core/opcode.hpp"
+#include "src/core/types.hpp"
 
 using namespace CHIP8;
 
@@ -427,6 +429,8 @@ TEST(InstructionTest, JP_V0_addr_SetPcEqualToV0PlusAddress) {
 
     instructions::JP_V0_addr(opcode, registers);
 
+    // JP_V0_addr should set pc equal to the specified address plus the offset
+    // value in V0
     EXPECT_EQ(newPcValue, registers.pc);
 }
 
@@ -441,5 +445,92 @@ TEST(InstructionTest, RND_Vx_byte_SetVxEqualToRndAndByte) {
 
     instructions::RND_Vx_byte(opcode, registers, random);
 
+    // RND_Vx_byte should AND a random number with the specified byte and store
+    // the result in Vx
     EXPECT_EQ(result, registers.v[x]);
+}
+
+TEST(InstructionTest, DRW_Vx_Vy_nibble_FirstDraw_DrawsSpriteOntoScreen) {
+    // create the sprite data
+    constexpr int SPRITE_HEIGHT = 6;
+    constexpr std::array<uint8_t, SPRITE_HEIGHT> sprite = {
+        0b00000000,
+        0b11111111,
+        0b10000000,
+        0b00000001,
+        0b11001100,
+        0b01100110
+    };
+
+    // load the sprite data into memory
+    Memory memory;
+    Registers registers;
+    registers.i = 0x200;
+    for (int offset = 0; offset < SPRITE_HEIGHT; offset++) {
+        memory[registers.i + offset] = sprite[offset];
+    }
+
+    // set the starting location of the sprite data
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0x1;
+    registers.v[x] = 32;
+    registers.v[y] = 16;
+
+    // construct the opcode and execute the instruction
+    Opcode opcode = (x << 8) | (y << 4) | SPRITE_HEIGHT;
+    Frame frame;
+    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+
+    // DRW_Vx_Vy should draw the sprite to the screen
+    for (int row = 0; row < SPRITE_HEIGHT; row++) {
+        for (int col = 0; col < 8; col++) {
+            bool expectedPixel = sprite[row] & (0b10000000 >> col);
+            bool actualPixel = frame[(registers.v[y] + row) * Frame::WIDTH + 
+                (registers.v[x] + col)];
+            EXPECT_EQ(expectedPixel, actualPixel);
+        }
+    }
+    // The VF flag should be cleared since there was nothing else on the screen
+    EXPECT_EQ(0, registers.v[0xF]);
+}
+
+TEST(InstructionTest, DRW_Vx_Vy_nibble_RepeatDraw_ClearsSpriteFromScreen) {
+    // create the sprite data
+    constexpr int SPRITE_HEIGHT = 6;
+    constexpr std::array<uint8_t, SPRITE_HEIGHT> sprite = {
+        0b00000000,
+        0b11111111,
+        0b10000000,
+        0b00000001,
+        0b11001100,
+        0b01100110
+    };
+
+    // load the sprite data into memory
+    Memory memory;
+    Registers registers;
+    registers.i = 0x200;
+    for (int offset = 0; offset < SPRITE_HEIGHT; offset++) {
+        memory[registers.i + offset] = sprite[offset];
+    }
+
+    // set the starting location of the sprite data
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0x1;
+    registers.v[x] = 32;
+    registers.v[y] = 16;
+
+    // construct the opcode and execute the instruction twice
+    Opcode opcode = (x << 8) | (y << 4) | SPRITE_HEIGHT;
+    Frame frame;
+    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+
+    // Drawing the sprite twice should toggle the pixels off, so the screen
+    // should be cleared
+    for (size_t i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
+        EXPECT_EQ(false, frame[i]);
+    }
+    // Toggled the pixels off, so the VF flag register should be set
+    EXPECT_EQ(1, registers.v[0xF]);
 }

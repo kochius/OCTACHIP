@@ -282,7 +282,7 @@ void instructions::DRW_Vx_Vy_nibble(const Opcode& opcode, const Memory& memory,
                 if (frame[pixel]) {
                     registers.v[0x0F] = 1;
                 }
-                frame[pixel] ^= 1;
+                frame[pixel] ^= true;
             }
         }
     }
