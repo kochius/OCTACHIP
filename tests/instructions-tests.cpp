@@ -598,3 +598,158 @@ TEST(InstructionTest, SKNP_Vx_VxNotPressed_SkipsNextInstruction) {
 
     EXPECT_EQ(newPcValue, registers.pc);
 }
+
+TEST(InstructionTest, LD_Vx_DT_SetsVxEqualToDelayTimer) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF007 | (x << 8);
+
+    Registers registers;
+    registers.delayTimer = 0x42;
+
+    instructions::LD_Vx_DT(opcode, registers);
+
+    EXPECT_EQ(registers.delayTimer, registers.v[x]);
+}
+
+TEST(InstructionTest, LD_Vx_K_NoKeyPressed_DecrementsProgramCounterByTwo) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF00A | (x << 8);
+
+    Registers registers;
+    registers.pc = 2;
+
+    Keypad keypad{};
+
+    instructions::LD_Vx_K(opcode, registers, keypad);
+
+    EXPECT_EQ(0, registers.pc);
+}
+
+TEST(InstructionTest, LD_Vx_K_KeyPressed_SetsVxEqualToKey) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF00A | (x << 8);
+
+    Registers registers;
+    registers.pc = 2;
+
+    Keypad keypad{};
+    const int key = 0xA;
+    keypad[key] = true;
+
+    instructions::LD_Vx_K(opcode, registers, keypad);
+
+    EXPECT_EQ(key, registers.v[x]);
+    EXPECT_EQ(2, registers.pc);
+}
+
+TEST(InstructionTest, LD_DT_Vx_SetsDelayTimerEqualToVx) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF015 | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x42;
+
+    instructions::LD_DT_Vx(opcode, registers);
+
+    EXPECT_EQ(registers.v[x], registers.delayTimer);
+}
+
+TEST(InstructionTest, LD_ST_Vx_SetsSoundTimerEqualToVx) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF018 | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x42;
+
+    instructions::LD_ST_Vx(opcode, registers);
+
+    EXPECT_EQ(registers.v[x], registers.soundTimer);
+}
+
+TEST(InstructionTest, ADD_I_Vx_SetsIndexRegistersEqualToIndexRegistersPlusVx) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF01E | (x << 8);
+
+    Registers registers;
+    registers.i = 0x32;
+    registers.v[x] = 0x29;
+    const uint16_t iPlusVx = registers.i + registers.v[x];
+
+    instructions::ADD_I_Vx(opcode, registers);
+
+    EXPECT_EQ(iPlusVx, registers.i);
+}
+
+TEST(InstructionTest, LD_F_Vx) {
+    const int FONT_START_ADDRESS = 0x00;
+    const int FONT_CHAR_SIZE = 0x05;
+
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF029 | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 0x06;
+    const uint16_t characterLocation = FONT_START_ADDRESS + registers.v[x] * FONT_CHAR_SIZE;
+
+    instructions::LD_F_Vx(opcode, registers, FONT_START_ADDRESS, FONT_CHAR_SIZE);
+
+    EXPECT_EQ(characterLocation, registers.i);
+}
+
+TEST(InstructionTest, LD_B_Vx_StoresBcdOfVxInMemory) {
+    const uint16_t x = 0x8;
+    Opcode opcode = 0xF033 | (x << 8);
+
+    Registers registers;
+    registers.v[x] = 62;
+    registers.i = 0;
+
+    Memory memory;
+
+    instructions::LD_B_Vx(opcode, memory, registers);
+
+    EXPECT_EQ(0, memory[registers.i]);
+    EXPECT_EQ(6, memory[registers.i + 1]);
+    EXPECT_EQ(2, memory[registers.i + 2]);
+}
+
+TEST(InstructionTest, LD_I_Vx_StoresRegistersV0ToVxInMemoryStartingAtI) {
+    const uint16_t x = 5;
+    Opcode opcode = 0xF055 | (x << 8);
+
+    std::array<uint8_t, x + 1> data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+    Registers registers;
+    registers.i = 0;
+
+    for (int i = 0; i <= x; i++) {
+        registers.v[i] = data[i];
+    }
+    
+    Memory memory;
+    instructions::LD_I_Vx(opcode, memory, registers);
+
+    for (int i = 0; i <= x; i++) {
+        EXPECT_EQ(data[i], memory[registers.i + i]);
+    }
+}
+
+TEST(InstructionTest, LD_Vx_I_StoresMemoryAtIInRegistersV0ToVx) {
+    const uint16_t x = 5;
+    Opcode opcode = 0xF065 | (x << 8);
+
+    std::array<uint8_t, x + 1> data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+
+    Registers registers;
+    registers.i = 0;
+
+    Memory memory;
+    for (int i = 0; i <= x; i++) {
+        memory[registers.i + i] = data[i];
+    }
+    
+    instructions::LD_Vx_I(opcode, memory, registers);
+
+    for (int i = 0; i <= x; i++) {
+        EXPECT_EQ(data[i], registers.v[i]);
+    }
+}
