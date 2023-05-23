@@ -58,7 +58,7 @@ TEST_F(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
 
 TEST_F(InstructionTest, RET_EmptyStack_ThrowsException) {
     // RET should throw an exception if the stack is empty
-    EXPECT_THROW(instructions::RET(registers, stack), std::runtime_error);
+    EXPECT_THROW(instructions::RET(registers, stack), std::underflow_error);
 }
 
 TEST_F(InstructionTest, JP_ADDR_SetsProgramCounterToAddress) {
@@ -98,7 +98,7 @@ TEST_F(InstructionTest, CALL_ADDR_FullStack_ThrowsException) {
         }
     });
     EXPECT_THROW(instructions::CALL_ADDR(opcode, registers, stack), 
-        std::runtime_error);
+        std::overflow_error);
 }
 
 TEST_F(InstructionTest, SE_VX_BYTE_VxEqualToByte_SkipsInstruction) {

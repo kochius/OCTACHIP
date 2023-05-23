@@ -23,8 +23,8 @@ void instructions::CLS(Frame& frame) {
  */
 void instructions::RET(Registers& registers, Stack& stack) {
     if (registers.sp <= 0) {
-        throw std::runtime_error("RET: Attempted to return from a subroutine, "
-            "but the stack is empty");
+        throw std::underflow_error("RET: Attempted to return from a subroutine,"
+            " but the stack is empty");
     }
     registers.pc = stack[--registers.sp];
 }
@@ -47,7 +47,7 @@ void instructions::JP_ADDR(const Opcode& opcode, Registers& registers) {
 void instructions::CALL_ADDR(const Opcode& opcode, Registers& registers, 
     Stack& stack) {
     if (registers.sp >= STACK_SIZE) {
-        throw std::runtime_error("CALL_ADDR: Stack overflow error");
+        throw std::overflow_error("CALL_ADDR: Stack overflow error");
     }
     stack[registers.sp++] = registers.pc;
     registers.pc = opcode.address();
