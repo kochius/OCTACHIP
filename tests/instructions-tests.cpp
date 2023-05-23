@@ -1,7 +1,8 @@
 #include <cstdint>
 #include <gtest/gtest.h>
+#include <stdexcept>
+#include <vector>
 
-#include "fixtures.hpp"
 #include "mocks.hpp"
 #include "src/core/frame.hpp"
 #include "src/core/instructions.hpp"
@@ -11,745 +12,852 @@
 using namespace CHIP8;
 
 TEST(InstructionTest, CLS_ClearsFrame) {
-    constexpr size_t FRAME_SIZE = Frame::WIDTH * Frame::HEIGHT;
-    Frame frame;
+    Frame frame{};
 
-    // turn on some pixels
+    // Turn pixels on
     frame[0] = true;
-    frame[FRAME_SIZE - 1] = true;
+    frame[1] = true;
+    frame[2] = true;
 
     instructions::CLS(frame);
 
-    // make sure all pixels are off now
-    for (size_t i = 0; i < FRAME_SIZE; i++) {
+    // CLS should turn off all pixels
+    for (int i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
         EXPECT_EQ(false, frame[i]);
     }
 }
 
 TEST(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
-    Registers registers;
-    Stack stack;
-
-    // Call a subroutine at address 0x400
-    constexpr uint16_t address = 0x400;
+    constexpr uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
-    const uint16_t oldPcValue = registers.pc;
-    const uint8_t oldSpValue = registers.sp;
-    instructions::CALL_addr(opcode, registers, stack);
+    Registers registers{};
+    Stack stack{};
+
+    const uint16_t initialPcValue = registers.pc;
+    const uint8_t initialSpValue = registers.sp;
+
+    // Call a subroutine at the specified address
+    instructions::CALL_ADDR(opcode, registers, stack);
 
     instructions::RET(registers, stack);
 
-    // RET should restore the previous values to pc and sp
-    EXPECT_EQ(oldPcValue, registers.pc);
-    EXPECT_EQ(oldSpValue, registers.sp);
+    // RET should restore the initial program counter and stack pointer values
+    EXPECT_EQ(initialPcValue, registers.pc);
+    EXPECT_EQ(initialSpValue, registers.sp);
 }
 
 TEST(InstructionTest, RET_EmptyStack_ThrowsException) {
-    Registers registers;
-    Stack stack;
+    Registers registers{};
+    Stack stack{};
 
-    // RET should throw an exception if there's nothing to return to
-    try {
-        instructions::RET(registers, stack);
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_STREQ("RET: Attempted to return from a subroutine, but the stack"
-            " is empty", ex.what());
-    }
+    // RET should throw an exception if the stack is empty
+    EXPECT_THROW(instructions::RET(registers, stack), std::runtime_error);
 }
 
-TEST(InstructionTest, JP_addr_SetsProgramCounterToNNN) {
-    constexpr uint16_t address = 0x600;
+TEST(InstructionTest, JP_ADDR_SetsProgramCounterToAddress) {
+    constexpr uint16_t address = 0x251;
     const Opcode opcode = 0x1000 | address;
-    Registers registers;
+    Registers registers{};
     
-    instructions::JP_addr(opcode, registers);
+    instructions::JP_ADDR(opcode, registers);
 
-    // PC should jump to address 0x600
+    // JP_ADDR should set the program counter to the specified address
     EXPECT_EQ(address, registers.pc);
 }
 
-TEST(InstructionTest, CALL_addr_NonFullStack_CallsSubroutineNNN) {
-    constexpr uint16_t address = 0x800;
+TEST(InstructionTest, CALL_ADDR_NonFullStack_CallsSubroutineAtAddress) {
+    constexpr uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
-    Registers registers;
-    Stack stack;
-    const uint16_t oldPcValue = registers.pc;
-    const uint16_t newSpValue = registers.sp + 1;
+    Registers registers{};
+    Stack stack{};
 
-    instructions::CALL_addr(opcode, registers, stack);
+    const uint16_t initialPcValue = registers.pc;
+    const uint16_t incrementedSpValue = registers.sp + 1;
 
-    // old pc value should be pushed onto stack
-    // sp should be incremented
-    // pc should jump to the specified address
-    EXPECT_EQ(oldPcValue, stack[registers.sp - 1]);
-    EXPECT_EQ(newSpValue, registers.sp);
+    instructions::CALL_ADDR(opcode, registers, stack);
+
+    // CALL_ADDR should push the initial program counter onto stack
+    EXPECT_EQ(initialPcValue, stack[registers.sp - 1]);
+
+    // CALL_ADDR should set the program counter to the specified address
     EXPECT_EQ(address, registers.pc);
+
+    // CALL_ADDR should increment the stack pointer
+    EXPECT_EQ(incrementedSpValue, registers.sp);
 }
 
-TEST(InstructionTest, CALL_addr_FullStack_ThrowsException) {
-    constexpr uint16_t address = 0x800;
+TEST(InstructionTest, CALL_ADDR_FullStack_ThrowsException) {
+    constexpr uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
-    Registers registers;
-    Stack stack;
+    Registers registers{};
+    Stack stack{};
 
-    // CALL_addr should throw an exception when too many addresses are pushed
-    // onto the stack
-    try {
-        for (size_t i = 0; i <= STACK_SIZE; i++) {
-            instructions::CALL_addr(opcode, registers, stack);
+    // CALL_ADDR should throw an exception when the stack limit is exceeded
+    EXPECT_NO_THROW({
+        for (int i = 0; i < STACK_SIZE; i++) {
+            instructions::CALL_ADDR(opcode, registers, stack);
         }
-        FAIL();
-    }
-    catch (std::exception& ex) {
-        EXPECT_STREQ("CALL_addr: Stack overflow error", ex.what());
-    }
+    });
+    EXPECT_THROW(instructions::CALL_ADDR(opcode, registers, stack), 
+        std::runtime_error);
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxEqualToByte_SkipsNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t kk = 0x24;
-    Opcode opcode = 0x3000 | (x << 8) | kk;
-    Registers registers;
+TEST(InstructionTest, SE_VX_BYTE_VxEqualToByte_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x3000 | (x << 8) | byte;
+    Registers registers{};
 
-    const uint16_t newPcValue = registers.pc + 2;
-    registers.v[x] = kk;
+    registers.v[x] = byte;
+    const uint16_t incrementedPcValue = registers.pc + 2;
 
-    instructions::SE_Vx_byte(opcode, registers);
+    instructions::SE_VX_BYTE(opcode, registers);
 
-    // SE_Vx_byte should increment pc by 2 because Vx == kk
-    EXPECT_EQ(newPcValue, registers.pc);
+    // Vx == byte, so SE_VX_BYTE should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SE_Vx_byte_VxNotEqualToByte_DoesNotSkipNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t kk = 0x24;
-    Opcode opcode = 0x3000 | (x << 8) | kk;
-    Registers registers;
+TEST(InstructionTest, SE_VX_BYTE_VxNotEqualToByte_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x3000 | (x << 8) | byte;
+    Registers registers{};
 
-    const uint16_t oldPcValue = registers.pc;
+    registers.v[x] = 0x23;
+    const uint16_t initialPcValue = registers.pc;
 
-    instructions::SE_Vx_byte(opcode, registers);
+    instructions::SE_VX_BYTE(opcode, registers);
 
-    // SE_Vx_byte should NOT increment pc by 2 because Vx != kk
-    EXPECT_EQ(oldPcValue, registers.pc);
+    // Vx != byte, so SE_VX_BYTE should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SNE_Vx_byte_VxEqualToByte_DoesNotSkipNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t kk = 0x24;
-    Opcode opcode = 0x4000 | (x << 8) | kk;
-    Registers registers;
+TEST(InstructionTest, SNE_VX_BYTE_VxEqualToByte_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x4000 | (x << 8) | byte;
+    Registers registers{};
 
-    const uint16_t oldPcValue = registers.pc;
-    registers.v[x] = kk;
+    registers.v[x] = byte;
+    const uint16_t initialPcValue = registers.pc;
 
-    instructions::SNE_Vx_byte(opcode, registers);
+    instructions::SNE_VX_BYTE(opcode, registers);
 
-    // SNE_Vx_byte should NOT increment pc by 2 because Vx == kk
-    EXPECT_EQ(oldPcValue, registers.pc);
+    // Vx == byte, so SNE_VX_BYTE should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SNE_Vx_byte_VxNotEqualToByte_SkipsNextInstruction) {
-    const uint16_t x = 0x5;
-    const uint16_t kk = 0x24;
-    Opcode opcode = 0x4000 | (x << 8) | kk;
-    Registers registers;
+TEST(InstructionTest, SNE_VX_BYTE_VxNotEqualToByte_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x4000 | (x << 8) | byte;
+    Registers registers{};
 
-    const uint16_t newPcValue = registers.pc + 2;
+    registers.v[x] = 0x23;
+    const uint16_t incrementedPcValue = registers.pc + 2;
 
-    instructions::SNE_Vx_byte(opcode, registers);
+    instructions::SNE_VX_BYTE(opcode, registers);
 
-    // SNE_Vx_byte should increment pc by 2 because Vx != kk
-    EXPECT_EQ(newPcValue, registers.pc);
+    // Vx != byte, so SNE_VX_BYTE should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST_F(VxVyInstructionTest, SE_Vx_Vy_VxEqualToVy_SkipsNextInstruction) {
+TEST(InstructionTest, SE_VX_VY_VxEqualToVy_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x5000 | (x << 8) | (y << 4);
+    Registers registers{};
+
     registers.v[x] = 0x42;
-    registers.v[y] = registers.v[x];
-    const uint16_t newPcValue = registers.pc + 2;
+    registers.v[y] = 0x42;
+    const uint16_t incrementedPcValue = registers.pc + 2;
+    
+    instructions::SE_VX_VY(opcode, registers);
 
-    instructions::SE_Vx_Vy(opcode, registers);
-
-    // SE_Vx_Vy should increment pc by 2 because Vx == Vy
-    EXPECT_EQ(newPcValue, registers.pc);
+    // Vx == Vy, so SE_VX_VY should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SE_Vx_Vy_VxNotEqualToVy_DoesNotSkipNextInstruction) {
-    registers.v[x] = 0x42;
-    registers.v[y] = 0x55;
-    const uint16_t oldPcValue = registers.pc;
+TEST(InstructionTest, SE_VX_VY_VxNotEqualToVy_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x5000 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SE_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x23;
+    registers.v[y] = 0x77;
 
-    // SE_Vx_Vy should NOT increment pc by 2 because Vx != Vy
-    EXPECT_EQ(oldPcValue, registers.pc);
+    const uint16_t initialPcValue = registers.pc;
+
+    instructions::SE_VX_VY(opcode, registers);
+
+    // Vx != Vy, so SE_VX_VY should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST(InstructionTest, LD_Vx_byte_SetsVxEqualToByte) {
-    const uint16_t x = 0x8;
-    const uint16_t byte = 0x24;
-    Opcode opcode = 0x6000 | (x << 8) | byte;
-    Registers registers;
+TEST(InstructionTest, LD_VX_BYTE_SetsVxToByte) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x6000 | (x << 8) | byte;
+    Registers registers{};
 
-    instructions::LD_Vx_byte(opcode, registers);
+    instructions::LD_VX_BYTE(opcode, registers);
 
-    // LD_Vx_byte should set Vx equal to the lower byte of the opcode
+    // LD_VX_BYTE should set Vx to the specified byte
     EXPECT_EQ(byte, registers.v[x]);
 }
 
-TEST(InstructionTest, ADD_Vx_byte_SetsVxEqualToVxPlusByte) {
-    const uint16_t x = 0x8;
-    const uint16_t byte = 0x24;
-    Opcode opcode = 0x7000 | (x << 8) | byte;
-    Registers registers;
+TEST(InstructionTest, ADD_VX_BYTE_AddsByteToVx) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0x7000 | (x << 8) | byte;
+    Registers registers{};
 
-    const uint8_t vxPlusByte = registers.v[x] + byte;
+    registers.v[x] = 0x23;
+    constexpr uint8_t vxPlusByte = 0x65;
 
-    instructions::ADD_Vx_byte(opcode, registers);
+    instructions::ADD_VX_BYTE(opcode, registers);
 
-    // ADD_Vx_byte should add byte to Vx and store the result in Vx
+    // ADD_VX_BYTE should add the specified byte to Vx and store the result in 
+    // Vx
     EXPECT_EQ(vxPlusByte, registers.v[x]);
 }
 
-TEST_F(VxVyInstructionTest, LD_Vx_Vy_SetsVxEqualToVy) {
-    registers.v[x] = 0x00;
-    registers.v[y] = 0x38;
+TEST(InstructionTest, LD_VX_VY_SetsVxToVy) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8000 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::LD_Vx_Vy(opcode, registers);
+    registers.v[y] = 0x23;
 
-    // LD_Vx_Vy should set Vx equal to the value in Vy
+    instructions::LD_VX_VY(opcode, registers);
+
+    // LD_VX_VY should set Vx to Vy
     EXPECT_EQ(registers.v[y], registers.v[x]);
 }
 
-TEST_F(VxVyInstructionTest, OR_Vx_Vy_SetsVxEqualToVxOrVy) {
-    registers.v[x] = 0x00;
-    registers.v[y] = 0x38;
-    const uint8_t vxOrVy = registers.v[x] | registers.v[y];
+TEST(InstructionTest, OR_VX_VY_OrsVxWithVy) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8001 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::OR_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vxOrVy = 0x63;
 
-    // OR_Vx_Vy should bitwise OR Vx with Vy and store the result in Vx
+    instructions::OR_VX_VY(opcode, registers);
+
+    // OR_VX_VY should bitwise OR Vx with Vy and store the result in Vx
     EXPECT_EQ(vxOrVy, registers.v[x]);
 }
 
-TEST_F(VxVyInstructionTest, AND_Vx_Vy_SetsVxEqualToVxAndVy) {
-    registers.v[x] = 0x00;
-    registers.v[y] = 0x38;
-    const uint8_t vxAndVy = registers.v[x] & registers.v[y];
+TEST(InstructionTest, AND_VX_VY_AndsVxWithVy) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8002 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::AND_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vxAndVy = 0x02;
 
-    // AND_Vx_Vy should bitwise AND Vx with Vy and store the result in Vx
+    instructions::AND_VX_VY(opcode, registers);
+
+    // AND_VX_VY should bitwise AND Vx with Vy and store the result in Vx
     EXPECT_EQ(vxAndVy, registers.v[x]);
 }
 
-TEST_F(VxVyInstructionTest, XOR_Vx_Vy_SetsVxEqualToVxXorVy) {
-    registers.v[x] = 0x00;
-    registers.v[y] = 0x38;
-    const uint8_t vxXorVy = registers.v[x] ^ registers.v[y];
+TEST(InstructionTest, XOR_VX_VY_XorsVxWithVy) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8003 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::XOR_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vxXorVy = 0x61;
 
-    // XOR_Vx_Vy should bitwise XOR Vx with Vy and store the result in Vx
+    instructions::XOR_VX_VY(opcode, registers);
+
+    // XOR_VX_VY should bitwise XOR Vx with Vy and store the result in Vx
     EXPECT_EQ(vxXorVy, registers.v[x]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    ADD_Vx_Vy_NoCarry_SetsVxEqualToVxPlusVyAndClearsVF) {
-    registers.v[x] = registers.v[y] = 0x01;
-    const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
+TEST(InstructionTest, ADD_VX_VY_NoCarry_AddsVyToVxAndClearsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8004 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::ADD_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vxPlusVy = 0x65;
 
-    // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
-    // Because the result is less than 255, VF is cleared
+    instructions::ADD_VX_VY(opcode, registers);
+
+    // ADD_VX_VY should add Vy to Vx and store the result in Vx
     EXPECT_EQ(vxPlusVy, registers.v[x]);
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // (Vx + Vy) <= 255, so ADD_VX_VY should clear the carry flag VF
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, ADD_Vx_Vy_Carry_SetsVxEqualToVxPlusVyAndSetsVF) {
-    registers.v[x] = registers.v[y] = 0xFF;
-    const uint8_t vxPlusVy = registers.v[x] + registers.v[y];
+TEST(InstructionTest, ADD_VX_VY_Carry_AddsVyToVxAndSetsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8004 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::ADD_Vx_Vy(opcode, registers);
+    registers.v[x] = 0xFF;
+    registers.v[y] = 0xFF;
+    constexpr uint8_t vxPlusVy = 0xFE;
 
-    // ADD_Vx_Vy should add Vy to Vx and store the result in Vx
-    // Because the result is greater than 255, VF is set
+    instructions::ADD_VX_VY(opcode, registers);
+
+    // ADD_VX_VY should add Vy to Vx and store the result in Vx
     EXPECT_EQ(vxPlusVy, registers.v[x]);
-    EXPECT_EQ(1, registers.v[0xF]);
+    
+    // (Vx + Vy) > 255, so ADD_VX_VY should set the carry flag VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SUB_Vx_Vy_NoBorrow_SetsVxEqualToVxMinusVyAndSetsVF) {
-    registers.v[x] = 0xFF;
-    registers.v[y] = 0x01;
-    const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
+TEST(InstructionTest, SUB_VX_VY_NoBorrow_SubtractsVyFromVxAndSetsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8005 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SUB_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vxMinusVy = 0x1F;
 
-    // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
-    // Because the Vx is greater than Vy, VF is set
+    instructions::SUB_VX_VY(opcode, registers);
+
+    // SUB_VX_VY should subtract Vy from Vx and store the result in Vx
     EXPECT_EQ(vxMinusVy, registers.v[x]);
-    EXPECT_EQ(1, registers.v[0xF]);
+
+    // Vx >= Vy, so SUB_VX_VY should set the borrow flag VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SUB_Vx_Vy_Borrow_SetsVxEqualToVxMinusVyAndClearsVF) {
-    registers.v[x] = 0x01;
-    registers.v[y] = 0xFF;
-    const uint8_t vxMinusVy = registers.v[x] - registers.v[y];
+TEST(InstructionTest, SUB_VX_VY_Borrow_SubtractsVyFromVxAndClearsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8005 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SUB_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x23;
+    registers.v[y] = 0x42;
+    constexpr uint8_t vxMinusVy = 0xE1;
 
-    // SUB_Vx_Vy should subtract Vy from Vx and store the result in Vx
-    // Because the Vx is less than Vy, VF is cleared
+    instructions::SUB_VX_VY(opcode, registers);
+
+    // SUB_VX_VY should subtract Vy from Vx and store the result in Vx
     EXPECT_EQ(vxMinusVy, registers.v[x]);
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // Vx < Vy, so SUB_VX_VY should clear the borrow flag
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, SHR_Vx_Vy_LsbOne_DividesVxByTwoAndSetsVF) {
-    registers.v[x] = 0x01;
-    const uint8_t vxDividedByTwo = registers.v[x] >> 1;
+TEST(InstructionTest, SHR_VX_VY_LsbZero_DividesVxByTwoAndClearsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8006 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SHR_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    constexpr uint8_t vxDividedByTwo = 0x21;
 
-    // SHR_Vx_Vy should divide Vx by two and store the result in Vx
-    // Because the least significant bit is 1, VF is set
+    instructions::SHR_VX_VY(opcode, registers);
+
+    // SHR_VX_VY should divide Vx by 2 and store the result in Vx
     EXPECT_EQ(vxDividedByTwo, registers.v[x]);
-    EXPECT_EQ(1, registers.v[0xF]);
+
+    // Least significant bit == 0, so SHR_VX_VY should clear VF
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SHR_Vx_Vy_LsbZero_DividesVxByTwoAndClearsVF) {
-    registers.v[x] = 0x10;
-    const uint8_t vxDividedByTwo = registers.v[x] >> 1;
+TEST(InstructionTest, SHR_VX_VY_LsbOne_DividesVxByTwoAndSetsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8006 | (x << 8) | (y << 4);
+    Registers registers{};
+    
+    registers.v[x] = 0x23;
+    constexpr uint8_t vxDividedByTwo = 0x11;
 
-    instructions::SHR_Vx_Vy(opcode, registers);
+    instructions::SHR_VX_VY(opcode, registers);
 
-    // SHR_Vx_Vy should divide Vx by two and store the result in Vx
-    // Because the least significant bit is 0, VF is cleared
+    // SHR_VX_VY should divide Vx by 2 and store the result in Vx
     EXPECT_EQ(vxDividedByTwo, registers.v[x]);
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // Least significant bit == 1, so SHR_VX_VY should set VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SUBN_Vx_Vy_NoBorrow_SetsVxEqualToVyMinusVxAndSetsVF) {
-    registers.v[x] = 0x01;
-    registers.v[y] = 0xFF;
-    const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
+TEST(InstructionTest, SUBN_VX_VY_NoBorrow_SubtractsVxFromVyAndSetsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8007 | (x << 8) | ( y << 4);
+    Registers registers{};
 
-    instructions::SUBN_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x23;
+    registers.v[y] = 0x42;
+    constexpr uint8_t vyMinusVx = 0x1F;
 
-    // SUBN_Vx_Vy should subtract Vx from Vy and store the result in Vx
-    // Because the Vx is less than Vy, VF is set
+    instructions::SUBN_VX_VY(opcode, registers);
+
+    // SUBN_VX_VY should subtract Vx from Vy and store the result in Vx
     EXPECT_EQ(vyMinusVx, registers.v[x]);
-    EXPECT_EQ(1, registers.v[0xF]);
+
+    // Vy >= Vx, so SUBN_VX_VY should set the borrow flag VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, 
-    SUBN_Vx_Vy_Borrow_SetsVxEqualToVyMinusVxAndClearsVF) {
-    registers.v[x] = 0xFF;
-    registers.v[y] = 0x01;
-    const uint8_t vyMinusVx = registers.v[y] - registers.v[x];
+TEST(InstructionTest, SUBN_VX_VY_Borrow_SubtractsVxFromVyAndClearsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x8007 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SUBN_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    constexpr uint8_t vyMinusVx = 0xE1;
 
-    // SUBN_Vx_Vy should subtract Vx from Vy and store the result in Vx
-    // Because the Vx is greater than Vy, VF is cleared
+    instructions::SUBN_VX_VY(opcode, registers);
+
+    // SUBN_VX_VY should subtract Vx from Vy and store the result in Vx
     EXPECT_EQ(vyMinusVx, registers.v[x]);
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // Vy < Vx, so SUBN_VX_VY should clear the borrow flag VF
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, SHL_Vx_Vy_MsbOne_MultipliesVxByTwoAndSetsVF) {
-    registers.v[x] = 0b10000000;
-    const uint8_t vxTimesTwo = registers.v[x] << 1;
+TEST(InstructionTest, SHL_VX_VY_MsbOne_MultipliesVxByTwoAndSetsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x800E | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SHL_Vx_Vy(opcode, registers);
+    registers.v[x] = 0xC2;
+    constexpr uint8_t vxTimesTwo = 0x84;
 
-    // SHL_Vx_Vy should multiply Vx by 2 and store the result in Vx
-    // Because the most significant bit of Vx is 1, VF is set
+    instructions::SHL_VX_VY(opcode, registers);
+
+    // SHL_VX_VY should multiply Vx by 2 and store the result in Vx
     EXPECT_EQ(vxTimesTwo, registers.v[x]);
-    EXPECT_EQ(1, registers.v[0xF]);
+
+    // Most significant bit == 1, so SHL_VX_VY should set VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, SHL_Vx_Vy_MsbZero_MultipliesVxByTwoAndClearsVF) {
-    registers.v[x] = 0b00000001;
-    const uint8_t vxTimesTwo = registers.v[x] << 1;
+TEST(InstructionTest, SHL_VX_VY_MsbZero_MultipliesVxByTwoAndClearsVF) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x800E | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SHL_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x61;
+    constexpr uint8_t vxTimesTwo = 0xC2;
 
-    // SHL_Vx_Vy should multiply Vx by 2 and store the result in Vx
-    // Because the most significant bit of Vx is 0, VF is cleared
+    instructions::SHL_VX_VY(opcode, registers);
+
+    // SHL_VX_VY should multiply Vx by 2 and store the result in Vx
     EXPECT_EQ(vxTimesTwo, registers.v[x]);
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // Most significant bit == 0, so SHL_VX_VY should clear VF
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST_F(VxVyInstructionTest, SNE_Vx_Vy_VxEqualToVy_DoesNotSkipNextInstruction) {
-    registers.v[x] = registers.v[y] = 0xFF;
-    const uint16_t oldPcValue = registers.pc;
+TEST(InstructionTest, SNE_VX_VY_VxEqualToVy_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x9000 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SNE_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x42;
+    const uint16_t initialPcValue = registers.pc;
 
-    // SNE_Vx_Vy should NOT increment pc by 2 because Vx == Vy
-    EXPECT_EQ(oldPcValue, registers.pc);
+    instructions::SNE_VX_VY(opcode, registers);
+
+    // Vx == Vy, so SNE_VX_VY should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST_F(VxVyInstructionTest, SNE_Vx_Vy_VxNotEqualToVy_SkipsNextInstruction) {
-    registers.v[x] = 0x01;
-    registers.v[y] = 0xFF;
-    const uint16_t newPcValue = registers.pc + 2;
+TEST(InstructionTest, SNE_VX_VY_VxNotEqualToVy_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint16_t y = 0xA;
+    const Opcode opcode = 0x9000 | (x << 8) | (y << 4);
+    Registers registers{};
 
-    instructions::SNE_Vx_Vy(opcode, registers);
+    registers.v[x] = 0x42;
+    registers.v[y] = 0x23;
+    const uint16_t incrementedPcValue = registers.pc + 2;
 
-    // SNE_Vx_Vy should increment pc by 2 because Vx != Vy
-    EXPECT_EQ(newPcValue, registers.pc);
+    instructions::SNE_VX_VY(opcode, registers);
+
+    // Vx != Vy, so SNE_VX_VY should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, LD_I_addr_SetIEqualToAddress) {
-    const uint16_t address = 0x0FFF;
-    Opcode opcode = 0xA000 | address;
-    Registers registers;
+TEST(InstructionTest, LD_I_ADDR_SetsIndexRegisterToAddress) {
+    constexpr uint16_t address = 0x251;
+    const Opcode opcode = 0xA000 | address;
+    Registers registers{};
 
-    instructions::LD_I_addr(opcode, registers);
+    instructions::LD_I_ADDR(opcode, registers);
 
-    // LD_I_addr should set i equal to the specified address
+    // LD_I_ADDR should set the index register to the specified address
     EXPECT_EQ(address, registers.i);
 }
 
-TEST(InstructionTest, JP_V0_addr_SetPcEqualToV0PlusAddress) {
-    const uint16_t address = 0x0500;
-    Opcode opcode = 0xB000 | address;
-    Registers registers;
+TEST(InstructionTest, JP_V0_ADDR_SetsProgramCounterToV0PlusAddress) {
+    constexpr uint16_t address = 0x251;
+    const Opcode opcode = 0xB000 | address;
+    Registers registers{};
 
-    registers.v[0] = 0x8;
-    const uint16_t newPcValue = registers.v[0] + address;
+    registers.v[0x0] = 0x42;
+    constexpr uint16_t expectedPcValue = 0x293;
 
-    instructions::JP_V0_addr(opcode, registers);
+    instructions::JP_V0_ADDR(opcode, registers);
 
-    // JP_V0_addr should set pc equal to the specified address plus the offset
-    // value in V0
-    EXPECT_EQ(newPcValue, registers.pc);
+    // JP_VO_ADDR should add the offset in V0 to the specified address and store
+    // the result in the program counter
+    EXPECT_EQ(expectedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, RND_Vx_byte_SetVxEqualToRndAndByte) {
-    const uint16_t x = 0x8;
-    const uint16_t byte = 0x10;
-    Opcode opcode = 0xC000 | (x << 8) | byte;
-    Registers registers;
+TEST(InstructionTest, RND_VX_BYTE_SetsVxToRndAndByte) {
+    constexpr uint16_t x = 0x0;
+    constexpr uint8_t byte = 0x42;
+    const Opcode opcode = 0xC000 | (x << 8) | byte;
+    Registers registers{};
+    MockRandom random{};
 
-    MockRandom random;
-    const uint8_t result = random.generateNumber() & byte;
+    constexpr uint8_t expectedRandomValue = 0x02;
 
-    instructions::RND_Vx_byte(opcode, registers, random);
+    // Check that the mock RNG is working as expected
+    ASSERT_EQ(0x37, random.generateNumber());
 
-    // RND_Vx_byte should AND a random number with the specified byte and store
-    // the result in Vx
-    EXPECT_EQ(result, registers.v[x]);
+    instructions::RND_VX_BYTE(opcode, registers, random);
+
+    // RND_VX_BYTE should bitwise AND a random number with the specified byte
+    // and store the result in Vx
+    EXPECT_EQ(expectedRandomValue, registers.v[x]);
 }
 
-TEST(InstructionTest, DRW_Vx_Vy_nibble_FirstDraw_DrawsSpriteOntoScreen) {
-    // create the sprite data
-    constexpr int SPRITE_HEIGHT = 6;
-    constexpr std::array<uint8_t, SPRITE_HEIGHT> sprite = {
-        0b00000000,
-        0b11111111,
-        0b10000000,
-        0b00000001,
-        0b11001100,
-        0b01100110
+TEST(InstructionTest, 
+    DRW_VX_VY_NIBBLE_BlankScreen_DrawsSpriteOnScreenAndClearsVF) {
+    // Vectorized representation of the sprite to draw on screen
+    const std::vector<std::vector<uint8_t>> sprite = {
+        {0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 1 ,0 ,1 ,0, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-    // load the sprite data into memory
-    Memory memory;
-    Registers registers;
-    registers.i = 0x200;
-    for (int offset = 0; offset < SPRITE_HEIGHT; offset++) {
-        memory[registers.i + offset] = sprite[offset];
-    }
-
-    // set the starting location of the sprite data
     constexpr uint16_t x = 0x0;
-    constexpr uint16_t y = 0x1;
-    registers.v[x] = 32;
-    registers.v[y] = 16;
+    constexpr uint16_t y = 0xA;
+    const uint8_t n = sprite.size();
+    const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
+    Memory memory{};
+    Registers registers{};
+    Frame frame{};
 
-    // construct the opcode and execute the instruction
-    Opcode opcode = (x << 8) | (y << 4) | SPRITE_HEIGHT;
-    Frame frame;
-    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+    // Load the sprite data into memory
+    registers.i = 0x200;
+    memory[registers.i] = 0b01010101;
+    memory[registers.i + 1] = 0b10101010;
+    memory[registers.i + 2] = 0b00000000;
+    memory[registers.i + 3] = 0b11111111;
 
-    // DRW_Vx_Vy should draw the sprite to the screen
-    for (int row = 0; row < SPRITE_HEIGHT; row++) {
-        for (int col = 0; col < 8; col++) {
-            bool expectedPixel = sprite[row] & (0b10000000 >> col);
-            bool actualPixel = frame[(registers.v[y] + row) * Frame::WIDTH + 
-                (registers.v[x] + col)];
-            EXPECT_EQ(expectedPixel, actualPixel);
+    instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame);
+
+    // DRW_VX_VY_NIBBLE should draw the sprite from memory onto the frame
+    for (int row = 0; row < sprite.size(); row++) {
+        for (int col = 0; col < sprite.front().size(); col++) {
+            int pixelLoc = Frame::WIDTH * row + col;
+            EXPECT_EQ(sprite[row][col], frame[pixelLoc]);
         }
     }
-    // The VF flag should be cleared since there was nothing else on the screen
-    EXPECT_EQ(0, registers.v[0xF]);
+
+    // Started with a blank screen, so DRW_VX_VY_NIBBLE should clear the 
+    // collision flag VF
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
-TEST(InstructionTest, DRW_Vx_Vy_nibble_RepeatDraw_ClearsSpriteFromScreen) {
-    // create the sprite data
-    constexpr int SPRITE_HEIGHT = 6;
-    constexpr std::array<uint8_t, SPRITE_HEIGHT> sprite = {
-        0b00000000,
-        0b11111111,
-        0b10000000,
-        0b00000001,
-        0b11001100,
-        0b01100110
+TEST(InstructionTest, 
+    DRW_VX_VY_NIBBLE_RepeatDraw_ClearsSpriteFromScreenAndSetsVF) {
+    // Vectorized representation of the sprite to draw on screen
+    const std::vector<std::vector<uint8_t>> sprite = {
+        {0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 1 ,0 ,1 ,0, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-    // load the sprite data into memory
-    Memory memory;
-    Registers registers;
-    registers.i = 0x200;
-    for (int offset = 0; offset < SPRITE_HEIGHT; offset++) {
-        memory[registers.i + offset] = sprite[offset];
-    }
-
-    // set the starting location of the sprite data
     constexpr uint16_t x = 0x0;
-    constexpr uint16_t y = 0x1;
-    registers.v[x] = 32;
-    registers.v[y] = 16;
+    constexpr uint16_t y = 0xA;
+    const uint8_t n = sprite.size();
+    const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
+    Memory memory{};
+    Registers registers{};
+    Frame frame{};
 
-    // construct the opcode and execute the instruction twice
-    Opcode opcode = (x << 8) | (y << 4) | SPRITE_HEIGHT;
-    Frame frame;
-    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
-    instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+    // Load the sprite data into memory
+    registers.i = 0x200;
+    memory[registers.i] = 0b01010101;
+    memory[registers.i + 1] = 0b10101010;
+    memory[registers.i + 2] = 0b00000000;
+    memory[registers.i + 3] = 0b11111111;
 
-    // Drawing the sprite twice should toggle the pixels off, so the screen
-    // should be cleared
-    for (size_t i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
+    // Repeating the draw instruction will toggle the sprite on and off
+    instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame);
+    instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame);
+
+    // The second call to DRW_VX_VY_NIBBLE should clear the frame
+    for (int i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
         EXPECT_EQ(false, frame[i]);
     }
-    // Toggled the pixels off, so the VF flag register should be set
-    EXPECT_EQ(1, registers.v[0xF]);
+    
+    // The second draw call overlapped the first sprite, so DRW_VX_VY_NIBBLE 
+    // should set the collision flag VF
+    EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
-TEST(InstructionTest, SKP_Vx_VxPressed_SkipsNextInstruction) {
-    const uint16_t x = 0x2;
-    Opcode opcode = 0xE09E | (x << 8);
+TEST(InstructionTest, SKP_VX_VxPressed_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xE09E | (x << 8);
+    Registers registers{};
+    Keypad keypad{};
 
-    Registers registers;
-    registers.v[x] = 0x8;
-    const uint16_t newPcValue = registers.pc + 2;
-
-    Keypad keypad;
+    registers.v[x] = 0xA;
     keypad[registers.v[x]] = true;
+    const uint16_t incrementedPcValue = registers.pc + 2;
 
-    instructions::SKP_Vx(opcode, registers, keypad);
+    instructions::SKP_VX(opcode, registers, keypad);
 
-    EXPECT_EQ(newPcValue, registers.pc);
+    // Key Vx pressed, so SKP_VX should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SKP_Vx_VxNotPressed_DoesNotSkipNextInstruction) {
-    const uint16_t x = 0x2;
-    Opcode opcode = 0xE09E | (x << 8);
+TEST(InstructionTest, SKP_VX_VxNotPressed_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xE09E | (x << 8);
+    Registers registers{};
+    Keypad keypad{};
 
-    Registers registers;
-    registers.v[x] = 0x8;
-    const uint16_t oldPcValue = registers.pc;
-
-    Keypad keypad;
+    registers.v[x] = 0xB;
     keypad[registers.v[x]] = false;
+    const uint16_t initialPcValue = registers.pc;
 
-    instructions::SKP_Vx(opcode, registers, keypad);
+    instructions::SKP_VX(opcode, registers, keypad);
 
-    EXPECT_EQ(oldPcValue, registers.pc);
+    // Key Vx not pressed, so SKP_VX should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SKNP_Vx_VxPressed_DoesNotSkipNextInstruction) {
-    const uint16_t x = 0x2;
-    Opcode opcode = 0xE09E | (x << 8);
+TEST(InstructionTest, SKNP_VX_VxPressed_DoesNotSkipInstruction) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xE0A1 | (x << 8);
+    Registers registers{};
+    Keypad keypad{};
 
-    Registers registers;
-    registers.v[x] = 0x8;
-    const uint16_t oldPcValue = registers.pc;
-
-    Keypad keypad;
+    registers.v[x] = 0xC;
     keypad[registers.v[x]] = true;
+    const uint16_t initialPcValue = registers.pc;
 
-    instructions::SKNP_Vx(opcode, registers, keypad);
+    instructions::SKNP_VX(opcode, registers, keypad);
 
-    EXPECT_EQ(oldPcValue, registers.pc);
+    // Key Vx pressed, so SKNP_VX should NOT increment the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
 }
 
-TEST(InstructionTest, SKNP_Vx_VxNotPressed_SkipsNextInstruction) {
-    const uint16_t x = 0x2;
-    Opcode opcode = 0xE09E | (x << 8);
+TEST(InstructionTest, SKNP_VX_VxNotPressed_SkipsInstruction) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xE0A1 | (x << 8);
+    Registers registers{};
+    Keypad keypad{};
 
-    Registers registers;
-    registers.v[x] = 0x8;
-    const uint16_t newPcValue = registers.pc + 2;
-
-    Keypad keypad;
+    registers.v[x] = 0xD;
     keypad[registers.v[x]] = false;
+    const uint16_t incrementedPcValue = registers.pc + 2;
 
-    instructions::SKNP_Vx(opcode, registers, keypad);
+    instructions::SKNP_VX(opcode, registers, keypad);
 
-    EXPECT_EQ(newPcValue, registers.pc);
+    // Key Vx not pressed, so SKNP_VX should increment the program counter
+    EXPECT_EQ(incrementedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, LD_Vx_DT_SetsVxEqualToDelayTimer) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF007 | (x << 8);
+TEST(InstructionTest, LD_VX_DT_SetsVxToDelayTimer) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF007 | (x << 8);
+    Registers registers{};
 
-    Registers registers;
     registers.delayTimer = 0x42;
 
-    instructions::LD_Vx_DT(opcode, registers);
+    instructions::LD_VX_DT(opcode, registers);
 
+    // LD_VX_DY should set Vx to the delay timer value
     EXPECT_EQ(registers.delayTimer, registers.v[x]);
 }
 
-TEST(InstructionTest, LD_Vx_K_NoKeyPressed_DecrementsProgramCounterByTwo) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF00A | (x << 8);
-
-    Registers registers;
-    registers.pc = 2;
-
+TEST(InstructionTest, LD_VX_K_NoKeyPressed_DecrementsProgramCounter) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF00A | (x << 8);
+    Registers registers{};
     Keypad keypad{};
 
-    instructions::LD_Vx_K(opcode, registers, keypad);
+    registers.pc = 0x002;
+    const uint16_t decrementedPcValue = registers.pc - 2;
 
-    EXPECT_EQ(0, registers.pc);
+    instructions::LD_VX_K(opcode, registers, keypad);
+
+    // No key press detected, so LD_VX_K should decrement the program counter
+    EXPECT_EQ(decrementedPcValue, registers.pc);
 }
 
-TEST(InstructionTest, LD_Vx_K_KeyPressed_SetsVxEqualToKey) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF00A | (x << 8);
-
-    Registers registers;
-    registers.pc = 2;
-
+TEST(InstructionTest, LD_VX_K_KeyPressed_SetVxToPressedKey) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF00A | (x << 8);
+    Registers registers{};
     Keypad keypad{};
-    const int key = 0xA;
+
+    const uint8_t initialPcValue = registers.pc;
+    constexpr uint8_t key = 0xE;
     keypad[key] = true;
 
-    instructions::LD_Vx_K(opcode, registers, keypad);
+    instructions::LD_VX_K(opcode, registers, keypad);
 
+    // Key press detected, so LD_VX_K should NOT decrement the program counter
+    EXPECT_EQ(initialPcValue, registers.pc);
+
+    // LD_VX_K should set Vx to the value of the pressed key
     EXPECT_EQ(key, registers.v[x]);
-    EXPECT_EQ(2, registers.pc);
 }
 
-TEST(InstructionTest, LD_DT_Vx_SetsDelayTimerEqualToVx) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF015 | (x << 8);
+TEST(InstructionTest, LD_DT_VX_SetsDelayTimerToVx) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF015 | (x << 8);
+    Registers registers{};
 
-    Registers registers;
-    registers.v[x] = 0x42;
+    registers.v[x] = 0xF0;
 
-    instructions::LD_DT_Vx(opcode, registers);
+    instructions::LD_DT_VX(opcode, registers);
 
+    // LD_DT_VX should set the delay timer to Vx
     EXPECT_EQ(registers.v[x], registers.delayTimer);
 }
 
-TEST(InstructionTest, LD_ST_Vx_SetsSoundTimerEqualToVx) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF018 | (x << 8);
+TEST(InstructionTest, LD_ST_VX_SetsSoundTimerToVx) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF018 | (x << 8);
+    Registers registers{};
 
-    Registers registers;
-    registers.v[x] = 0x42;
+    registers.v[x] = 0xF0;
 
-    instructions::LD_ST_Vx(opcode, registers);
+    instructions::LD_ST_VX(opcode, registers);
 
+    // LD_ST_VX should set the sound timer to Vx
     EXPECT_EQ(registers.v[x], registers.soundTimer);
 }
 
-TEST(InstructionTest, ADD_I_Vx_SetsIndexRegistersEqualToIndexRegistersPlusVx) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF01E | (x << 8);
+TEST(InstructionTest, ADD_I_VX_AddsVxToIndexRegister) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF01E | (x << 8);
+    Registers registers{};
 
-    Registers registers;
-    registers.i = 0x32;
-    registers.v[x] = 0x29;
-    const uint16_t iPlusVx = registers.i + registers.v[x];
+    registers.v[x] = 0x42;
+    registers.i = 0x619;
+    constexpr uint16_t vxPlusI = 0x65B;
 
-    instructions::ADD_I_Vx(opcode, registers);
+    instructions::ADD_I_VX(opcode, registers);
 
-    EXPECT_EQ(iPlusVx, registers.i);
+    // ADD_I_VX should add Vx to the index register and store the result in the 
+    // index register
+    EXPECT_EQ(vxPlusI, registers.i);
 }
 
-TEST(InstructionTest, LD_F_Vx) {
-    const int FONT_START_ADDRESS = 0x00;
-    const int FONT_CHAR_SIZE = 0x05;
+TEST(InstructionTest, LD_F_VX_SetsIndexRegisterToVxSpriteAddress) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF029 | (x << 8);
+    Registers registers{};
 
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF029 | (x << 8);
+    registers.v[x] = 0xE;
+    constexpr uint16_t startAddress = 0x050;
+    constexpr int spriteSize = 5;
+    constexpr uint16_t spriteAddress = 0x096;
 
-    Registers registers;
-    registers.v[x] = 0x06;
-    const uint16_t characterLocation = FONT_START_ADDRESS + registers.v[x] * FONT_CHAR_SIZE;
+    instructions::LD_F_VX(opcode, registers, startAddress, spriteSize);
 
-    instructions::LD_F_Vx(opcode, registers, FONT_START_ADDRESS, FONT_CHAR_SIZE);
-
-    EXPECT_EQ(characterLocation, registers.i);
+    // LD_F_VX should set the index register to the address of the sprite for
+    // the digit in Vx
+    EXPECT_EQ(spriteAddress, registers.i);
 }
 
-TEST(InstructionTest, LD_B_Vx_StoresBcdOfVxInMemory) {
-    const uint16_t x = 0x8;
-    Opcode opcode = 0xF033 | (x << 8);
+TEST(InstructionTest, LD_B_VX_WritesVxBcdToMemory) {
+    constexpr uint16_t x = 0x0;
+    const Opcode opcode = 0xF033 | (x << 8);
+    Memory memory{};
+    Registers registers{};
 
-    Registers registers;
-    registers.v[x] = 62;
-    registers.i = 0;
+    constexpr uint8_t hundredsDigit = 2;
+    constexpr uint8_t tensDigit = 5;
+    constexpr uint8_t onesDigit = 1;
+    registers.v[x] = (100 * hundredsDigit) + (10 * tensDigit) + onesDigit;
+    registers.i = 0x200;
 
-    Memory memory;
+    instructions::LD_B_VX(opcode, memory, registers);
 
-    instructions::LD_B_Vx(opcode, memory, registers);
-
-    EXPECT_EQ(0, memory[registers.i]);
-    EXPECT_EQ(6, memory[registers.i + 1]);
-    EXPECT_EQ(2, memory[registers.i + 2]);
+    // LD_B_VX should store the BCD representation of Vx in memory
+    EXPECT_EQ(hundredsDigit, memory[registers.i]);
+    EXPECT_EQ(tensDigit, memory[registers.i + 1]);
+    EXPECT_EQ(onesDigit, memory[registers.i + 2]);
 }
 
-TEST(InstructionTest, LD_I_Vx_StoresRegistersV0ToVxInMemoryStartingAtI) {
-    const uint16_t x = 5;
-    Opcode opcode = 0xF055 | (x << 8);
+TEST(InstructionTest, LD_I_VX_WritesRegistersToMemory) {
+    const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    std::array<uint8_t, x + 1> data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
-    Registers registers;
-    registers.i = 0;
-
-    for (int i = 0; i <= x; i++) {
+    const uint16_t x = data.size() - 1;
+    const Opcode opcode = 0xF055 | (x << 8);
+    Memory memory{};
+    Registers registers{};
+    
+    // Load the data into registers V0 through Vx
+    for (int i = 0; i < data.size(); i++) {
         registers.v[i] = data[i];
     }
-    
-    Memory memory;
-    instructions::LD_I_Vx(opcode, memory, registers);
 
+    registers.i = 0x200;
+    
+    instructions::LD_I_VX(opcode, memory, registers);
+
+    // LD_I_VX should store the data from registers V0 through Vx in memory
     for (int i = 0; i <= x; i++) {
-        EXPECT_EQ(data[i], memory[registers.i + i]);
+        EXPECT_EQ(registers.v[i], memory[registers.i + i]);
     }
 }
 
-TEST(InstructionTest, LD_Vx_I_StoresMemoryAtIInRegistersV0ToVx) {
-    const uint16_t x = 5;
-    Opcode opcode = 0xF065 | (x << 8);
+TEST(InstructionTest, LD_VX_I_ReadsMemoryIntoRegisters) {
+    const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    std::array<uint8_t, x + 1> data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+    const uint16_t x = data.size() - 1;
+    const Opcode opcode = 0xF065 | (x << 8);
+    Memory memory{};
+    Registers registers{};
 
-    Registers registers;
-    registers.i = 0;
-
-    Memory memory;
-    for (int i = 0; i <= x; i++) {
+    // Load the data into memory starting at the address in I
+    registers.i = 0x200;
+    for (int i = 0; i < data.size(); i++) {
         memory[registers.i + i] = data[i];
     }
     
-    instructions::LD_Vx_I(opcode, memory, registers);
+    instructions::LD_VX_I(opcode, memory, registers);
 
+    // LD_VX_I should store the data from memory in registers V0 through Vx
     for (int i = 0; i <= x; i++) {
-        EXPECT_EQ(data[i], registers.v[i]);
+        EXPECT_EQ(memory[registers.i + i], registers.v[i]);
     }
 }
