@@ -1,4 +1,3 @@
-// add error handling for memory access
 // change font instruction to not accept font size and character or whatever idk
 
 #include <cstdint>
@@ -276,7 +275,12 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
     registers.v[0x0F] = 0;
     int height = opcode.nibble();
     for (int row = 0; row < height; row++) {
-        uint8_t spriteRow = memory[registers.i + row];
+        const uint16_t address = registers.i + row;
+        if (address >= MEMORY_SIZE) {
+            throw std::out_of_range("DRW_VX_VY_NIBBLE: Out-of-bounds memory "
+                "access");
+        }
+        uint8_t spriteRow = memory[address];
         for (int col = 0; col < 8; col++) {
             if (xPos + col >= 0 && xPos + col <= Frame::WIDTH &&
                 yPos + row >= 0 && yPos + row <= Frame::HEIGHT &&
@@ -399,7 +403,11 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers&
     registers) {
     uint8_t value = registers.v[opcode.x()];
     for (int j = 2; j >= 0; j--) {
-        memory[registers.i + j] = value % 10;
+        const uint16_t address = registers.i + j;
+        if (address >= MEMORY_SIZE) {
+            throw std::out_of_range("LD_B_VX: Out-of-bounds memory access");
+        }
+        memory[address] = value % 10;
         value /= 10;
     }
 }
@@ -415,7 +423,11 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers&
 void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers& 
     registers) {
     for (int j = 0; j <= opcode.x(); j++) {
-        memory[registers.i + j] = registers.v[j];
+        const uint16_t address = registers.i + j;
+        if (address >= MEMORY_SIZE) {
+            throw std::out_of_range("LD_I_VX: Out-of-bounds memory access");
+        }
+        memory[address] = registers.v[j];
     }
 }
 
@@ -428,6 +440,10 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers&
 void instructions::LD_VX_I(const Opcode& opcode, Memory& memory, Registers& 
     registers) {
     for (int j = 0; j <= opcode.x(); j++) {
-        registers.v[j] = memory[registers.i + j];
+        const uint16_t address = registers.i + j;
+        if (address >= MEMORY_SIZE) {
+            throw std::out_of_range("LD_I_VX: Out-of-bounds memory access");
+        }
+        registers.v[j] = memory[address];
     }
 }
