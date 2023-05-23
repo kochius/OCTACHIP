@@ -531,6 +531,21 @@ TEST_F(InstructionTest,
     EXPECT_EQ(0x01, registers.v[0xF]);
 }
 
+TEST_F(InstructionTest, DRW_VX_VY_NIBBLE_MemoryOutOfRange_ThrowsException) {
+    const uint8_t n = 0xF;
+    const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
+
+    registers.i = MEMORY_SIZE - 1;
+
+    // DRW_VX_VY_NIBBLE should attempt read from memory addresses I to I + n - 1
+    // I already points to the last memory address, so DRW_VX_VY_NIBBLE should 
+    // throw an exception
+    EXPECT_THROW(
+        instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame), 
+        std::out_of_range
+    );
+}
+
 TEST_F(InstructionTest, SKP_VX_VxPressed_SkipsInstruction) {
     const Opcode opcode = 0xE09E | (x << 8);
 
@@ -673,7 +688,7 @@ TEST_F(InstructionTest, LD_F_VX_SetsIndexRegisterToVxSpriteAddress) {
     EXPECT_EQ(spriteAddress, registers.i);
 }
 
-TEST_F(InstructionTest, LD_B_VX_WritesVxBcdToMemory) {
+TEST_F(InstructionTest, LD_B_VX_MemoryInRange_WritesVxBcdToMemory) {
     const Opcode opcode = 0xF033 | (x << 8);
 
     constexpr uint8_t hundredsDigit = 2;
@@ -690,7 +705,19 @@ TEST_F(InstructionTest, LD_B_VX_WritesVxBcdToMemory) {
     EXPECT_EQ(onesDigit, memory[registers.i + 2]);
 }
 
-TEST_F(InstructionTest, LD_I_VX_WritesRegistersToMemory) {
+TEST_F(InstructionTest, LD_B_VX_MemoryOutOfRange_ThrowsException) {
+    const Opcode opcode = 0xF033 | (x << 8);
+
+    registers.i = MEMORY_SIZE - 1;
+
+    // LD_B_VX should attempt to write to memory addresses I to I + 2
+    // I already points to the last memory address, so LD_B_VX should throw an 
+    // exception
+    EXPECT_THROW(instructions::LD_B_VX(opcode, memory, registers), 
+        std::out_of_range);
+}
+
+TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
     const uint16_t x = data.size() - 1;
@@ -711,7 +738,20 @@ TEST_F(InstructionTest, LD_I_VX_WritesRegistersToMemory) {
     }
 }
 
-TEST_F(InstructionTest, LD_VX_I_ReadsMemoryIntoRegisters) {
+TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
+    constexpr uint16_t x = 0xF;
+    const Opcode opcode = 0xF055 | (x << 8);
+
+    registers.i = MEMORY_SIZE - 1;
+    
+    // LD_I_VX should attempt to write to memory addresses I to I + x
+    // I already points to the last memory address, so LD_I_VX should throw an 
+    // exception
+    EXPECT_THROW(instructions::LD_I_VX(opcode, memory, registers), 
+        std::out_of_range);
+}
+
+TEST_F(InstructionTest, LD_VX_I_MemoryInRange_ReadsMemoryIntoRegisters) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
     const uint16_t x = data.size() - 1;
@@ -729,4 +769,17 @@ TEST_F(InstructionTest, LD_VX_I_ReadsMemoryIntoRegisters) {
     for (int i = 0; i <= x; i++) {
         EXPECT_EQ(memory[registers.i + i], registers.v[i]);
     }
+}
+
+TEST_F(InstructionTest, LD_VX_I_MemoryOutOfRange_ThrowsException) {
+    constexpr uint16_t x = 0xF;
+    const Opcode opcode = 0xF065 | (x << 8);
+
+    registers.i = MEMORY_SIZE - 1;
+    
+    // LD_VX_I should attempt to read from memory addresses I to I + x
+    // I already points to the last memory address, so LD_VX_I should throw an 
+    // exception
+    EXPECT_THROW(instructions::LD_VX_I(opcode, memory, registers), 
+        std::out_of_range);
 }
