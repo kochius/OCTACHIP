@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-set(TESTS ${CMAKE_PROJECT_NAME}-tests)
+set(TESTS ${CMAKE_PROJECT_NAME}_tests)
 
 set(HEADERS
-    mocks.hpp
+    fixtures/instruction_test.hpp
+    mocks/mock_random.hpp
     ${PROJECT_SRC_DIR}/src/core/frame.hpp
     ${PROJECT_SRC_DIR}/src/core/instructions.hpp
     ${PROJECT_SRC_DIR}/src/core/opcode.hpp
@@ -12,7 +13,11 @@ set(HEADERS
 )
 
 set(SOURCES
-    instructions-tests.cpp
+    instructions/arithmetic_instructions.cpp
+    instructions/flow_instructions.cpp
+    instructions/io_instructions.cpp
+    instructions/load_instructions.cpp
+    instructions/misc_instructions.cpp
     ${PROJECT_SRC_DIR}/src/core/frame.cpp
     ${PROJECT_SRC_DIR}/src/core/instructions.cpp
     ${PROJECT_SRC_DIR}/src/core/opcode.cpp
