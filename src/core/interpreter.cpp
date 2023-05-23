@@ -100,53 +100,60 @@ void Interpreter::tick() {
                     throw std::runtime_error("Invalid opcode: "s + 
                         std::to_string(opcode.full()));
             }
-        case 0x01: return instructions::JP_addr(opcode, registers);
-        case 0x02: return instructions::CALL_addr(opcode, registers, stack);
-        case 0x03: return instructions::SE_Vx_byte(opcode, registers);
-        case 0x04: return instructions::SNE_Vx_byte(opcode, registers);
-        case 0x05: return instructions::SE_Vx_Vy(opcode, registers);
-        case 0x06: return instructions::LD_Vx_byte(opcode, registers);
-        case 0x07: return instructions::ADD_Vx_byte(opcode, registers);
+        case 0x01: return instructions::JP_ADDR(opcode, registers);
+        case 0x02: return instructions::CALL_ADDR(opcode, registers, stack);
+        case 0x03: return instructions::SE_VX_BYTE(opcode, registers);
+        case 0x04: return instructions::SNE_VX_BYTE(opcode, registers);
+        case 0x05: return instructions::SE_VX_VY(opcode, registers);
+        case 0x06: return instructions::LD_VX_BYTE(opcode, registers);
+        case 0x07: return instructions::ADD_VX_BYTE(opcode, registers);
         case 0x08:
             switch (opcode.nibble()) {
-                case 0x00: return instructions::LD_Vx_Vy(opcode, registers);
-                case 0x01: return instructions::OR_Vx_Vy(opcode, registers);
-                case 0x02: return instructions::AND_Vx_Vy(opcode, registers);
-                case 0x03: return instructions::XOR_Vx_Vy(opcode, registers);
-                case 0x04: return instructions::ADD_Vx_Vy(opcode, registers);
-                case 0x05: return instructions::SUB_Vx_Vy(opcode, registers);
-                case 0x06: return instructions::SHR_Vx_Vy(opcode, registers);
-                case 0x07: return instructions::SUBN_Vx_Vy(opcode, registers);
-                case 0x0E: return instructions::SHL_Vx_Vy(opcode, registers);
+                case 0x00: return instructions::LD_VX_VY(opcode, registers);
+                case 0x01: return instructions::OR_VX_VY(opcode, registers);
+                case 0x02: return instructions::AND_VX_VY(opcode, registers);
+                case 0x03: return instructions::XOR_VX_VY(opcode, registers);
+                case 0x04: return instructions::ADD_VX_VY(opcode, registers);
+                case 0x05: return instructions::SUB_VX_VY(opcode, registers);
+                case 0x06: return instructions::SHR_VX_VY(opcode, registers);
+                case 0x07: return instructions::SUBN_VX_VY(opcode, registers);
+                case 0x0E: return instructions::SHL_VX_VY(opcode, registers);
                 default:
                     throw std::runtime_error("Invalid opcode: "s + 
                         std::to_string(opcode.full()));
             }
-        case 0x09: return instructions::SNE_Vx_Vy(opcode, registers);
-        case 0x0A: return instructions::LD_I_addr(opcode, registers);
-        case 0x0B: return instructions::JP_V0_addr(opcode, registers);
-        case 0x0C: return instructions::RND_Vx_byte(opcode, registers, random);
-        case 0x0D: return instructions::DRW_Vx_Vy_nibble(opcode, memory, registers, frame);
+        case 0x09: return instructions::SNE_VX_VY(opcode, registers);
+        case 0x0A: return instructions::LD_I_ADDR(opcode, registers);
+        case 0x0B: return instructions::JP_V0_ADDR(opcode, registers);
+        case 0x0C: return instructions::RND_VX_BYTE(opcode, registers, random);
+        case 0x0D: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
+            registers, frame);
         case 0x0E:
             switch(opcode.byte()) {
-                case 0x9E: return instructions::SKP_Vx(opcode, registers, keypad);
-                case 0xA1: return instructions::SKNP_Vx(opcode, registers, keypad);
+                case 0x9E: return instructions::SKP_VX(opcode, registers, 
+                    keypad);
+                case 0xA1: return instructions::SKNP_VX(opcode, registers, 
+                    keypad);
                 default:
                     throw std::runtime_error("Invalid opcode: "s + 
                         std::to_string(opcode.full()));
             }
         case 0x0F:
             switch(opcode.byte()) {
-                case 0x07: return instructions::LD_Vx_DT(opcode, registers);
-                case 0x0A: return instructions::LD_Vx_K(opcode, registers, keypad);
-                case 0x15: return instructions::LD_DT_Vx(opcode, registers);
-                case 0x18: return instructions::LD_ST_Vx(opcode, registers);
-                case 0x1E: return instructions::ADD_I_Vx(opcode, registers);
-                case 0x29: return instructions::LD_F_Vx(opcode, registers, FONT_START_ADDRESS, 
-                    FONT_CHAR_SIZE);
-                case 0x33: return instructions::LD_B_Vx(opcode, memory, registers);
-                case 0x55: return instructions::LD_I_Vx(opcode, memory, registers);
-                case 0x65: return instructions::LD_Vx_I(opcode, memory, registers);
+                case 0x07: return instructions::LD_VX_DT(opcode, registers);
+                case 0x0A: return instructions::LD_VX_K(opcode, registers, 
+                    keypad);
+                case 0x15: return instructions::LD_DT_VX(opcode, registers);
+                case 0x18: return instructions::LD_ST_VX(opcode, registers);
+                case 0x1E: return instructions::ADD_I_VX(opcode, registers);
+                case 0x29: return instructions::LD_F_VX(opcode, registers, 
+                    FONT_START_ADDRESS, FONT_CHAR_SIZE);
+                case 0x33: return instructions::LD_B_VX(opcode, memory, 
+                    registers);
+                case 0x55: return instructions::LD_I_VX(opcode, memory, 
+                    registers);
+                case 0x65: return instructions::LD_VX_I(opcode, memory, 
+                    registers);
                 default:
                     throw std::runtime_error("Invalid opcode: "s + 
                         std::to_string(opcode.full()));

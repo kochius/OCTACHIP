@@ -1,3 +1,6 @@
+// add error handling for memory access
+// change font instruction to not accept font size and character or whatever idk
+
 #include <cstdint>
 #include <stdexcept>
 
@@ -31,7 +34,7 @@ void instructions::RET(Registers& registers, Stack& stack) {
  * 
  * The interpreter sets the program counter to nnn.
  */
-void instructions::JP_addr(const Opcode& opcode, Registers& registers) {
+void instructions::JP_ADDR(const Opcode& opcode, Registers& registers) {
     registers.pc = opcode.address();
 }
 
@@ -41,10 +44,10 @@ void instructions::JP_addr(const Opcode& opcode, Registers& registers) {
  * The interpreter increments the stack pointer, then puts the current PC on 
  * the top of the stack. The PC is then set to nnn.
  */
-void instructions::CALL_addr(const Opcode& opcode, Registers& registers, 
+void instructions::CALL_ADDR(const Opcode& opcode, Registers& registers, 
     Stack& stack) {
     if (registers.sp >= STACK_SIZE) {
-        throw std::runtime_error("CALL_addr: Stack overflow error");
+        throw std::runtime_error("CALL_ADDR: Stack overflow error");
     }
     stack[registers.sp++] = registers.pc;
     registers.pc = opcode.address();
@@ -56,7 +59,7 @@ void instructions::CALL_addr(const Opcode& opcode, Registers& registers,
  * The interpreter compares register Vx to kk, and if they are equal, increments 
  * the program counter by 2.
  */
-void instructions::SE_Vx_byte(const Opcode& opcode, Registers& registers) {
+void instructions::SE_VX_BYTE(const Opcode& opcode, Registers& registers) {
     if (registers.v[opcode.x()] == opcode.byte()) {
         registers.pc += 2;
     }
@@ -68,7 +71,7 @@ void instructions::SE_Vx_byte(const Opcode& opcode, Registers& registers) {
  * The interpreter compares register Vx to kk, and if they are not equal, 
  * increments the program counter by 2.
  */
-void instructions::SNE_Vx_byte(const Opcode& opcode, Registers& registers) {
+void instructions::SNE_VX_BYTE(const Opcode& opcode, Registers& registers) {
     if (registers.v[opcode.x()] != opcode.byte()) {
         registers.pc += 2;
     }
@@ -80,7 +83,7 @@ void instructions::SNE_Vx_byte(const Opcode& opcode, Registers& registers) {
  * The interpreter compares register Vx to register Vy, and if they are equal, 
  * increments the program counter by 2.
  */
-void instructions::SE_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SE_VX_VY(const Opcode& opcode, Registers& registers) {
     if (registers.v[opcode.x()] == registers.v[opcode.y()]) {
         registers.pc += 2;
     }
@@ -91,7 +94,7 @@ void instructions::SE_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * 
  * The interpreter puts the value kk into register Vx.
  */
-void instructions::LD_Vx_byte(const Opcode& opcode, Registers& registers) {
+void instructions::LD_VX_BYTE(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] = opcode.byte();
 }
 
@@ -100,7 +103,7 @@ void instructions::LD_Vx_byte(const Opcode& opcode, Registers& registers) {
  * 
  * Adds the value kk to the value of register Vx, then stores the result in Vx.
  */
-void instructions::ADD_Vx_byte(const Opcode& opcode, Registers& registers) {
+void instructions::ADD_VX_BYTE(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] += opcode.byte();
 }
 
@@ -109,7 +112,7 @@ void instructions::ADD_Vx_byte(const Opcode& opcode, Registers& registers) {
  * 
  * Stores the value of register Vy in register Vx.
  */
-void instructions::LD_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::LD_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] = registers.v[opcode.y()];
 }
 
@@ -121,7 +124,7 @@ void instructions::LD_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * either bit is 1, then the same bit in the result is also 1. Otherwise, it is 
  * 0.
  */
-void instructions::OR_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::OR_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] |= registers.v[opcode.y()];
 }
 
@@ -133,7 +136,7 @@ void instructions::OR_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * both bits are 1, then the same bit in the result is also 1. Otherwise, it is 
  * 0.
  */
-void instructions::AND_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::AND_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] &= registers.v[opcode.y()];
 }
 
@@ -145,7 +148,7 @@ void instructions::AND_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * values, and if the bits are not both the same, then the corresponding bit in 
  * the result is set to 1. Otherwise, it is 0.
  */
-void instructions::XOR_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::XOR_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] ^= registers.v[opcode.y()];
 }
 
@@ -156,7 +159,7 @@ void instructions::XOR_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * bits (i.e., > 255,) VF is set to 1, otherwise 0. Only the lowest 8 bits of 
  * the result are kept, and stored in Vx.
  */
-void instructions::ADD_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::ADD_VX_VY(const Opcode& opcode, Registers& registers) {
     uint16_t sum = registers.v[opcode.x()] + registers.v[opcode.y()];
     registers.v[opcode.x()] = sum & 0xFF;
     registers.v[0x0F] = sum > 0xFF ? 1 : 0;
@@ -168,7 +171,7 @@ void instructions::ADD_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * If Vx >= Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, 
  * and the results stored in Vx.
  */
-void instructions::SUB_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
     bool borrow = registers.v[opcode.x()] < registers.v[opcode.y()];
     registers.v[opcode.x()] -= registers.v[opcode.y()];
     registers.v[0x0F] = !borrow? 1 : 0;
@@ -182,7 +185,7 @@ void instructions::SUB_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHR_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[0x0F] = registers.v[opcode.x()] & 0x01;
     registers.v[opcode.x()] >>= 1;
 }
@@ -193,7 +196,7 @@ void instructions::SHR_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * If Vy >= Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, 
  * and the results stored in Vx.
  */
-void instructions::SUBN_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
     bool borrow = registers.v[opcode.y()] < registers.v[opcode.x()];
     registers.v[opcode.x()] = registers.v[opcode.y()] - registers.v[opcode.x()];
     registers.v[0x0F] =  !borrow? 1 : 0;
@@ -207,7 +210,7 @@ void instructions::SUBN_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHL_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers) {
     registers.v[0x0F] = registers.v[opcode.x()] >> 7;
     registers.v[opcode.x()] <<= 1;
 }
@@ -218,7 +221,7 @@ void instructions::SHL_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * The values of Vx and Vy are compared, and if they are not equal, the program 
  * counter is increased by 2.
  */
-void instructions::SNE_Vx_Vy(const Opcode& opcode, Registers& registers) {
+void instructions::SNE_VX_VY(const Opcode& opcode, Registers& registers) {
     if (registers.v[opcode.x()] != registers.v[opcode.y()]) {
         registers.pc += 2;
     }
@@ -229,7 +232,7 @@ void instructions::SNE_Vx_Vy(const Opcode& opcode, Registers& registers) {
  * 
  * The value of register I is set to nnn.
  */
-void instructions::LD_I_addr(const Opcode& opcode, Registers& registers) {
+void instructions::LD_I_ADDR(const Opcode& opcode, Registers& registers) {
     registers.i = opcode.address();
 }
 
@@ -240,7 +243,7 @@ void instructions::LD_I_addr(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::JP_V0_addr(const Opcode& opcode, Registers& registers) {
+void instructions::JP_V0_ADDR(const Opcode& opcode, Registers& registers) {
     registers.pc = opcode.address() + registers.v[0];
 }
 
@@ -250,7 +253,7 @@ void instructions::JP_V0_addr(const Opcode& opcode, Registers& registers) {
  * The interpreter generates a random number from 0 to 255, which is then ANDed 
  * with the value kk. The results are stored in Vx.
  */
-void instructions::RND_Vx_byte(const Opcode& opcode, Registers& registers, 
+void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers, 
     Random& random) {
     registers.v[opcode.x()] = random.generateNumber() & opcode.byte();
 }
@@ -266,7 +269,7 @@ void instructions::RND_Vx_byte(const Opcode& opcode, Registers& registers,
  * is positioned so part of it is outside the coordinates of the display, it 
  * wraps around to the opposite side of the screen.
  */
-void instructions::DRW_Vx_Vy_nibble(const Opcode& opcode, const Memory& memory, 
+void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
     Registers& registers, Frame& frame) {
     int xPos = registers.v[opcode.x()] % Frame::WIDTH;
     int yPos = registers.v[opcode.y()] % Frame::HEIGHT;
@@ -294,7 +297,7 @@ void instructions::DRW_Vx_Vy_nibble(const Opcode& opcode, const Memory& memory,
  * Checks the keyboard, and if the key corresponding to the value of Vx is 
  * currently in the down position, PC is increased by 2.
  */
-void instructions::SKP_Vx(const Opcode& opcode, Registers& registers, const 
+void instructions::SKP_VX(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
     bool isPressed = keypad[registers.v[opcode.x()]];
     if (isPressed) {
@@ -308,7 +311,7 @@ void instructions::SKP_Vx(const Opcode& opcode, Registers& registers, const
  * Checks the keyboard, and if the key corresponding to the value of Vx is 
  * currently in the up position, PC is increased by 2.
  */
-void instructions::SKNP_Vx(const Opcode& opcode, Registers& registers, const 
+void instructions::SKNP_VX(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
     bool isPressed = keypad[registers.v[opcode.x()]];
     if (!isPressed) {
@@ -321,7 +324,7 @@ void instructions::SKNP_Vx(const Opcode& opcode, Registers& registers, const
  * 
  * The value of DT is placed into Vx.
  */
-void instructions::LD_Vx_DT(const Opcode& opcode, Registers& registers) {
+void instructions::LD_VX_DT(const Opcode& opcode, Registers& registers) {
     registers.v[opcode.x()] = registers.delayTimer;
 }
 
@@ -333,7 +336,7 @@ void instructions::LD_Vx_DT(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::LD_Vx_K(const Opcode& opcode, Registers& registers, const 
+void instructions::LD_VX_K(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
     for (size_t keyValue = 0; keyValue < keypad.size(); keyValue++) {
         if (keypad[keyValue]) {
@@ -349,7 +352,7 @@ void instructions::LD_Vx_K(const Opcode& opcode, Registers& registers, const
  * 
  * DT is set equal to the value of Vx.
  */
-void instructions::LD_DT_Vx(const Opcode& opcode, Registers& registers) {
+void instructions::LD_DT_VX(const Opcode& opcode, Registers& registers) {
     registers.delayTimer = registers.v[opcode.x()];
 }
 
@@ -358,7 +361,7 @@ void instructions::LD_DT_Vx(const Opcode& opcode, Registers& registers) {
  * 
  * ST is set equal to the value of Vx.
  */
-void instructions::LD_ST_Vx(const Opcode& opcode, Registers& registers) {
+void instructions::LD_ST_VX(const Opcode& opcode, Registers& registers) {
     registers.soundTimer = registers.v[opcode.x()];
 }
 
@@ -369,7 +372,7 @@ void instructions::LD_ST_Vx(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::ADD_I_Vx(const Opcode& opcode, Registers& registers) {
+void instructions::ADD_I_VX(const Opcode& opcode, Registers& registers) {
     registers.i += registers.v[opcode.x()];
 }
 
@@ -379,10 +382,10 @@ void instructions::ADD_I_Vx(const Opcode& opcode, Registers& registers) {
  * The value of I is set to the location for the hexadecimal sprite 
  * corresponding to the value of Vx.
  */
-void instructions::LD_F_Vx(const Opcode& opcode, Registers& registers, 
-    const int fontStartaddress, const int fontCharSize) {
-    uint8_t character = registers.v[opcode.x()] & 0x0F;
-    registers.i = fontStartaddress + fontCharSize * character;
+void instructions::LD_F_VX(const Opcode& opcode, Registers& registers, 
+    const uint16_t startAddress, const int spriteSize) {
+    const uint8_t digit = registers.v[opcode.x()] & 0x0F;
+    registers.i = startAddress + spriteSize * digit;
 }
 
 /**
@@ -392,7 +395,7 @@ void instructions::LD_F_Vx(const Opcode& opcode, Registers& registers,
  * in memory at location in I, the tens digit at location I+1, and the ones 
  * digit at location I+2.
  */
-void instructions::LD_B_Vx(const Opcode& opcode, Memory& memory, Registers& 
+void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers& 
     registers) {
     uint8_t value = registers.v[opcode.x()];
     for (int j = 2; j >= 0; j--) {
@@ -409,7 +412,7 @@ void instructions::LD_B_Vx(const Opcode& opcode, Memory& memory, Registers&
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::LD_I_Vx(const Opcode& opcode, Memory& memory, Registers& 
+void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers& 
     registers) {
     for (int j = 0; j <= opcode.x(); j++) {
         memory[registers.i + j] = registers.v[j];
@@ -422,7 +425,7 @@ void instructions::LD_I_Vx(const Opcode& opcode, Memory& memory, Registers&
  * The interpreter reads values from memory starting at location I into 
  * registers V0 through Vx.
  */
-void instructions::LD_Vx_I(const Opcode& opcode, Memory& memory, Registers& 
+void instructions::LD_VX_I(const Opcode& opcode, Memory& memory, Registers& 
     registers) {
     for (int j = 0; j <= opcode.x(); j++) {
         registers.v[j] = memory[registers.i + j];
