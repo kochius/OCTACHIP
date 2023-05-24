@@ -11,11 +11,11 @@ add_subdirectory(tests)
 include(FetchContent)
 
 FetchContent_Declare(
-    SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL/
-    GIT_TAG release-2.0.20
+    cxxopts
+    GIT_REPOSITORY https://github.com/jarro2783/cxxopts
+    GIT_TAG v3.1.1
 )
-FetchContent_MakeAvailable(SDL2)
+FetchContent_MakeAvailable(cxxopts)
 
 FetchContent_Declare(
     googletest
@@ -23,6 +23,13 @@ FetchContent_Declare(
     GIT_TAG v1.13.0
 )
 FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(
+    SDL2
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL/
+    GIT_TAG release-2.0.20
+)
+FetchContent_MakeAvailable(SDL2)
 
 set(HEADERS
     src/emulator.hpp
@@ -50,4 +57,4 @@ set(SOURCES
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES})
 
-target_link_libraries(chip8 SDL2-static)
+target_link_libraries(chip8 SDL2-static cxxopts)
