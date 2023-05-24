@@ -53,8 +53,7 @@ void Interpreter::loadRom(const std::filesystem::path& romPath) {
     if (romSize > MAX_ROM_SIZE) {
         const uintmax_t overflow = romSize - MAX_ROM_SIZE;
         throw std::length_error("File exceeds maximum ROM size by "s + 
-            std::to_string(overflow) + " bytes: "s + romPath.string() + 
-            " (actual size: " + std::to_string(romSize) + ")");
+            std::to_string(overflow) + " bytes: "s + romPath.string());
     }
 
     romFile.seekg(0, std::ios_base::beg);
