@@ -17,6 +17,7 @@ target_compile_options(${TESTS_EXECUTABLE}
             /W4
             /w14640
             /WX
+            /Zi
         >
         $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
             -Wall
@@ -25,6 +26,7 @@ target_compile_options(${TESTS_EXECUTABLE}
             -Wnon-virtual-dtor
             -pedantic
             -Werror
+            -g
         >
 )
 

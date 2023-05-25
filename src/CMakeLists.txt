@@ -15,6 +15,7 @@ target_compile_options(${CHIP8_EXECUTABLE}
             /W4
             /w14640
             /WX
+            /Zi
         >
         $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
             -Wall
@@ -23,6 +24,7 @@ target_compile_options(${CHIP8_EXECUTABLE}
             -Wnon-virtual-dtor
             -pedantic
             -Werror
+            -g
         >
 )
 
