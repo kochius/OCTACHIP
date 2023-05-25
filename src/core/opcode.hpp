@@ -6,7 +6,7 @@ namespace CHIP8 {
 
 class Opcode {
 public:
-    Opcode(uint16_t opcode);
+    Opcode(const uint16_t instructionCode);
     uint8_t x() const;
     uint8_t y() const;
     uint8_t nibble() const;

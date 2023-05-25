@@ -19,8 +19,8 @@ private:
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-    int width;
-    int height;
+    int baseWidth;
+    int baseHeight;
 };
 
 }

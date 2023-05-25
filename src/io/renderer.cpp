@@ -8,8 +8,8 @@ Renderer::Renderer(const int width, const int height,
     const std::string_view& title) :
         window{nullptr},
         renderer{nullptr},
-        width{width},
-        height{height} {
+        baseWidth{width},
+        baseHeight{height} {
     using namespace std::string_literals;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -36,9 +36,9 @@ Renderer::~Renderer() {
 void Renderer::drawFrame(const Frame& frame) {
     clearRenderer();
 
-    for (int row = 0; row < height; row++) {
-        for (int col = 0; col < width; col++) {
-            if (frame[col + (row * width)]) {
+    for (int row = 0; row < baseHeight; row++) {
+        for (int col = 0; col < baseWidth; col++) {
+            if (frame[col + (row * baseWidth)]) {
                 drawPixel(col, row);
             }
         }

@@ -11,22 +11,22 @@ set_target_properties(${TESTS_EXECUTABLE}
 
 target_compile_features(${TESTS_EXECUTABLE} PRIVATE cxx_std_17)
 
-# target_compile_options(${TESTS_EXECUTABLE}
-#     PRIVATE
-#         $<$<CXX_COMPILER_ID:MSVC>:
-#             /W4
-#             /w14640
-#             /WX
-#         >
-#         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
-#             -Wall
-#             -Wextra
-#             -Wshadow
-#             -Wnon-virtual-dtor
-#             -pedantic
-#             -Werror
-#         >
-# )
+target_compile_options(${TESTS_EXECUTABLE}
+    PRIVATE
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:
+            /W4
+            /w14640
+            /WX
+        >
+        $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+            -Wall
+            -Wextra
+            -Wshadow
+            -Wnon-virtual-dtor
+            -pedantic
+            -Werror
+        >
+)
 
 target_include_directories(${TESTS_EXECUTABLE} 
     PRIVATE
