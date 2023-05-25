@@ -117,11 +117,11 @@ TEST_F(InstructionTest, LD_B_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t x = data.size() - 1;
-    const Opcode opcode = 0xF055 | (x << 8);
+    const uint16_t lastRegisterIndex = data.size() - 1;
+    const Opcode opcode = 0xF055 | (lastRegisterIndex << 8);
     
     // Load the data into registers V0 through Vx
-    for (int i = 0; i < data.size(); i++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
         registers.v[i] = data[i];
     }
 
@@ -130,14 +130,14 @@ TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     instructions::LD_I_VX(opcode, memory, registers);
 
     // LD_I_VX should store the data from registers V0 through Vx in memory
-    for (int i = 0; i <= x; i++) {
+    for (int i = 0; i <= lastRegisterIndex; i++) {
         EXPECT_EQ(registers.v[i], memory[registers.i + i]);
     }
 }
 
 TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
-    constexpr uint16_t x = 0xF;
-    const Opcode opcode = 0xF055 | (x << 8);
+    constexpr uint16_t lastRegisterIndex = 0xF;
+    const Opcode opcode = 0xF055 | (lastRegisterIndex << 8);
 
     registers.i = MEMORY_SIZE - 1;
     
@@ -151,26 +151,26 @@ TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_VX_I_MemoryInRange_ReadsMemoryIntoRegisters) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t x = data.size() - 1;
-    const Opcode opcode = 0xF065 | (x << 8);
+    const uint16_t lastRegisterIndex = data.size() - 1;
+    const Opcode opcode = 0xF065 | (lastRegisterIndex << 8);
 
     // Load the data into memory starting at the address in I
     registers.i = 0x200;
-    for (int i = 0; i < data.size(); i++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
         memory[registers.i + i] = data[i];
     }
     
     instructions::LD_VX_I(opcode, memory, registers);
 
     // LD_VX_I should store the data from memory in registers V0 through Vx
-    for (int i = 0; i <= x; i++) {
+    for (int i = 0; i <= lastRegisterIndex; i++) {
         EXPECT_EQ(memory[registers.i + i], registers.v[i]);
     }
 }
 
 TEST_F(InstructionTest, LD_VX_I_MemoryOutOfRange_ThrowsException) {
-    constexpr uint16_t x = 0xF;
-    const Opcode opcode = 0xF065 | (x << 8);
+    constexpr uint16_t lastRegisterIndex = 0xF;
+    const Opcode opcode = 0xF065 | (lastRegisterIndex << 8);
 
     registers.i = MEMORY_SIZE - 1;
     

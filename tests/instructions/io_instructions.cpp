@@ -45,8 +45,8 @@ TEST_F(InstructionTest,
     instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame);
 
     // DRW_VX_VY_NIBBLE should draw the sprite from memory onto the frame
-    for (int row = 0; row < sprite.size(); row++) {
-        for (int col = 0; col < sprite.front().size(); col++) {
+    for (unsigned int row = 0; row < sprite.size(); row++) {
+        for (unsigned int col = 0; col < sprite.front().size(); col++) {
             int pixelLoc = Frame::WIDTH * row + col;
             EXPECT_EQ(sprite[row][col], frame[pixelLoc]);
         }
