@@ -1,4 +1,4 @@
-#include "frame.hpp"
+#include "core/frame.hpp"
 
 using namespace CHIP8;
 

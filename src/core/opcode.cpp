@@ -1,9 +1,9 @@
-#include "opcode.hpp"
+#include "core/opcode.hpp"
 
 using namespace CHIP8;
 
 Opcode::Opcode(uint16_t opcode) :
-    opcode(opcode) {}
+    opcode{opcode} {}
 
 uint8_t Opcode::x() const {
     return (opcode & 0x0F00) >> 8;

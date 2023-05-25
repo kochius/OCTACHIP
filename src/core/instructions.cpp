@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "instructions.hpp"
+#include "core/instructions.hpp"
 
 using namespace CHIP8;
 

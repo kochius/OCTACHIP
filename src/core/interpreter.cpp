@@ -5,9 +5,9 @@
 #include <stdexcept>
 #include <string>
 
-#include "instructions.hpp"
-#include "interpreter.hpp"
-#include "opcode.hpp"
+#include "core/instructions.hpp"
+#include "core/interpreter.hpp"
+#include "core/opcode.hpp"
 
 using namespace CHIP8;
 

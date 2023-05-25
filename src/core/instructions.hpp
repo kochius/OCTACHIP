@@ -1,9 +1,9 @@
 #pragma once
 
-#include "frame.hpp"
-#include "opcode.hpp"
-#include "random.hpp"
-#include "types.hpp"
+#include "core/frame.hpp"
+#include "core/opcode.hpp"
+#include "core/random.hpp"
+#include "core/types.hpp"
 
 namespace CHIP8::instructions {
 

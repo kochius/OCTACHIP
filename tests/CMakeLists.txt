@@ -1,31 +1,57 @@
-cmake_minimum_required(VERSION 3.22.1)
+set(TESTS_EXECUTABLE chip8_tests)
 
-set(TESTS ${CMAKE_PROJECT_NAME}_tests)
+enable_testing()
 
-set(HEADERS
-    fixtures/instruction_test.hpp
-    mocks/mock_random.hpp
-    ${PROJECT_SRC_DIR}/src/core/frame.hpp
-    ${PROJECT_SRC_DIR}/src/core/instructions.hpp
-    ${PROJECT_SRC_DIR}/src/core/opcode.hpp
-    ${PROJECT_SRC_DIR}/src/core/random.hpp
-    ${PROJECT_SRC_DIR}/src/core/types.hpp
+add_executable(${TESTS_EXECUTABLE})
+
+set_target_properties(${TESTS_EXECUTABLE}
+    PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests_bin"
 )
 
-set(SOURCES
-    instructions/arithmetic_instructions.cpp
-    instructions/flow_instructions.cpp
-    instructions/io_instructions.cpp
-    instructions/load_instructions.cpp
-    instructions/misc_instructions.cpp
-    ${PROJECT_SRC_DIR}/src/core/frame.cpp
-    ${PROJECT_SRC_DIR}/src/core/instructions.cpp
-    ${PROJECT_SRC_DIR}/src/core/opcode.cpp
-    ${PROJECT_SRC_DIR}/src/core/random.cpp
+target_compile_features(${TESTS_EXECUTABLE} PRIVATE cxx_std_17)
+
+# target_compile_options(${TESTS_EXECUTABLE}
+#     PRIVATE
+#         $<$<CXX_COMPILER_ID:MSVC>:
+#             /W4
+#             /w14640
+#             /WX
+#         >
+#         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
+#             -Wall
+#             -Wextra
+#             -Wshadow
+#             -Wnon-virtual-dtor
+#             -pedantic
+#             -Werror
+#         >
+# )
+
+target_include_directories(${TESTS_EXECUTABLE} 
+    PRIVATE
+        ${PROJECT_SRC_DIR} 
+        ${PROJECT_TESTS_DIR}
 )
 
-add_executable(${TESTS} ${HEADERS} ${SOURCES})
+target_link_libraries(${TESTS_EXECUTABLE} PRIVATE gtest_main)
 
-target_link_libraries(${TESTS} gtest_main)
-
-target_include_directories(${TESTS} PUBLIC ${PROJECT_SRC_DIR})
+target_sources(${TESTS_EXECUTABLE}
+    PRIVATE
+        fixtures/instruction_test.hpp
+        instructions/arithmetic_instructions.cpp
+        instructions/flow_instructions.cpp
+        instructions/io_instructions.cpp
+        instructions/load_instructions.cpp
+        instructions/misc_instructions.cpp
+        mocks/mock_random.hpp
+        ${PROJECT_SRC_DIR}/core/frame.hpp
+        ${PROJECT_SRC_DIR}/core/frame.cpp
+        ${PROJECT_SRC_DIR}/core/instructions.hpp
+        ${PROJECT_SRC_DIR}/core/instructions.cpp
+        ${PROJECT_SRC_DIR}/core/opcode.hpp
+        ${PROJECT_SRC_DIR}/core/opcode.cpp
+        ${PROJECT_SRC_DIR}/core/random.hpp
+        ${PROJECT_SRC_DIR}/core/random.cpp
+        ${PROJECT_SRC_DIR}/core/types.hpp
+)

@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "../mocks/mock_random.hpp"
-#include "src/core/frame.hpp"
-#include "src/core/types.hpp"
+#include "mocks/mock_random.hpp"
+#include "core/frame.hpp"
+#include "core/types.hpp"
 
 namespace CHIP8 {
 

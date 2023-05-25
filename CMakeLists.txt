@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(chip8)
 
-set(CMAKE_CXX_STANDARD 17)
-set(PROJECT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-enable_testing()
-
-add_subdirectory(tests)
+set(PROJECT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(PROJECT_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 include(FetchContent)
 
@@ -22,6 +18,8 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/google/googletest
     GIT_TAG v1.13.0
 )
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(
@@ -31,30 +29,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2)
 
-set(HEADERS
-    src/emulator.hpp
-    src/core/frame.hpp
-    src/core/instructions.hpp
-    src/core/interpreter.hpp
-    src/core/opcode.hpp
-    src/core/random.hpp
-    src/core/types.hpp
-    src/io/input.hpp
-    src/io/renderer.hpp
-)
-
-set(SOURCES
-    src/main.cpp
-    src/emulator.cpp
-    src/core/frame.cpp
-    src/core/instructions.cpp
-    src/core/interpreter.cpp
-    src/core/opcode.cpp
-    src/core/random.cpp
-    src/io/input.cpp
-    src/io/renderer.cpp
-)
-
-add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES})
-
-target_link_libraries(chip8 SDL2-static cxxopts)
+add_subdirectory(src)
+add_subdirectory(tests)

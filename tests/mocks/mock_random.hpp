@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/core/random.hpp"
+#include "core/random.hpp"
 
 namespace CHIP8 {
 

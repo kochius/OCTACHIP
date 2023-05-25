@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <filesystem>
 
-#include "frame.hpp"
-#include "random.hpp"
-#include "types.hpp"
+#include "core/frame.hpp"
+#include "core/random.hpp"
+#include "core/types.hpp"
 
 namespace CHIP8 {
 

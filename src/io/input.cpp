@@ -1,4 +1,4 @@
-#include "input.hpp"
+#include "io/input.hpp"
 
 using namespace CHIP8;
 

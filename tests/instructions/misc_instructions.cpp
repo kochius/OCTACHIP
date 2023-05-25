@@ -1,11 +1,11 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "../fixtures/instruction_test.hpp"
-#include "../mocks/mock_random.hpp"
-#include "src/core/instructions.hpp"
-#include "src/core/opcode.hpp"
-#include "src/core/types.hpp"
+#include "fixtures/instruction_test.hpp"
+#include "mocks/mock_random.hpp"
+#include "core/instructions.hpp"
+#include "core/opcode.hpp"
+#include "core/types.hpp"
 
 using namespace CHIP8;
 
