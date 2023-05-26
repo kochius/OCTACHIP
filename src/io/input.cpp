@@ -21,7 +21,8 @@ Input::Input() {
     keyMap[SDLK_v] = 0xF;
 }
 
-bool Input::processInput(std::function<void(int, bool)> keyEventHandler) {
+bool Input::processInput(
+        const std::function<void(int, bool)>& keyEventHandler) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
