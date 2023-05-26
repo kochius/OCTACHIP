@@ -54,6 +54,6 @@ void Renderer::drawPixel(const int col, const int row) {
 }
 
 void Renderer::clearRenderer() {
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
 }
