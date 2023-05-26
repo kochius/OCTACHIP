@@ -2,6 +2,8 @@
 
 using namespace CHIP8;
 
+Frame::Frame() : pixels{} {}
+
 void Frame::clearFrame() {
     pixels.fill(false);
 }

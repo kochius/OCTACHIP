@@ -9,11 +9,12 @@ public:
     static constexpr int WIDTH = 64;
     static constexpr int HEIGHT = 32;
 
+    Frame();
     void clearFrame();
     bool& operator[](const int index);
     const bool& operator[](const int index) const;
 private:
-    std::array<bool, WIDTH * HEIGHT> pixels{};
+    std::array<bool, WIDTH * HEIGHT> pixels;
 };
 
 }
