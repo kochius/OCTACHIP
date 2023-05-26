@@ -22,7 +22,7 @@ void instructions::CLS(Frame& frame) {
  */
 void instructions::RET(Registers& registers, Stack& stack) {
     if (registers.sp <= 0) {
-        throw std::underflow_error("RET: Attempted to return from a subroutine,"
+        throw std::underflow_error("RET: attempted to return from a subroutine,"
             " but the stack is empty");
     }
     registers.pc = stack[--registers.sp];
@@ -46,7 +46,7 @@ void instructions::JP_ADDR(const Opcode& opcode, Registers& registers) {
 void instructions::CALL_ADDR(const Opcode& opcode, Registers& registers, 
     Stack& stack) {
     if (registers.sp >= STACK_SIZE) {
-        throw std::overflow_error("CALL_ADDR: Stack overflow error");
+        throw std::overflow_error("CALL_ADDR: stack overflow error");
     }
     stack[registers.sp++] = registers.pc;
     registers.pc = opcode.address();
@@ -277,7 +277,7 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
     for (int row = 0; row < height; row++) {
         const uint16_t address = registers.i + row;
         if (address >= MEMORY_SIZE) {
-            throw std::out_of_range("DRW_VX_VY_NIBBLE: Out-of-bounds memory "
+            throw std::out_of_range("DRW_VX_VY_NIBBLE: out-of-bounds memory "
                 "access");
         }
         uint8_t spriteRow = memory[address];
@@ -405,7 +405,7 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers&
     for (int j = 2; j >= 0; j--) {
         const uint16_t address = registers.i + j;
         if (address >= MEMORY_SIZE) {
-            throw std::out_of_range("LD_B_VX: Out-of-bounds memory access");
+            throw std::out_of_range("LD_B_VX: out-of-bounds memory access");
         }
         memory[address] = value % 10;
         value /= 10;
@@ -425,7 +425,7 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers&
     for (int j = 0; j <= opcode.x(); j++) {
         const uint16_t address = registers.i + j;
         if (address >= MEMORY_SIZE) {
-            throw std::out_of_range("LD_I_VX: Out-of-bounds memory access");
+            throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         memory[address] = registers.v[j];
     }
@@ -442,7 +442,7 @@ void instructions::LD_VX_I(const Opcode& opcode, Memory& memory, Registers&
     for (int j = 0; j <= opcode.x(); j++) {
         const uint16_t address = registers.i + j;
         if (address >= MEMORY_SIZE) {
-            throw std::out_of_range("LD_I_VX: Out-of-bounds memory access");
+            throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         registers.v[j] = memory[address];
     }
