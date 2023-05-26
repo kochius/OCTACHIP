@@ -21,7 +21,7 @@ Input::Input() {
     keyMap[SDLK_v] = 0xF;
 }
 
-bool Input::processInput(std::function<void(int, bool)> callback) {
+bool Input::processInput(std::function<void(int, bool)> keyEventHandler) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
@@ -33,12 +33,12 @@ bool Input::processInput(std::function<void(int, bool)> callback) {
                 return false;
             }
             if (keyMap.find(key) != keyMap.end()) {
-                callback(keyMap[key], true);
+                keyEventHandler(keyMap[key], true);
             }
         }
         if (event.type == SDL_KEYUP) {
             if (keyMap.find(key) != keyMap.end()) {
-                callback(keyMap[key], false);
+                keyEventHandler(keyMap[key], false);
             }
         }
     }
