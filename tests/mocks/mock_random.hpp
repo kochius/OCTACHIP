@@ -4,10 +4,12 @@
 
 namespace CHIP8 {
 
-class MockRandom : public Random {
+template <typename T>
+class MockRandom : public Random<T> {
 public:
-    MockRandom() : Random() {}
-    uint8_t generateNumber() override {
+    MockRandom() :
+        Random<T>(0, T{}, T{}) {}
+    T generateNumber() override {
         return 0x37;
     }
 };

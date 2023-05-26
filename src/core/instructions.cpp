@@ -1,6 +1,5 @@
 // change font instruction to not accept font size and character or whatever idk
 
-#include <cstdint>
 #include <stdexcept>
 
 #include "core/instructions.hpp"
@@ -253,7 +252,7 @@ void instructions::JP_V0_ADDR(const Opcode& opcode, Registers& registers) {
  * with the value kk. The results are stored in Vx.
  */
 void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers, 
-    Random& random) {
+    Random<uint8_t>& random) {
     registers.v[opcode.x()] = random.generateNumber() & opcode.byte();
 }
 

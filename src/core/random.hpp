@@ -2,18 +2,32 @@
 
 #include <climits>
 #include <random>
+#include <type_traits>
 
 namespace CHIP8 {
 
+template <typename T>
 class Random {
 public:
-    Random(unsigned int seed = std::random_device{}(), uint8_t min = 0, 
-        uint8_t max = 255);
+    Random(unsigned int seed, T min, T max) :
+        engine{seed},
+        minValue{min},
+        maxValue{max} {}
     virtual ~Random() = default;
-    virtual uint8_t generateNumber();
+    virtual T generateNumber()  {
+        if constexpr (std::is_integral<T>::value) {
+            std::uniform_int_distribution<T> distribution(minValue, maxValue);
+            return distribution(engine);
+        }
+        else {
+            std::uniform_real_distribution<T> distribution(minValue, maxValue);
+            return distribution(engine);
+        }
+    }
 private:
     std::mt19937 engine;
-    std::uniform_int_distribution<uint8_t> distribution;
+    T minValue;
+    T maxValue;
 };
 
 }

@@ -30,7 +30,7 @@ private:
     Registers registers;
     Frame frame;
     Keypad keypad{};
-    Random random;
+    Random<uint8_t> random;
 };
 
 }

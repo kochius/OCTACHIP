@@ -16,7 +16,7 @@ protected:
     Stack stack{};
     Frame frame{};
     Keypad keypad{};
-    MockRandom random{};
+    MockRandom<uint8_t> random{};
 
     const uint16_t x = 0x0;
     const uint16_t y = 0xA;

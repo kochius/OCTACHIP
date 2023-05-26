@@ -54,6 +54,5 @@ target_sources(${TESTS_EXECUTABLE}
         ${PROJECT_SRC_DIR}/core/opcode.hpp
         ${PROJECT_SRC_DIR}/core/opcode.cpp
         ${PROJECT_SRC_DIR}/core/random.hpp
-        ${PROJECT_SRC_DIR}/core/random.cpp
         ${PROJECT_SRC_DIR}/core/types.hpp
 )

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "core/frame.hpp"
 #include "core/opcode.hpp"
 #include "core/random.hpp"
@@ -71,7 +73,8 @@ void LD_I_ADDR(const Opcode& opcode, Registers& registers);
 void JP_V0_ADDR(const Opcode& opcode, Registers& registers);
 
 // Cxkk - Set Vx = random byte AND kk.
-void RND_VX_BYTE(const Opcode& opcode, Registers& registers, Random& random);
+void RND_VX_BYTE(const Opcode& opcode, Registers& registers, 
+    Random<uint8_t>& random);
 
 // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set 
 //        VF = collision.

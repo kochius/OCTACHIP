@@ -49,7 +49,6 @@ target_sources(${CHIP8_EXECUTABLE}
         core/interpreter.hpp
         core/opcode.cpp
         core/opcode.hpp
-        core/random.cpp
         core/random.hpp
         core/types.hpp
         io/input.cpp
