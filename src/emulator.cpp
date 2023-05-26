@@ -5,9 +5,9 @@
 
 using namespace CHIP8;
 
-Emulator::Emulator() : 
+Emulator::Emulator(const int windowScale) : 
     interpreter{},
-    renderer{Frame::WIDTH, Frame::HEIGHT, "CHIP-8"} {
+    renderer{Frame::WIDTH, Frame::HEIGHT, windowScale, "CHIP-8"} {
 }
 
 void Emulator::loadRom(const std::filesystem::path& romPath) {

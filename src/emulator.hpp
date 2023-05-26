@@ -10,7 +10,7 @@ namespace CHIP8 {
 
 class Emulator {
 public:
-    Emulator();
+    Emulator(const int windowScale);
     void loadRom(const std::filesystem::path& romPath);
     void run(const int ticksPerSecond);
 private:
