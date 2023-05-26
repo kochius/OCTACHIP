@@ -5,26 +5,25 @@
 using namespace CHIP8;
 
 Renderer::Renderer(const int width, const int height, const int scalar,
-    const std::string_view& title) :
-        window{nullptr},
-        renderer{nullptr},
-        baseWidth{width},
-        baseHeight{height},
-        windowScale{scalar} {
-    using namespace std::string_literals;
-
+        const std::string& title) :
+            window{nullptr},
+            renderer{nullptr},
+            baseWidth{width},
+            baseHeight{height},
+            windowScale{scalar} {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        throw std::runtime_error("Failed to initialize SDL video subsystem: "s 
-            + std::string(SDL_GetError()));
+        throw std::runtime_error("Failed to initialize SDL video subsystem: " + 
+            std::string(SDL_GetError()));
     }
 
     SDL_CreateWindowAndRenderer(width * windowScale, height * windowScale, 0, 
         &window, &renderer);
+    
     if (window == nullptr || renderer == nullptr) {
-        throw std::runtime_error("Failed to create SDL window and renderer: "s 
-            + std::string(SDL_GetError()));
+        throw std::runtime_error("Failed to create SDL window and renderer: " + 
+            std::string(SDL_GetError()));
     }
-
+    
     SDL_SetWindowTitle(window, title.data());
 }
 
@@ -36,7 +35,6 @@ Renderer::~Renderer() {
 
 void Renderer::drawFrame(const Frame& frame) {
     clearRenderer();
-
     for (int row = 0; row < baseHeight; row++) {
         for (int col = 0; col < baseWidth; col++) {
             if (frame[col + (row * baseWidth)]) {
@@ -44,11 +42,10 @@ void Renderer::drawFrame(const Frame& frame) {
             }
         }
     }
-
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawPixel(int col, int row) {
+void Renderer::drawPixel(const int col, const int row) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_Rect pixelBlock{col * windowScale, row * windowScale, windowScale, 
         windowScale};
@@ -57,6 +54,6 @@ void Renderer::drawPixel(int col, int row) {
 }
 
 void Renderer::clearRenderer() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(renderer);
 }
