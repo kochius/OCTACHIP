@@ -11,7 +11,7 @@ public:
     Input();
     bool processInput(const std::function<void(int, bool)>& keyEventHandler);
 private:
-    std::unordered_map<SDL_Keycode, uint8_t> keyMap{};
+    std::unordered_map<SDL_Keycode, uint8_t> keyMap;
 };
 
 }
