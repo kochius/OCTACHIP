@@ -1,6 +1,7 @@
 // change font instruction to not accept font size and character or whatever idk
 
 #include <stdexcept>
+#include <string>
 
 #include "core/instructions.hpp"
 
@@ -445,4 +446,11 @@ void instructions::LD_VX_I(const Opcode& opcode, Memory& memory, Registers&
         }
         registers.v[j] = memory[address];
     }
+}
+/**
+ * Illegal opcode - Throws exception when no matching instruction is found.
+ */
+void instructions::ILLEGAL_OPCODE(const Opcode& opcode) {
+    throw std::runtime_error("Illegal opcode: " + 
+        std::to_string(opcode.full()));
 }

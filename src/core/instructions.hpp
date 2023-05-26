@@ -115,4 +115,7 @@ void LD_I_VX(const Opcode& opcode, Memory& memory, Registers& registers);
 // Fx65 - Read registers V0 through Vx from memory starting at location I.
 void LD_VX_I(const Opcode& opcode, Memory& memory, Registers& registers);
 
+// Illegal opcode - Throws exception when no matching instruction is found.
+void ILLEGAL_OPCODE(const Opcode& opcode);
+
 }
