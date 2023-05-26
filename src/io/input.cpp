@@ -22,13 +22,13 @@ Input::Input() {
 }
 
 bool Input::processInput(
-        const std::function<void(int, bool)>& keyEventHandler) {
+    const std::function<void(const int, const bool)>& keyEventHandler) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             return false;
         }
-        SDL_Keycode key = event.key.keysym.sym;
+        const SDL_Keycode key = event.key.keysym.sym;
         if (event.type == SDL_KEYDOWN) {
             if (key == SDLK_ESCAPE) {
                 return false;

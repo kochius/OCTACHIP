@@ -50,10 +50,8 @@ int main(int argc, char* argv[]) {
 
 std::string parsePath(const cxxopts::ParseResult& result) {
     if (result.count("rom") == 0 || result["rom"].as<std::string>().empty()) {
-        throw std::runtime_error(
-            "No ROM file path provided\n"
-            "Usage: ./chip8 -r <PATH>"
-        );
+        throw std::runtime_error("No ROM file path provided\n"
+            "Usage: ./chip8 -r <PATH>");
     }
     return result["rom"].as<std::string>();
 }
@@ -61,8 +59,7 @@ std::string parsePath(const cxxopts::ParseResult& result) {
 int parseSpeed(const cxxopts::ParseResult& result) {
     if (result["speed"].as<int>() <= 0) {
         throw std::invalid_argument(
-            "Invalid argument: emulation speed must be greater than 0"
-        );
+            "Invalid argument: emulation speed must be greater than 0");
     }
     return result["speed"].as<int>();
 }
@@ -70,8 +67,7 @@ int parseSpeed(const cxxopts::ParseResult& result) {
 int parseScale(const cxxopts::ParseResult& result) {
     if (result["scale"].as<int>() <= 0) {
         throw std::invalid_argument(
-            "Invalid argument: window scale factor must be greater than 0"
-        );
+            "Invalid argument: window scale factor must be greater than 0");
     }
     return result["scale"].as<int>();
 }

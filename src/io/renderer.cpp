@@ -5,12 +5,12 @@
 using namespace CHIP8;
 
 Renderer::Renderer(const int width, const int height, const int scalar,
-        const std::string& title) :
-            window{nullptr},
-            renderer{nullptr},
-            baseWidth{width},
-            baseHeight{height},
-            windowScale{scalar} {
+    const std::string& title) :
+        window{nullptr},
+        renderer{nullptr},
+        baseWidth{width},
+        baseHeight{height},
+        windowScale{scalar} {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw std::runtime_error("Failed to initialize SDL video subsystem: " + 
             std::string(SDL_GetError()));
