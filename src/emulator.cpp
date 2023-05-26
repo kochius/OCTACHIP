@@ -15,14 +15,14 @@ void Emulator::loadRom(const std::filesystem::path& romPath) {
 }
 
 void Emulator::run(const int ticksPerSecond) {
-    const int ticksPerFrame = ticksPerSecond / framesPerSecond;
+    const int ticksPerFrame = ticksPerSecond / FRAMES_PER_SECOND;
     long lastFrameTime = getCurrentTime();
     bool running = true;
 
     while (running) {
         const long timeElapsed = getCurrentTime() - lastFrameTime;
 
-        if (timeElapsed >= 1000 / framesPerSecond) {
+        if (timeElapsed >= 1000 / FRAMES_PER_SECOND) {
             lastFrameTime = getCurrentTime();
 
             for (int i = 0; i < ticksPerFrame; i++) {
