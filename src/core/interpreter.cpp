@@ -45,14 +45,16 @@ void Interpreter::loadRom(const std::filesystem::path& romPath) {
     if (!std::filesystem::exists(romPath)) {
         throw std::runtime_error("File not found: " + romPath.string());
     }
-    
+
     std::ifstream romFile{romPath, std::ios_base::in | std::ios_base::binary};
+
     if (!romFile) {
         throw std::runtime_error("Failed to open file: " + romPath.string());
     }
 
     const uintmax_t romSize = std::filesystem::file_size(romPath);
     const uintmax_t maxRomSize = MEMORY_SIZE - PROG_START_ADDRESS;
+
     if (romSize > maxRomSize) {
         throw std::length_error("File exceeds maximum ROM size: " + 
             romPath.string() +  " (current size: " + std::to_string(romSize) +
@@ -62,6 +64,7 @@ void Interpreter::loadRom(const std::filesystem::path& romPath) {
     romFile.seekg(0, std::ios_base::beg);
     romFile.read(reinterpret_cast<char*>(memory.data() + PROG_START_ADDRESS), 
         romSize);
+    
     if (!romFile) {
         throw std::runtime_error("Failed to read file: " + romPath.string());
     }

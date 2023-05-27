@@ -2,8 +2,7 @@
 
 using namespace CHIP8;
 
-Opcode::Opcode(const uint16_t instructionCode) :
-    opcode{instructionCode} {}
+Opcode::Opcode(const uint16_t instructionCode) : opcode{instructionCode} {}
 
 uint8_t Opcode::x() const {
     return (opcode & 0x0F00) >> 8;
