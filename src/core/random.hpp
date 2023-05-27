@@ -9,18 +9,16 @@ namespace CHIP8 {
 template <typename T>
 class Random {
 public:
-    Random(unsigned int seed, T min, T max) :
-        engine{seed},
-        minValue{min},
-        maxValue{max} {}
+    Random(unsigned int seed, T min, T max) : 
+        engine{seed}, minValue{min}, maxValue{max} {}
     virtual ~Random() = default;
     virtual T generateNumber()  {
         if constexpr (std::is_integral<T>::value) {
-            std::uniform_int_distribution<T> distribution(minValue, maxValue);
+            std::uniform_int_distribution<T> distribution{minValue, maxValue};
             return distribution(engine);
         }
         else {
-            std::uniform_real_distribution<T> distribution(minValue, maxValue);
+            std::uniform_real_distribution<T> distribution{minValue, maxValue};
             return distribution(engine);
         }
     }

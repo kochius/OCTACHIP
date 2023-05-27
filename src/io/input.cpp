@@ -2,7 +2,7 @@
 
 using namespace CHIP8;
 
-Input::Input() {
+Input::Input() : keyMap{} {
     keyMap[SDLK_x] = 0;
     keyMap[SDLK_1] = 1;
     keyMap[SDLK_2] = 2;
@@ -23,7 +23,7 @@ Input::Input() {
 
 bool Input::processInput(
     const std::function<void(const int, const bool)>& keyEventHandler) {
-    SDL_Event event;
+    SDL_Event event{};
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             return false;
