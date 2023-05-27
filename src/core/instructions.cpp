@@ -1,5 +1,3 @@
-// change font instruction to not accept font size and character or whatever idk
-
 #include <stdexcept>
 #include <string>
 
@@ -20,7 +18,7 @@ void instructions::CLS(Frame& frame) {
  * The interpreter sets the program counter to the address at the top of the 
  * stack, then subtracts 1 from the stack pointer.
  */
-void instructions::RET(Registers& registers, Stack& stack) {
+void instructions::RET(Registers& registers, const Stack& stack) {
     if (registers.sp <= 0) {
         throw std::underflow_error("RET: attempted to return from a subroutine,"
             " but the stack is empty");
@@ -159,9 +157,9 @@ void instructions::XOR_VX_VY(const Opcode& opcode, Registers& registers) {
  * the result are kept, and stored in Vx.
  */
 void instructions::ADD_VX_VY(const Opcode& opcode, Registers& registers) {
-    uint16_t sum = registers.v[opcode.x()] + registers.v[opcode.y()];
+    const uint16_t sum = registers.v[opcode.x()] + registers.v[opcode.y()];
     registers.v[opcode.x()] = sum & 0xFF;
-    registers.v[0x0F] = sum > 0xFF ? 1 : 0;
+    registers.v[0xF] = sum > 0xFF ? 1 : 0;
 }
 
 /**
@@ -171,9 +169,9 @@ void instructions::ADD_VX_VY(const Opcode& opcode, Registers& registers) {
  * and the results stored in Vx.
  */
 void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
-    bool borrow = registers.v[opcode.x()] < registers.v[opcode.y()];
+    const bool borrow = registers.v[opcode.x()] < registers.v[opcode.y()];
     registers.v[opcode.x()] -= registers.v[opcode.y()];
-    registers.v[0x0F] = !borrow? 1 : 0;
+    registers.v[0xF] = !borrow? 1 : 0;
 }
 
 /**
@@ -185,7 +183,7 @@ void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers) {
-    registers.v[0x0F] = registers.v[opcode.x()] & 0x01;
+    registers.v[0xF] = registers.v[opcode.x()] & 0x01;
     registers.v[opcode.x()] >>= 1;
 }
 
@@ -196,9 +194,9 @@ void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers) {
  * and the results stored in Vx.
  */
 void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
-    bool borrow = registers.v[opcode.y()] < registers.v[opcode.x()];
+    const bool borrow = registers.v[opcode.y()] < registers.v[opcode.x()];
     registers.v[opcode.x()] = registers.v[opcode.y()] - registers.v[opcode.x()];
-    registers.v[0x0F] =  !borrow? 1 : 0;
+    registers.v[0xF] = !borrow? 1 : 0;
 }
 
 /**
@@ -210,7 +208,7 @@ void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers) {
-    registers.v[0x0F] = registers.v[opcode.x()] >> 7;
+    registers.v[0xF] = registers.v[opcode.x()] >> 7;
     registers.v[opcode.x()] <<= 1;
 }
 
@@ -243,7 +241,7 @@ void instructions::LD_I_ADDR(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::JP_V0_ADDR(const Opcode& opcode, Registers& registers) {
-    registers.pc = opcode.address() + registers.v[0];
+    registers.pc = opcode.address() + registers.v[0x0];
 }
 
 /**
@@ -270,25 +268,32 @@ void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers,
  */
 void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
     Registers& registers, Frame& frame) {
-    int xPos = registers.v[opcode.x()] % Frame::WIDTH;
-    int yPos = registers.v[opcode.y()] % Frame::HEIGHT;
-    registers.v[0x0F] = 0;
-    int height = opcode.nibble();
+    const int xPos = registers.v[opcode.x()] % Frame::WIDTH;
+    const int yPos = registers.v[opcode.y()] % Frame::HEIGHT;
+    const int height = opcode.nibble();
+
+    registers.v[0xF] = 0;
+
     for (int row = 0; row < height; row++) {
         const uint16_t address = registers.i + row;
+
         if (address >= MEMORY_SIZE) {
             throw std::out_of_range("DRW_VX_VY_NIBBLE: out-of-bounds memory "
                 "access");
         }
-        uint8_t spriteRow = memory[address];
+
+        const uint8_t spriteRow = memory[address];
+
         for (int col = 0; col < 8; col++) {
             if (xPos + col >= 0 && xPos + col <= Frame::WIDTH &&
                 yPos + row >= 0 && yPos + row <= Frame::HEIGHT &&
                 spriteRow & (0b10000000 >> col)) {
-                int pixel = ((yPos + row) * Frame::WIDTH) + (xPos + col);
+                const int pixel = (xPos + col) + ((yPos + row) * Frame::WIDTH);
+
                 if (frame[pixel]) {
-                    registers.v[0x0F] = 1;
+                    registers.v[0xF] = 1;
                 }
+
                 frame[pixel] ^= true;
             }
         }
@@ -303,7 +308,7 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
  */
 void instructions::SKP_VX(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
-    bool isPressed = keypad[registers.v[opcode.x()]];
+    const bool isPressed = keypad[registers.v[opcode.x()]];
     if (isPressed) {
         registers.pc += 2;
     }
@@ -317,7 +322,7 @@ void instructions::SKP_VX(const Opcode& opcode, Registers& registers, const
  */
 void instructions::SKNP_VX(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
-    bool isPressed = keypad[registers.v[opcode.x()]];
+    const bool isPressed = keypad[registers.v[opcode.x()]];
     if (!isPressed) {
         registers.pc += 2;
     }
@@ -342,7 +347,7 @@ void instructions::LD_VX_DT(const Opcode& opcode, Registers& registers) {
  */
 void instructions::LD_VX_K(const Opcode& opcode, Registers& registers, const 
     Keypad& keypad) {
-    for (size_t keyValue = 0; keyValue < keypad.size(); keyValue++) {
+    for (int keyValue = 0; keyValue < KEY_COUNT; keyValue++) {
         if (keypad[keyValue]) {
             registers.v[opcode.x()] = keyValue;
             return;
@@ -399,11 +404,11 @@ void instructions::LD_F_VX(const Opcode& opcode, Registers& registers,
  * in memory at location in I, the tens digit at location I+1, and the ones 
  * digit at location I+2.
  */
-void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers& 
-    registers) {
+void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, 
+    const Registers& registers) {
     uint8_t value = registers.v[opcode.x()];
-    for (int j = 2; j >= 0; j--) {
-        const uint16_t address = registers.i + j;
+    for (int i = 2; i >= 0; i--) {
+        const uint16_t address = registers.i + i;
         if (address >= MEMORY_SIZE) {
             throw std::out_of_range("LD_B_VX: out-of-bounds memory access");
         }
@@ -420,14 +425,14 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory, Registers&
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers& 
-    registers) {
-    for (int j = 0; j <= opcode.x(); j++) {
-        const uint16_t address = registers.i + j;
+void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, 
+    const Registers& registers) {
+    for (int i = 0; i <= opcode.x(); i++) {
+        const uint16_t address = registers.i + i;
         if (address >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
-        memory[address] = registers.v[j];
+        memory[address] = registers.v[i];
     }
 }
 
@@ -437,16 +442,17 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, Registers&
  * The interpreter reads values from memory starting at location I into 
  * registers V0 through Vx.
  */
-void instructions::LD_VX_I(const Opcode& opcode, Memory& memory, Registers& 
-    registers) {
-    for (int j = 0; j <= opcode.x(); j++) {
-        const uint16_t address = registers.i + j;
+void instructions::LD_VX_I(const Opcode& opcode, const Memory& memory, 
+    Registers& registers) {
+    for (int i = 0; i <= opcode.x(); i++) {
+        const uint16_t address = registers.i + i;
         if (address >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
-        registers.v[j] = memory[address];
+        registers.v[i] = memory[address];
     }
 }
+
 /**
  * Illegal opcode - Throws exception when no matching instruction is found.
  */

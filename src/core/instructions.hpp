@@ -13,7 +13,7 @@ namespace CHIP8::instructions {
 void CLS(Frame& frame);
 
 // 00EE - Return from a subroutine.
-void RET(Registers& registers, Stack& stack);
+void RET(Registers& registers, const Stack& stack);
 
 // 1nnn - Jump to location nnn.
 void JP_ADDR(const Opcode& opcode, Registers& registers);
@@ -107,13 +107,13 @@ void LD_F_VX(const Opcode& opcode, Registers& registers,
     const uint16_t startAddress, const int spriteSize);
 
 // Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2.
-void LD_B_VX(const Opcode& opcode, Memory& memory, Registers& registers);
+void LD_B_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
 
 // Fx55 - Store registers V0 through Vx in memory starting at location I.
-void LD_I_VX(const Opcode& opcode, Memory& memory, Registers& registers);
+void LD_I_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
 
 // Fx65 - Read registers V0 through Vx from memory starting at location I.
-void LD_VX_I(const Opcode& opcode, Memory& memory, Registers& registers);
+void LD_VX_I(const Opcode& opcode, const Memory& memory, Registers& registers);
 
 // Illegal opcode - Throws exception when no matching instruction is found.
 void ILLEGAL_OPCODE(const Opcode& opcode);
