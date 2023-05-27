@@ -9,6 +9,8 @@
 using namespace CHIP8;
 
 TEST_F(InstructionTest, LD_VX_BYTE_SetsVxToByte) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x6000 | (x << 8) | byte;
 
     instructions::LD_VX_BYTE(opcode, registers);
@@ -18,6 +20,8 @@ TEST_F(InstructionTest, LD_VX_BYTE_SetsVxToByte) {
 }
 
 TEST_F(InstructionTest, LD_VX_VY_SetsVxToVy) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8000 | (x << 8) | (y << 4);
 
     registers.v[y] = 0x23;
@@ -29,6 +33,7 @@ TEST_F(InstructionTest, LD_VX_VY_SetsVxToVy) {
 }
 
 TEST_F(InstructionTest, LD_I_ADDR_SetsIndexRegisterToAddress) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0xA000 | address;
 
     instructions::LD_I_ADDR(opcode, registers);
@@ -38,6 +43,7 @@ TEST_F(InstructionTest, LD_I_ADDR_SetsIndexRegisterToAddress) {
 }
 
 TEST_F(InstructionTest, LD_VX_DT_SetsVxToDelayTimer) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF007 | (x << 8);
 
     registers.delayTimer = 0x42;
@@ -49,6 +55,7 @@ TEST_F(InstructionTest, LD_VX_DT_SetsVxToDelayTimer) {
 }
 
 TEST_F(InstructionTest, LD_DT_VX_SetsDelayTimerToVx) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF015 | (x << 8);
 
     registers.v[x] = 0xF0;
@@ -60,6 +67,7 @@ TEST_F(InstructionTest, LD_DT_VX_SetsDelayTimerToVx) {
 }
 
 TEST_F(InstructionTest, LD_ST_VX_SetsSoundTimerToVx) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF018 | (x << 8);
 
     registers.v[x] = 0xF0;
@@ -71,12 +79,13 @@ TEST_F(InstructionTest, LD_ST_VX_SetsSoundTimerToVx) {
 }
 
 TEST_F(InstructionTest, LD_F_VX_SetsIndexRegisterToVxSpriteAddress) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF029 | (x << 8);
 
     registers.v[x] = 0xE;
-    constexpr uint16_t startAddress = 0x050;
-    constexpr int spriteSize = 5;
-    constexpr uint16_t spriteAddress = 0x096;
+    const uint16_t startAddress = 0x050;
+    const int spriteSize = 5;
+    const uint16_t spriteAddress = 0x096;
 
     instructions::LD_F_VX(opcode, registers, startAddress, spriteSize);
 
@@ -86,11 +95,12 @@ TEST_F(InstructionTest, LD_F_VX_SetsIndexRegisterToVxSpriteAddress) {
 }
 
 TEST_F(InstructionTest, LD_B_VX_MemoryInRange_WritesVxBcdToMemory) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF033 | (x << 8);
 
-    constexpr uint8_t hundredsDigit = 2;
-    constexpr uint8_t tensDigit = 5;
-    constexpr uint8_t onesDigit = 1;
+    const uint8_t hundredsDigit = 2;
+    const uint8_t tensDigit = 5;
+    const uint8_t onesDigit = 1;
     registers.v[x] = (100 * hundredsDigit) + (10 * tensDigit) + onesDigit;
     registers.i = 0x200;
 
@@ -103,6 +113,7 @@ TEST_F(InstructionTest, LD_B_VX_MemoryInRange_WritesVxBcdToMemory) {
 }
 
 TEST_F(InstructionTest, LD_B_VX_MemoryOutOfRange_ThrowsException) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF033 | (x << 8);
 
     registers.i = MEMORY_SIZE - 1;
@@ -117,8 +128,8 @@ TEST_F(InstructionTest, LD_B_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t lastRegisterIndex = data.size() - 1;
-    const Opcode opcode = 0xF055 | (lastRegisterIndex << 8);
+    const uint16_t x = data.size() - 1;
+    const Opcode opcode = 0xF055 | (x << 8);
     
     // Load the data into registers V0 through Vx
     for (unsigned int i = 0; i < data.size(); i++) {
@@ -130,14 +141,14 @@ TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     instructions::LD_I_VX(opcode, memory, registers);
 
     // LD_I_VX should store the data from registers V0 through Vx in memory
-    for (int i = 0; i <= lastRegisterIndex; i++) {
+    for (int i = 0; i <= x; i++) {
         EXPECT_EQ(registers.v[i], memory[registers.i + i]);
     }
 }
 
 TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
-    constexpr uint16_t lastRegisterIndex = 0xF;
-    const Opcode opcode = 0xF055 | (lastRegisterIndex << 8);
+    const uint16_t x = 0xF;
+    const Opcode opcode = 0xF055 | (x << 8);
 
     registers.i = MEMORY_SIZE - 1;
     
@@ -151,8 +162,8 @@ TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_VX_I_MemoryInRange_ReadsMemoryIntoRegisters) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t lastRegisterIndex = data.size() - 1;
-    const Opcode opcode = 0xF065 | (lastRegisterIndex << 8);
+    const uint16_t x = data.size() - 1;
+    const Opcode opcode = 0xF065 | (x << 8);
 
     // Load the data into memory starting at the address in I
     registers.i = 0x200;
@@ -163,14 +174,14 @@ TEST_F(InstructionTest, LD_VX_I_MemoryInRange_ReadsMemoryIntoRegisters) {
     instructions::LD_VX_I(opcode, memory, registers);
 
     // LD_VX_I should store the data from memory in registers V0 through Vx
-    for (int i = 0; i <= lastRegisterIndex; i++) {
+    for (int i = 0; i <= x; i++) {
         EXPECT_EQ(memory[registers.i + i], registers.v[i]);
     }
 }
 
 TEST_F(InstructionTest, LD_VX_I_MemoryOutOfRange_ThrowsException) {
-    constexpr uint16_t lastRegisterIndex = 0xF;
-    const Opcode opcode = 0xF065 | (lastRegisterIndex << 8);
+    const uint16_t x = 0xF;
+    const Opcode opcode = 0xF065 | (x << 8);
 
     registers.i = MEMORY_SIZE - 1;
     

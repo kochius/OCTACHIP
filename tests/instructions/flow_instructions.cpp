@@ -9,6 +9,7 @@
 using namespace CHIP8;
 
 TEST_F(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
 
     const uint16_t initialPcValue = registers.pc;
@@ -30,6 +31,7 @@ TEST_F(InstructionTest, RET_EmptyStack_ThrowsException) {
 }
 
 TEST_F(InstructionTest, JP_ADDR_SetsProgramCounterToAddress) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0x1000 | address;
     
     instructions::JP_ADDR(opcode, registers);
@@ -39,6 +41,7 @@ TEST_F(InstructionTest, JP_ADDR_SetsProgramCounterToAddress) {
 }
 
 TEST_F(InstructionTest, CALL_ADDR_NonFullStack_CallsSubroutineAtAddress) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
 
     const uint16_t initialPcValue = registers.pc;
@@ -57,6 +60,7 @@ TEST_F(InstructionTest, CALL_ADDR_NonFullStack_CallsSubroutineAtAddress) {
 }
 
 TEST_F(InstructionTest, CALL_ADDR_FullStack_ThrowsException) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0x2000 | address;
 
     // CALL_ADDR should throw an exception when the stack limit is exceeded
@@ -70,6 +74,8 @@ TEST_F(InstructionTest, CALL_ADDR_FullStack_ThrowsException) {
 }
 
 TEST_F(InstructionTest, SE_VX_BYTE_VxEqualToByte_SkipsInstruction) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x3000 | (x << 8) | byte;
 
     registers.v[x] = byte;
@@ -82,6 +88,8 @@ TEST_F(InstructionTest, SE_VX_BYTE_VxEqualToByte_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, SE_VX_BYTE_VxNotEqualToByte_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x3000 | (x << 8) | byte;
 
     registers.v[x] = byte + 1; // Vx != byte
@@ -94,6 +102,8 @@ TEST_F(InstructionTest, SE_VX_BYTE_VxNotEqualToByte_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SNE_VX_BYTE_VxEqualToByte_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x4000 | (x << 8) | byte;
 
     registers.v[x] = byte;
@@ -106,6 +116,8 @@ TEST_F(InstructionTest, SNE_VX_BYTE_VxEqualToByte_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SNE_VX_BYTE_VxNotEqualToByte_SkipsInstruction) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x4000 | (x << 8) | byte;
 
     registers.v[x] = byte + 1; // Vx != byte
@@ -118,6 +130,8 @@ TEST_F(InstructionTest, SNE_VX_BYTE_VxNotEqualToByte_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, SE_VX_VY_VxEqualToVy_SkipsInstruction) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x5000 | (x << 8) | (y << 4);
 
     registers.v[x] = registers.v[y];
@@ -130,6 +144,8 @@ TEST_F(InstructionTest, SE_VX_VY_VxEqualToVy_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, SE_VX_VY_VxNotEqualToVy_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x5000 | (x << 8) | (y << 4);
 
     registers.v[x] = registers.v[y] + 1; // Vx != Vy
@@ -142,6 +158,8 @@ TEST_F(InstructionTest, SE_VX_VY_VxNotEqualToVy_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SNE_VX_VY_VxEqualToVy_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x9000 | (x << 8) | (y << 4);
 
     registers.v[x] = registers.v[y];
@@ -154,6 +172,8 @@ TEST_F(InstructionTest, SNE_VX_VY_VxEqualToVy_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SNE_VX_VY_VxNotEqualToVy_SkipsInstruction) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x9000 | (x << 8) | (y << 4);
 
     registers.v[x] = registers.v[y] + 1; // Vx != Vy
@@ -166,10 +186,11 @@ TEST_F(InstructionTest, SNE_VX_VY_VxNotEqualToVy_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, JP_V0_ADDR_SetsProgramCounterToV0PlusAddress) {
+    const uint16_t address = 0x251;
     const Opcode opcode = 0xB000 | address;
 
     registers.v[0x0] = 0x42;
-    constexpr uint16_t expectedPcValue = 0x293;
+    const uint16_t expectedPcValue = 0x293;
 
     instructions::JP_V0_ADDR(opcode, registers);
 

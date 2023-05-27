@@ -32,6 +32,8 @@ TEST_F(InstructionTest,
         {1, 1, 1, 1, 1, 1, 1, 1}
     };
 
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const uint8_t n = sprite.size();
     const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
 
@@ -67,6 +69,8 @@ TEST_F(InstructionTest,
         {1, 1, 1, 1, 1, 1, 1, 1}
     };
 
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const uint8_t n = sprite.size();
     const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
 
@@ -92,6 +96,8 @@ TEST_F(InstructionTest,
 }
 
 TEST_F(InstructionTest, DRW_VX_VY_NIBBLE_MemoryOutOfRange_ThrowsException) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const uint8_t n = 0xF;
     const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
 
@@ -107,6 +113,7 @@ TEST_F(InstructionTest, DRW_VX_VY_NIBBLE_MemoryOutOfRange_ThrowsException) {
 }
 
 TEST_F(InstructionTest, SKP_VX_VxPressed_SkipsInstruction) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xE09E | (x << 8);
 
     registers.v[x] = 0xA;
@@ -120,6 +127,7 @@ TEST_F(InstructionTest, SKP_VX_VxPressed_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, SKP_VX_VxNotPressed_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xE09E | (x << 8);
 
     registers.v[x] = 0xB;
@@ -133,6 +141,7 @@ TEST_F(InstructionTest, SKP_VX_VxNotPressed_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SKNP_VX_VxPressed_DoesNotSkipInstruction) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xE0A1 | (x << 8);
 
     registers.v[x] = 0xC;
@@ -146,6 +155,7 @@ TEST_F(InstructionTest, SKNP_VX_VxPressed_DoesNotSkipInstruction) {
 }
 
 TEST_F(InstructionTest, SKNP_VX_VxNotPressed_SkipsInstruction) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xE0A1 | (x << 8);
 
     registers.v[x] = 0xD;
@@ -159,6 +169,7 @@ TEST_F(InstructionTest, SKNP_VX_VxNotPressed_SkipsInstruction) {
 }
 
 TEST_F(InstructionTest, LD_VX_K_NoKeyPressed_DecrementsProgramCounter) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF00A | (x << 8);
 
     registers.pc = 0x002;
@@ -171,10 +182,11 @@ TEST_F(InstructionTest, LD_VX_K_NoKeyPressed_DecrementsProgramCounter) {
 }
 
 TEST_F(InstructionTest, LD_VX_K_KeyPressed_SetVxToPressedKey) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF00A | (x << 8);
 
     const uint8_t initialPcValue = registers.pc;
-    constexpr uint8_t key = 0xE;
+    const uint8_t key = 0xE;
     keypad[key] = true; // Set key E as pressed
 
     instructions::LD_VX_K(opcode, registers, keypad);

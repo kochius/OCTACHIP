@@ -17,11 +17,6 @@ protected:
     Frame frame{};
     Keypad keypad{};
     MockRandom<uint8_t> random{};
-
-    const uint16_t x = 0x0;
-    const uint16_t y = 0xA;
-    const uint16_t address = 0x251;
-    const uint8_t byte = 0x42;
 };
 
 }

@@ -9,10 +9,12 @@
 using namespace CHIP8;
 
 TEST_F(InstructionTest, ADD_VX_BYTE_AddsByteToVx) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0x7000 | (x << 8) | byte;
 
     registers.v[x] = 0x23;
-    constexpr uint8_t vxPlusByte = 0x65;
+    const uint8_t vxPlusByte = 0x65;
 
     instructions::ADD_VX_BYTE(opcode, registers);
 
@@ -22,11 +24,13 @@ TEST_F(InstructionTest, ADD_VX_BYTE_AddsByteToVx) {
 }
 
 TEST_F(InstructionTest, OR_VX_VY_OrsVxWithVy) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8001 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vxOrVy = 0x63;
+    const uint8_t vxOrVy = 0x63;
 
     instructions::OR_VX_VY(opcode, registers);
 
@@ -35,11 +39,13 @@ TEST_F(InstructionTest, OR_VX_VY_OrsVxWithVy) {
 }
 
 TEST_F(InstructionTest, AND_VX_VY_AndsVxWithVy) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8002 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vxAndVy = 0x02;
+    const uint8_t vxAndVy = 0x02;
 
     instructions::AND_VX_VY(opcode, registers);
 
@@ -48,11 +54,13 @@ TEST_F(InstructionTest, AND_VX_VY_AndsVxWithVy) {
 }
 
 TEST_F(InstructionTest, XOR_VX_VY_XorsVxWithVy) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8003 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vxXorVy = 0x61;
+    const uint8_t vxXorVy = 0x61;
 
     instructions::XOR_VX_VY(opcode, registers);
 
@@ -61,11 +69,13 @@ TEST_F(InstructionTest, XOR_VX_VY_XorsVxWithVy) {
 }
 
 TEST_F(InstructionTest, ADD_VX_VY_NoCarry_AddsVyToVxAndClearsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8004 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vxPlusVy = 0x65;
+    const uint8_t vxPlusVy = 0x65;
 
     instructions::ADD_VX_VY(opcode, registers);
 
@@ -77,11 +87,13 @@ TEST_F(InstructionTest, ADD_VX_VY_NoCarry_AddsVyToVxAndClearsVF) {
 }
 
 TEST_F(InstructionTest, ADD_VX_VY_Carry_AddsVyToVxAndSetsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8004 | (x << 8) | (y << 4);
 
     registers.v[x] = 0xFF;
     registers.v[y] = 0xFF;
-    constexpr uint8_t vxPlusVy = 0xFE;
+    const uint8_t vxPlusVy = 0xFE;
 
     instructions::ADD_VX_VY(opcode, registers);
 
@@ -93,11 +105,13 @@ TEST_F(InstructionTest, ADD_VX_VY_Carry_AddsVyToVxAndSetsVF) {
 }
 
 TEST_F(InstructionTest, SUB_VX_VY_NoBorrow_SubtractsVyFromVxAndSetsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8005 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vxMinusVy = 0x1F;
+    const uint8_t vxMinusVy = 0x1F;
 
     instructions::SUB_VX_VY(opcode, registers);
 
@@ -109,11 +123,13 @@ TEST_F(InstructionTest, SUB_VX_VY_NoBorrow_SubtractsVyFromVxAndSetsVF) {
 }
 
 TEST_F(InstructionTest, SUB_VX_VY_Borrow_SubtractsVyFromVxAndClearsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8005 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x23;
     registers.v[y] = 0x42;
-    constexpr uint8_t vxMinusVy = 0xE1;
+    const uint8_t vxMinusVy = 0xE1;
 
     instructions::SUB_VX_VY(opcode, registers);
 
@@ -125,10 +141,12 @@ TEST_F(InstructionTest, SUB_VX_VY_Borrow_SubtractsVyFromVxAndClearsVF) {
 }
 
 TEST_F(InstructionTest, SHR_VX_VY_LsbZero_DividesVxByTwoAndClearsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8006 | (x << 8) | (y << 4);
 
     registers.v[x] = 0b11110000; // 240
-    constexpr uint8_t vxDividedByTwo = 0b01111000; // 120
+    const uint8_t vxDividedByTwo = 0b01111000; // 120
 
     instructions::SHR_VX_VY(opcode, registers);
 
@@ -140,10 +158,12 @@ TEST_F(InstructionTest, SHR_VX_VY_LsbZero_DividesVxByTwoAndClearsVF) {
 }
 
 TEST_F(InstructionTest, SHR_VX_VY_LsbOne_DividesVxByTwoAndSetsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8006 | (x << 8) | (y << 4);
     
     registers.v[x] = 0b11110001; // 241
-    constexpr uint8_t vxDividedByTwo = 0b01111000; // 120
+    const uint8_t vxDividedByTwo = 0b01111000; // 120
 
     instructions::SHR_VX_VY(opcode, registers);
 
@@ -155,11 +175,13 @@ TEST_F(InstructionTest, SHR_VX_VY_LsbOne_DividesVxByTwoAndSetsVF) {
 }
 
 TEST_F(InstructionTest, SUBN_VX_VY_NoBorrow_SubtractsVxFromVyAndSetsVF) {
-    const Opcode opcode = 0x8007 | (x << 8) | ( y << 4);
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
+    const Opcode opcode = 0x8007 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x23;
     registers.v[y] = 0x42;
-    constexpr uint8_t vyMinusVx = 0x1F;
+    const uint8_t vyMinusVx = 0x1F;
 
     instructions::SUBN_VX_VY(opcode, registers);
 
@@ -171,11 +193,13 @@ TEST_F(InstructionTest, SUBN_VX_VY_NoBorrow_SubtractsVxFromVyAndSetsVF) {
 }
 
 TEST_F(InstructionTest, SUBN_VX_VY_Borrow_SubtractsVxFromVyAndClearsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x8007 | (x << 8) | (y << 4);
 
     registers.v[x] = 0x42;
     registers.v[y] = 0x23;
-    constexpr uint8_t vyMinusVx = 0xE1;
+    const uint8_t vyMinusVx = 0xE1;
 
     instructions::SUBN_VX_VY(opcode, registers);
 
@@ -187,10 +211,12 @@ TEST_F(InstructionTest, SUBN_VX_VY_Borrow_SubtractsVxFromVyAndClearsVF) {
 }
 
 TEST_F(InstructionTest, SHL_VX_VY_MsbZero_MultipliesVxByTwoAndClearsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x800E | (x << 8) | (y << 4);
 
     registers.v[x] = 0b01110000; // 112
-    constexpr uint8_t vxTimesTwo = 0b11100000; // 224
+    const uint8_t vxTimesTwo = 0b11100000; // 224
 
     instructions::SHL_VX_VY(opcode, registers);
 
@@ -202,10 +228,12 @@ TEST_F(InstructionTest, SHL_VX_VY_MsbZero_MultipliesVxByTwoAndClearsVF) {
 }
 
 TEST_F(InstructionTest, SHL_VX_VY_MsbOne_MultipliesVxByTwoAndSetsVF) {
+    const uint16_t x = 0x0;
+    const uint16_t y = 0xA;
     const Opcode opcode = 0x800E | (x << 8) | (y << 4);
 
     registers.v[x] = 0b11110000; // 240
-    constexpr uint8_t vxTimesTwo = 0b11100000; // 224
+    const uint8_t vxTimesTwo = 0b11100000; // 224
 
     instructions::SHL_VX_VY(opcode, registers);
 
@@ -217,11 +245,12 @@ TEST_F(InstructionTest, SHL_VX_VY_MsbOne_MultipliesVxByTwoAndSetsVF) {
 }
 
 TEST_F(InstructionTest, ADD_I_VX_AddsVxToIndexRegister) {
+    const uint16_t x = 0x0;
     const Opcode opcode = 0xF01E | (x << 8);
 
     registers.v[x] = 0x42;
     registers.i = 0x619;
-    constexpr uint16_t vxPlusI = 0x65B;
+    const uint16_t vxPlusI = 0x65B;
 
     instructions::ADD_I_VX(opcode, registers);
 

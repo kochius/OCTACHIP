@@ -10,9 +10,11 @@
 using namespace CHIP8;
 
 TEST_F(InstructionTest, RND_VX_BYTE_SetsVxToRndAndByte) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0x42;
     const Opcode opcode = 0xC000 | (x << 8) | byte;
 
-    constexpr uint8_t expectedRandomValue = 0x02;
+    const uint8_t expectedRandomValue = 0x02;
 
     // Check that the mock RNG is working as expected
     ASSERT_EQ(0x37, random.generateNumber());
