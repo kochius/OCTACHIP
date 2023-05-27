@@ -12,8 +12,13 @@
 using namespace CHIP8;
 
 Interpreter::Interpreter() :
+    memory{},
+    registers{},
+    stack{},
+    frame{},
+    keypad{},
     random{std::random_device{}(), 0u, 255u} {
-    constexpr std::array<uint8_t, FONT_SET_SIZE> fontSet = {
+    const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -31,35 +36,34 @@ Interpreter::Interpreter() :
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
-    std::copy(std::begin(fontSet), std::end(fontSet), 
-        std::begin(this->memory) + FONT_START_ADDRESS);
+    std::copy(std::begin(fontSet), std::end(fontSet), std::begin(this->memory) + 
+        FONT_START_ADDRESS);
     registers.pc = PROG_START_ADDRESS;
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
-    using namespace std::string_literals;
-
     if (!std::filesystem::exists(romPath)) {
-        throw std::runtime_error("File not found: "s + romPath.string());
+        throw std::runtime_error("File not found: " + romPath.string());
     }
     
     std::ifstream romFile{romPath, std::ios_base::in | std::ios_base::binary};
     if (!romFile) {
-        throw std::runtime_error("Unable to open file: "s + romPath.string());
+        throw std::runtime_error("Failed to open file: " + romPath.string());
     }
 
     const uintmax_t romSize = std::filesystem::file_size(romPath);
-    constexpr unsigned int MAX_ROM_SIZE = MEMORY_SIZE - PROG_START_ADDRESS;
-    if (romSize > MAX_ROM_SIZE) {
-        const uintmax_t overflow = romSize - MAX_ROM_SIZE;
-        throw std::length_error("File exceeds maximum ROM size by "s + 
-            std::to_string(overflow) + " bytes: "s + romPath.string());
+    const uintmax_t maxRomSize = MEMORY_SIZE - PROG_START_ADDRESS;
+    if (romSize > maxRomSize) {
+        throw std::length_error("File exceeds maximum ROM size: " + 
+            romPath.string() +  " (current size: " + std::to_string(romSize) +
+            " bytes, maximum size: " + std::to_string(maxRomSize) + " bytes)");
     }
 
     romFile.seekg(0, std::ios_base::beg);
-    if (!romFile.read(reinterpret_cast<char*>(this->memory.data() + 
-        PROG_START_ADDRESS), static_cast<std::streamsize>(romSize))) {
-        throw std::runtime_error("Unable to read file: "s + romPath.string());
+    romFile.read(reinterpret_cast<char*>(memory.data() + PROG_START_ADDRESS), 
+        romSize);
+    if (!romFile) {
+        throw std::runtime_error("Failed to read file: " + romPath.string());
     }
 }
 
@@ -76,68 +80,61 @@ bool Interpreter::soundTimerOn() const {
     return (registers.soundTimer > 0);
 }
 
-void Interpreter::setKey(int key, bool isPressed) {
-    keypad[key] = isPressed;
-}
-
 const Frame& Interpreter::getFrame() const {
     return frame;
 }
 
+void Interpreter::setKey(const int key, const bool isPressed) {
+    keypad[key] = isPressed;
+}
+
 void Interpreter::tick() {
-    using namespace std::string_literals;
-    Opcode opcode = memory[registers.pc] << 8 | memory[registers.pc + 1];
+    const Opcode opcode = memory[registers.pc] << 8 | memory[registers.pc + 1];
 
     registers.pc += 2;
 
     switch (opcode.prefix()) {
-        case 0x00: 
+        case 0x0: 
             switch (opcode.byte()) {
                 case 0xE0: return instructions::CLS(frame);
                 case 0xEE: return instructions::RET(registers, stack);
-                default:
-                    throw std::runtime_error("Invalid opcode: "s + 
-                        std::to_string(opcode.full()));
+                default: return instructions::ILLEGAL_OPCODE(opcode);
             }
-        case 0x01: return instructions::JP_ADDR(opcode, registers);
-        case 0x02: return instructions::CALL_ADDR(opcode, registers, stack);
-        case 0x03: return instructions::SE_VX_BYTE(opcode, registers);
-        case 0x04: return instructions::SNE_VX_BYTE(opcode, registers);
-        case 0x05: return instructions::SE_VX_VY(opcode, registers);
-        case 0x06: return instructions::LD_VX_BYTE(opcode, registers);
-        case 0x07: return instructions::ADD_VX_BYTE(opcode, registers);
-        case 0x08:
+        case 0x1: return instructions::JP_ADDR(opcode, registers);
+        case 0x2: return instructions::CALL_ADDR(opcode, registers, stack);
+        case 0x3: return instructions::SE_VX_BYTE(opcode, registers);
+        case 0x4: return instructions::SNE_VX_BYTE(opcode, registers);
+        case 0x5: return instructions::SE_VX_VY(opcode, registers);
+        case 0x6: return instructions::LD_VX_BYTE(opcode, registers);
+        case 0x7: return instructions::ADD_VX_BYTE(opcode, registers);
+        case 0x8:
             switch (opcode.nibble()) {
-                case 0x00: return instructions::LD_VX_VY(opcode, registers);
-                case 0x01: return instructions::OR_VX_VY(opcode, registers);
-                case 0x02: return instructions::AND_VX_VY(opcode, registers);
-                case 0x03: return instructions::XOR_VX_VY(opcode, registers);
-                case 0x04: return instructions::ADD_VX_VY(opcode, registers);
-                case 0x05: return instructions::SUB_VX_VY(opcode, registers);
-                case 0x06: return instructions::SHR_VX_VY(opcode, registers);
-                case 0x07: return instructions::SUBN_VX_VY(opcode, registers);
-                case 0x0E: return instructions::SHL_VX_VY(opcode, registers);
-                default:
-                    throw std::runtime_error("Invalid opcode: "s + 
-                        std::to_string(opcode.full()));
+                case 0x0: return instructions::LD_VX_VY(opcode, registers);
+                case 0x1: return instructions::OR_VX_VY(opcode, registers);
+                case 0x2: return instructions::AND_VX_VY(opcode, registers);
+                case 0x3: return instructions::XOR_VX_VY(opcode, registers);
+                case 0x4: return instructions::ADD_VX_VY(opcode, registers);
+                case 0x5: return instructions::SUB_VX_VY(opcode, registers);
+                case 0x6: return instructions::SHR_VX_VY(opcode, registers);
+                case 0x7: return instructions::SUBN_VX_VY(opcode, registers);
+                case 0xE: return instructions::SHL_VX_VY(opcode, registers);
+                default: return instructions::ILLEGAL_OPCODE(opcode);
             }
-        case 0x09: return instructions::SNE_VX_VY(opcode, registers);
-        case 0x0A: return instructions::LD_I_ADDR(opcode, registers);
-        case 0x0B: return instructions::JP_V0_ADDR(opcode, registers);
-        case 0x0C: return instructions::RND_VX_BYTE(opcode, registers, random);
-        case 0x0D: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
+        case 0x9: return instructions::SNE_VX_VY(opcode, registers);
+        case 0xA: return instructions::LD_I_ADDR(opcode, registers);
+        case 0xB: return instructions::JP_V0_ADDR(opcode, registers);
+        case 0xC: return instructions::RND_VX_BYTE(opcode, registers, random);
+        case 0xD: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
             registers, frame);
-        case 0x0E:
+        case 0xE:
             switch(opcode.byte()) {
                 case 0x9E: return instructions::SKP_VX(opcode, registers, 
                     keypad);
                 case 0xA1: return instructions::SKNP_VX(opcode, registers, 
                     keypad);
-                default:
-                    throw std::runtime_error("Invalid opcode: "s + 
-                        std::to_string(opcode.full()));
+                default: return instructions::ILLEGAL_OPCODE(opcode);
             }
-        case 0x0F:
+        case 0xF:
             switch(opcode.byte()) {
                 case 0x07: return instructions::LD_VX_DT(opcode, registers);
                 case 0x0A: return instructions::LD_VX_K(opcode, registers, 
@@ -153,12 +150,8 @@ void Interpreter::tick() {
                     registers);
                 case 0x65: return instructions::LD_VX_I(opcode, memory, 
                     registers);
-                default:
-                    throw std::runtime_error("Invalid opcode: "s + 
-                        std::to_string(opcode.full()));
+                default: return instructions::ILLEGAL_OPCODE(opcode);
             }
-        default:
-            throw std::runtime_error("Invalid opcode: "s + 
-                std::to_string(opcode.full()));
+        default: return instructions::ILLEGAL_OPCODE(opcode);
     }
 }
