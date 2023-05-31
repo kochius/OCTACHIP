@@ -4,19 +4,22 @@ add_executable(${CHIP8_EXECUTABLE})
 
 if(NOT EMSCRIPTEN)
     target_link_libraries(${CHIP8_EXECUTABLE}
-    PRIVATE
-        SDL2-static
-        cxxopts
+        PRIVATE
+            SDL2-static
+            cxxopts
     )
 
     target_sources(${CHIP8_EXECUTABLE}
-    PRIVATE
-        main.cpp
-        emulator.cpp
-        emulator.hpp
+        PRIVATE
+            main.cpp
+            emulator.cpp
+            emulator.hpp
     )
 else()
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set_target_properties(${CHIP8_EXECUTABLE}
+        PROPERTIES
+            SUFFIX ".html"
+    )
     
     target_compile_options(${CHIP8_EXECUTABLE}
         PRIVATE
@@ -27,6 +30,7 @@ else()
         PRIVATE
             -s USE_SDL=2
             --preload-file ../../roms
+            --shell-file ${PROJECT_WEB_DIR}/shell.html
     )
 
     target_sources(${CHIP8_EXECUTABLE}
