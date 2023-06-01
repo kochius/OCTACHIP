@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -39,6 +40,25 @@ Interpreter::Interpreter() :
     std::copy(std::begin(fontSet), std::end(fontSet), std::begin(this->memory) + 
         FONT_START_ADDRESS);
     registers.pc = PROG_START_ADDRESS;
+}
+
+void Interpreter::reset() {
+    std::fill(std::begin(memory), std::begin(memory) + FONT_START_ADDRESS, 0);
+    std::fill(std::begin(memory) + FONT_START_ADDRESS + FONT_SET_SIZE, 
+        std::end(memory), 0);
+
+    registers.v.fill(0);
+    registers.pc = PROG_START_ADDRESS;
+    registers.i = 0;
+    registers.sp = 0;
+    registers.delayTimer = 0;
+    registers.soundTimer = 0;
+
+    stack.fill(0);
+
+    frame.clearFrame();
+
+    keypad.fill(false);
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
