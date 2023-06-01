@@ -56,7 +56,7 @@ void Interpreter::reset() {
 
     stack.fill(0);
 
-    frame.clearFrame();
+    frame.clear();
 
     keypad.fill(false);
 }

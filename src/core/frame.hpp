@@ -10,7 +10,7 @@ public:
     static constexpr int HEIGHT = 32;
 
     Frame();
-    void clearFrame();
+    void clear();
     bool& operator[](const int index);
     const bool& operator[](const int index) const;
 private:

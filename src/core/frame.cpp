@@ -4,7 +4,7 @@ using namespace CHIP8;
 
 Frame::Frame() : pixels{} {}
 
-void Frame::clearFrame() {
+void Frame::clear() {
     pixels.fill(false);
 }
 

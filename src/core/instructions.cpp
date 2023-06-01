@@ -9,7 +9,7 @@ using namespace CHIP8;
  * 00E0 - Clear the display.
  */
 void instructions::CLS(Frame& frame) {
-    frame.clearFrame();
+    frame.clear();
 }
 
 /**
