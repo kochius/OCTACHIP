@@ -1,0 +1,55 @@
+:root {
+    --background-color: #222225;
+    --font-color: #e8e9ed;
+    --inverted-font-color: #222225;
+    --secondary-color: #a3abba;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--font-color);
+}
+
+.site-content {
+    max-width: 960px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: "Azeret Mono", "Courier New", sans-serif;
+}
+
+.site-title,
+.site-description,
+.card-heading {
+    text-align: center;
+}
+
+.card {
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--secondary-color);
+}
+
+.card-header {
+    background-color: var(--secondary-color);
+    color: var(--inverted-font-color);
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.emscripten {
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+canvas.emscripten {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0px none;
+    background-color: black;
+}

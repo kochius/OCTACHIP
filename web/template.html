@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>CHIP-8 Emulator</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap">
+        <link rel="stylesheet" href="reset.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="site-content">
+            <h1 class="site-title">CHIP-8 EMULATOR</h1>
+            <p class="site-description">
+                A CHIP-8 emulator written in C++ and compiled into WebAssembly
+            </p>
+    
+            <canvas 
+                class="emscripten" 
+                id="canvas" 
+                oncontextmenu="event.preventDefault()" 
+                tabindex=-1>
+            </canvas>
+
+            <div class="card">
+                <header class="card-header">
+                    <h2 class="card-heading">CONTROLS</h2>
+                </header>
+
+                <div class="card-body">
+                    <select id="rom-select">
+                        <option>Tetris</option>
+                    </select>
+
+                    <button id="stop-start-button" type="button">
+                        Stop
+                    </button>
+
+                    <button id="pause-resume-button" type="button">
+                        Pause
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="index.js"></script>
+        {{{ SCRIPT }}}
+    </body>
+</html>
