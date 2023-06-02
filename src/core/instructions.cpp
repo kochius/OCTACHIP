@@ -9,7 +9,7 @@ using namespace CHIP8;
  * 00E0 - Clear the display.
  */
 void instructions::CLS(Frame& frame) {
-    frame.clear();
+    frame.fill(false);
 }
 
 /**
@@ -268,8 +268,8 @@ void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers,
  */
 void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
     Registers& registers, Frame& frame) {
-    const int xPos = registers.v[opcode.x()] % Frame::WIDTH;
-    const int yPos = registers.v[opcode.y()] % Frame::HEIGHT;
+    const int xPos = registers.v[opcode.x()] % FRAME_WIDTH;
+    const int yPos = registers.v[opcode.y()] % FRAME_HEIGHT;
     const int height = opcode.nibble();
 
     registers.v[0xF] = 0;
@@ -285,10 +285,10 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
         const uint8_t spriteRow = memory[address];
 
         for (int col = 0; col < 8; col++) {
-            if (xPos + col >= 0 && xPos + col <= Frame::WIDTH &&
-                yPos + row >= 0 && yPos + row <= Frame::HEIGHT &&
+            if (xPos + col >= 0 && xPos + col <= FRAME_WIDTH &&
+                yPos + row >= 0 && yPos + row <= FRAME_HEIGHT &&
                 spriteRow & (0b10000000 >> col)) {
-                const int pixel = (xPos + col) + ((yPos + row) * Frame::WIDTH);
+                const int pixel = (xPos + col) + ((yPos + row) * FRAME_WIDTH);
 
                 if (frame[pixel]) {
                     registers.v[0xF] = 1;

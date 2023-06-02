@@ -55,9 +55,7 @@ void Interpreter::reset() {
     registers.soundTimer = 0;
 
     stack.fill(0);
-
-    frame.clear();
-
+    frame.fill(false);
     keypad.fill(false);
 }
 

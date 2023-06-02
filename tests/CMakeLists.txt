@@ -47,8 +47,6 @@ target_sources(${TESTS_EXECUTABLE}
         instructions/load_instructions.cpp
         instructions/misc_instructions.cpp
         mocks/mock_random.hpp
-        ${PROJECT_SRC_DIR}/core/frame.hpp
-        ${PROJECT_SRC_DIR}/core/frame.cpp
         ${PROJECT_SRC_DIR}/core/instructions.hpp
         ${PROJECT_SRC_DIR}/core/instructions.cpp
         ${PROJECT_SRC_DIR}/core/opcode.hpp

@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include "mocks/mock_random.hpp"
-#include "core/frame.hpp"
 #include "core/types.hpp"
 
 namespace CHIP8 {

@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <filesystem>
 
-#include "core/frame.hpp"
 #include "core/random.hpp"
 #include "core/types.hpp"
 
