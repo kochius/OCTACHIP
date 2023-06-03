@@ -60,14 +60,17 @@ if(EMSCRIPTEN)
     target_link_options(${CHIP8_EXECUTABLE}
         PRIVATE
             -sUSE_SDL=2
+            -sEXPORTED_FUNCTIONS=_main,_stop,_pause,_resume
+            -sEXPORTED_RUNTIME_METHODS=ccall
             --preload-file ../../roms
             --shell-file ${PROJECT_WEB_DIR}/template.html
     )
 
     target_sources(${CHIP8_EXECUTABLE}
         PRIVATE
-            wasm_main.cpp
+            wasm_emulator.cpp
             wasm_emulator.hpp
+            wasm_main.cpp
     )
 else()
     target_link_libraries(${CHIP8_EXECUTABLE}
@@ -78,8 +81,8 @@ else()
 
     target_sources(${CHIP8_EXECUTABLE}
         PRIVATE
-            main.cpp
             emulator.cpp
             emulator.hpp
+            main.cpp
     )
 endif()
