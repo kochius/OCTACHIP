@@ -1,20 +1,34 @@
 #pragma once
 
-#include "core/frame.hpp"
+#include <chrono>
+#include <filesystem>
+
 #include "core/interpreter.hpp"
 #include "io/input.hpp"
 #include "io/renderer.hpp"
 
 namespace CHIP8 {
 
-struct Emulator {
-    static constexpr int INTSTRUCTIONS_PER_UPDATE = 10;
+class Emulator {
+public:
+    Emulator(const int windowScale, const int emulationSpeed);
+    void reset();
+    void refreshUpdateTimer();
+    void loadRom(const std::filesystem::path& romPath);
+    void update();
+private:
     static constexpr double UPDATES_PER_SECOND = 60.0;
-    static constexpr double DELTA_TIME = 1.0 / UPDATES_PER_SECOND;
+    static constexpr double UPDATE_INTERVAL = 1.0 / UPDATES_PER_SECOND;
 
-    Interpreter interpreter{};
-    Input input{};
-    Renderer renderer{Frame::WIDTH, Frame::HEIGHT, 10, "CHIP-8 Emulator"};
+    std::chrono::high_resolution_clock::time_point lastUpdateTime;
+    double accumulator;
+    int instructionsPerUpdate;
+
+    Interpreter interpreter;
+    Input input;
+    Renderer renderer;
+
+    double getDeltaTime();
 };
 
 }
