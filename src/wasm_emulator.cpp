@@ -3,10 +3,11 @@
 
 using namespace CHIP8;
 
-Emulator::Emulator(const int windowScale, const int emulationSpeed) : 
+Emulator::Emulator(const int windowScale, const int instructionsPerSecond) : 
     lastUpdateTime{},
     accumulator{},
-    instructionsPerUpdate{static_cast<int>(emulationSpeed / UPDATES_PER_SECOND)},
+    instructionsPerUpdate{static_cast<int>(instructionsPerSecond / 
+        UPDATES_PER_SECOND)},
     interpreter{},
     input{},
     renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "CHIP-8 Emulator"} {}
@@ -23,6 +24,11 @@ void Emulator::refreshUpdateTimer() {
 
 void Emulator::loadRom(const std::filesystem::path& romPath) {
     interpreter.loadRom(romPath);
+}
+
+void Emulator::setSpeed(const int instructionsPerSecond) {
+    instructionsPerUpdate = static_cast<int>(instructionsPerSecond / 
+        UPDATES_PER_SECOND);
 }
 
 void Emulator::update() {

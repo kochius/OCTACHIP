@@ -11,10 +11,11 @@ namespace CHIP8 {
 
 class Emulator {
 public:
-    Emulator(const int windowScale, const int emulationSpeed);
+    Emulator(const int windowScale, const int instructionsPerSecond);
     void reset();
     void refreshUpdateTimer();
     void loadRom(const std::filesystem::path& romPath);
+    void setSpeed(const int instructionsPerSecond);
     void update();
 private:
     static constexpr double UPDATES_PER_SECOND = 60.0;
