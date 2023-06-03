@@ -60,7 +60,7 @@ if(EMSCRIPTEN)
     target_link_options(${CHIP8_EXECUTABLE}
         PRIVATE
             -sUSE_SDL=2
-            -sEXPORTED_FUNCTIONS=_main,_stop,_pause,_resume
+            -sEXPORTED_FUNCTIONS=_main,_loadRom,_setSpeed,_stop,_pause,_resume
             -sEXPORTED_RUNTIME_METHODS=ccall
             --preload-file ../../roms
             --shell-file ${PROJECT_WEB_DIR}/template.html

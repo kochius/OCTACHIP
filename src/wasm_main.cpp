@@ -7,8 +7,13 @@ static constexpr int defaultEmulationSpeed = 700;
 
 CHIP8::Emulator chip8{defaultWindowScale, defaultEmulationSpeed};
 
-void loadRom(const char* romPath) {
+extern "C" void loadRom(const char* romPath) {
+    chip8.reset();
     chip8.loadRom(romPath);
+}
+
+extern "C" void setSpeed(const int emulationSpeed) {
+    chip8.setSpeed(emulationSpeed);
 }
 
 extern "C" void stop() {
@@ -31,9 +36,6 @@ void mainLoop() {
 
 extern "C" int main() {
     chip8.refreshUpdateTimer();
-
-    const char* romPath = "roms/tetris.ch8";
-    chip8.loadRom(romPath);
     emscripten_set_main_loop(mainLoop, 0, 0);
 
     return EXIT_SUCCESS;

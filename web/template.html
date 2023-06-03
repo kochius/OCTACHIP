@@ -29,19 +29,28 @@
                 </header>
 
                 <div class="card-body">
-                    <select id="rom-select">
-                        <option>Tetris</option>
-                    </select>
+                    <select id="rom-select"></select>
 
-                    <button id="stop-start-button" type="button">
-                        Stop
+                    <button id="start-stop-button" type="button">
+                        Start
                     </button>
 
-                    <button id="pause-resume-button" type="button">
+                    <button id="pause-resume-button" type="button" disabled>
                         Pause
                     </button>
                 </div>
             </div>
+
+            <div class="card">
+                <header class="card-header">
+                    <h2 class="card-heading">ABOUT THIS ROM</h2>
+                </header>
+
+                <div class="card-body">
+                    <p id="rom-description"></p>
+                </div>
+            </div>
+
         </div>
         <script type="text/javascript" src="index.js"></script>
         {{{ SCRIPT }}}
