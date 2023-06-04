@@ -54,16 +54,26 @@ if(EMSCRIPTEN)
     
     target_compile_options(${CHIP8_EXECUTABLE}
         PRIVATE
-            -sUSE_SDL=2
+            "SHELL:-s USE_SDL=2"
     )
 
     target_link_options(${CHIP8_EXECUTABLE}
         PRIVATE
-            -sUSE_SDL=2
-            -sEXPORTED_FUNCTIONS=_main,_loadRom,_setSpeed,_stop,_pause,_resume
-            -sEXPORTED_RUNTIME_METHODS=ccall
-            --preload-file ../../roms
-            --shell-file ${PROJECT_WEB_DIR}/template.html
+            "SHELL:-s USE_SDL=2"
+            "SHELL:-s EXPORTED_FUNCTIONS='_main,\
+                                          _loadRom,\
+                                          _setSpeed,\
+                                          _stop,_pause,\
+                                          _resume,\
+                                          _getRegisterValue,\
+                                          _getProgramCounterValue,\
+                                          _getIndexRegisterValue,\
+                                          _getStackPointerValue,\
+                                          _getDelayTimerValue,\
+                                          _getSoundTimerValue'"
+            "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
+            "SHELL:--preload-file ../../roms"
+            "SHELL:--shell-file ${PROJECT_WEB_DIR}/template.html"
     )
 
     target_sources(${CHIP8_EXECUTABLE}

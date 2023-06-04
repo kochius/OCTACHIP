@@ -12,13 +12,20 @@ namespace CHIP8 {
 class Interpreter {
 public:
     Interpreter();
+
     void reset();
     void loadRom(const std::filesystem::path& romPath);
     void updateTimers();
-    bool soundTimerOn() const;
-    const Frame& getFrame() const;
     void setKey(const int key, const bool isPressed);
     void tick();
+    
+    uint8_t getRegisterValue(const int index) const;
+    uint16_t getProgramCounterValue() const;
+    uint16_t getIndexRegisterValue() const;
+    uint8_t getStackPointerValue() const;
+    uint8_t getDelayTimerValue() const;
+    uint8_t getSoundTimerValue() const;
+    const Frame& getFrame() const;
 private:
     static constexpr uint16_t PROG_START_ADDRESS = 0x200;
     static constexpr uint16_t FONT_START_ADDRESS = 0x050;
