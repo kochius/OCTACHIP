@@ -1,14 +1,14 @@
 #include <chrono>
 
 #include "emulator.hpp"
-#include "core/frame.hpp"
+#include "core/types.hpp"
 
 using namespace CHIP8;
 
 Emulator::Emulator(const int windowScale) : 
     interpreter{},
     input{},
-    renderer{Frame::WIDTH, Frame::HEIGHT, windowScale, "CHIP-8"} {}
+    renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "CHIP-8"} {}
 
 void Emulator::loadRom(const std::filesystem::path& romPath) {
     interpreter.loadRom(romPath);

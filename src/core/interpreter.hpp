@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <filesystem>
 
-#include "core/frame.hpp"
 #include "core/random.hpp"
 #include "core/types.hpp"
 
@@ -13,6 +12,7 @@ namespace CHIP8 {
 class Interpreter {
 public:
     Interpreter();
+    void reset();
     void loadRom(const std::filesystem::path& romPath);
     void updateTimers();
     bool soundTimerOn() const;

@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "core/frame.hpp"
 #include "core/opcode.hpp"
 #include "core/random.hpp"
 #include "core/types.hpp"

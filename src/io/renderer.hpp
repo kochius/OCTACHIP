@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <string>
 
-#include "core/frame.hpp"
+#include "core/types.hpp"
 
 namespace CHIP8 {
 

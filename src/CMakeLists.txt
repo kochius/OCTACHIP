@@ -30,19 +30,8 @@ target_compile_options(${CHIP8_EXECUTABLE}
 
 target_include_directories(${CHIP8_EXECUTABLE} PRIVATE ${PROJECT_SRC_DIR})
 
-target_link_libraries(${CHIP8_EXECUTABLE}
-    PRIVATE
-        SDL2-static
-        cxxopts
-)
-
 target_sources(${CHIP8_EXECUTABLE}
     PRIVATE
-        main.cpp
-        emulator.cpp
-        emulator.hpp
-        core/frame.cpp
-        core/frame.hpp
         core/instructions.cpp
         core/instructions.hpp
         core/interpreter.cpp
@@ -56,3 +45,44 @@ target_sources(${CHIP8_EXECUTABLE}
         io/renderer.cpp
         io/renderer.hpp
 )
+
+if(EMSCRIPTEN)
+    set_target_properties(${CHIP8_EXECUTABLE}
+        PROPERTIES
+            SUFFIX ".html"
+    )
+    
+    target_compile_options(${CHIP8_EXECUTABLE}
+        PRIVATE
+            -sUSE_SDL=2
+    )
+
+    target_link_options(${CHIP8_EXECUTABLE}
+        PRIVATE
+            -sUSE_SDL=2
+            -sEXPORTED_FUNCTIONS=_main,_loadRom,_setSpeed,_stop,_pause,_resume
+            -sEXPORTED_RUNTIME_METHODS=ccall
+            --preload-file ../../roms
+            --shell-file ${PROJECT_WEB_DIR}/template.html
+    )
+
+    target_sources(${CHIP8_EXECUTABLE}
+        PRIVATE
+            wasm_emulator.cpp
+            wasm_emulator.hpp
+            wasm_main.cpp
+    )
+else()
+    target_link_libraries(${CHIP8_EXECUTABLE}
+        PRIVATE
+            SDL2-static
+            cxxopts
+    )
+
+    target_sources(${CHIP8_EXECUTABLE}
+        PRIVATE
+            emulator.cpp
+            emulator.hpp
+            main.cpp
+    )
+endif()

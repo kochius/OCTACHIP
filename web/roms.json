@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Space Invaders",
+        "filename": "space_invaders.ch8",
+        "description": "Space Invaders, by David Winter\n\nQ - Move left\nE - Move right\nW - Start/Shoot",
+        "speed": 900
+    },
+    {
+        "title": "Tetris",
+        "filename": "tetris.ch8",
+        "description": "Tetris (1991), by Fran Dachille\n\nW - Move left\nE - Move right\nQ - Rotate left\nA - Fast drop",
+        "speed": 700
+    }
+]

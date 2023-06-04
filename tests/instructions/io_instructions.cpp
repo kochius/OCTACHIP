@@ -17,7 +17,7 @@ TEST_F(InstructionTest, CLS_ClearsFrame) {
     instructions::CLS(frame);
 
     // CLS should turn off all pixels
-    for (int i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
+    for (int i = 0; i < FRAME_WIDTH * FRAME_HEIGHT; i++) {
         EXPECT_EQ(false, frame[i]);
     }
 }
@@ -49,7 +49,7 @@ TEST_F(InstructionTest,
     // DRW_VX_VY_NIBBLE should draw the sprite from memory onto the frame
     for (unsigned int row = 0; row < sprite.size(); row++) {
         for (unsigned int col = 0; col < sprite.front().size(); col++) {
-            int pixelLoc = Frame::WIDTH * row + col;
+            int pixelLoc = FRAME_WIDTH * row + col;
             EXPECT_EQ(sprite[row][col], frame[pixelLoc]);
         }
     }
@@ -86,7 +86,7 @@ TEST_F(InstructionTest,
     instructions::DRW_VX_VY_NIBBLE(opcode, memory, registers, frame);
 
     // The second call to DRW_VX_VY_NIBBLE should clear the frame
-    for (int i = 0; i < Frame::WIDTH * Frame::HEIGHT; i++) {
+    for (int i = 0; i < FRAME_WIDTH * FRAME_HEIGHT; i++) {
         EXPECT_EQ(false, frame[i]);
     }
     
