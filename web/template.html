@@ -5,13 +5,13 @@
         <title>CHIP-8 Emulator</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="reset.css">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div class="site-content">
-            <h1 class="site-title">CHIP-8 EMULATOR</h1>
+            <h1 class="site-title">CHIP-8 Emulator</h1>
             <p class="site-description">
                 A CHIP-8 emulator written in C++ and compiled into WebAssembly
             </p>
@@ -25,34 +25,38 @@
 
             <div class="card">
                 <header class="card-header">
-                    <h2 class="card-heading">CONTROLS</h2>
+                    <h2 class="card-heading">Controls</h2>
                 </header>
 
                 <div class="card-body">
-                    <select id="rom-select"></select>
+                    <div class="select-controls">
+                        <label for="rom-select">Select a ROM:</label>
+                        <select id="rom-select"></select>
+                    </div>
 
-                    <button id="start-stop-button" type="button">
-                        Start
-                    </button>
+                    <div class="button-controls">
+                        <button id="start-stop-button" type="button">
+                            Start
+                        </button>
 
-                    <button id="pause-resume-button" type="button" disabled>
-                        Pause
-                    </button>
+                        <button id="pause-resume-button" type="button" disabled>
+                            Pause
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
                 <header class="card-header">
-                    <h2 class="card-heading">ABOUT THIS ROM</h2>
+                    <h2 class="card-heading">About This ROM</h2>
                 </header>
 
                 <div class="card-body">
                     <p id="rom-description"></p>
                 </div>
             </div>
-
         </div>
-        <script type="text/javascript" src="index.js"></script>
+        <script src="index.js"></script>
         {{{ SCRIPT }}}
     </body>
 </html>

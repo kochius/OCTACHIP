@@ -8,11 +8,6 @@
     margin: 0;
 }
 
-/* Allow percentage-based heights in the application */
-html, body {
-    height: 100%;
-}
-
 /* Add accessible line-height and improve text rendering */
 body {
     line-height: 1.5;
