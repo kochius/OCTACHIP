@@ -3,7 +3,7 @@
         "title": "Space Invaders",
         "filename": "space_invaders.ch8",
         "description": "Space Invaders, by David Winter\n\nQ - Move left\nE - Move right\nW - Start/Shoot",
-        "speed": 2000
+        "speed": 900
     },
     {
         "title": "Tetris",
