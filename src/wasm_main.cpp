@@ -54,6 +54,10 @@ extern "C" uint8_t getSoundTimerValue() {
     return chip8.getSoundTimerValue();
 }
 
+extern "C" uint16_t getStackValue(const int index) {
+    return chip8.getStackValue(index);
+}
+
 void mainLoop() {
     chip8.update();
 }

@@ -25,6 +25,7 @@ public:
     uint8_t getStackPointerValue() const;
     uint8_t getDelayTimerValue() const;
     uint8_t getSoundTimerValue() const;
+    uint16_t getStackValue(const int index) const;
     const Frame& getFrame() const;
 private:
     static constexpr uint16_t PROG_START_ADDRESS = 0x200;

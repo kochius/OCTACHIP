@@ -25,6 +25,7 @@ public:
     uint8_t getStackPointerValue() const;
     uint8_t getDelayTimerValue() const;
     uint8_t getSoundTimerValue() const;
+    uint16_t getStackValue(const int index) const;
 private:
     static constexpr double UPDATES_PER_SECOND = 60.0;
     static constexpr double UPDATE_INTERVAL = 1.0 / UPDATES_PER_SECOND;

@@ -170,7 +170,7 @@ void Interpreter::tick() {
 }
 
 uint8_t Interpreter::getRegisterValue(const int index) const {
-    if (index < 0x0 || index > 0xF) {
+    if (index < 0 || index >= Registers::V_REG_COUNT) {
         throw std::out_of_range("Invalid register index: " + 
             std::to_string(index));
     }
@@ -195,6 +195,14 @@ uint8_t Interpreter::getDelayTimerValue() const {
 
 uint8_t Interpreter::getSoundTimerValue() const {
     return registers.soundTimer;
+}
+
+uint16_t Interpreter::getStackValue(const int index) const {
+    if (index < 0 || index >= STACK_SIZE) {
+        throw std::out_of_range("Invalid stack index: " + 
+            std::to_string(index));
+    }
+    return stack[index];
 }
 
 const Frame& Interpreter::getFrame() const {

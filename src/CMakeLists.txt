@@ -70,7 +70,8 @@ if(EMSCRIPTEN)
                                           _getIndexRegisterValue,\
                                           _getStackPointerValue,\
                                           _getDelayTimerValue,\
-                                          _getSoundTimerValue'"
+                                          _getSoundTimerValue,\
+                                          _getStackValue'"
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
             "SHELL:--shell-file ${PROJECT_WEB_DIR}/template.html"

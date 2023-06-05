@@ -82,6 +82,10 @@ uint8_t Emulator::getSoundTimerValue() const {
     return interpreter.getSoundTimerValue();
 }
 
+uint16_t Emulator::getStackValue(const int index) const {
+    return interpreter.getStackValue(index);
+}
+
 double Emulator::getDeltaTime() {
     const auto now = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double> deltaTime = now - lastUpdateTime;
