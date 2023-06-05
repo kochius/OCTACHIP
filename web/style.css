@@ -5,6 +5,8 @@
     --secondary-accent-color: #282828;
     --button-hover-color: #3D3D3D;
     --button-active-color: #474747;
+
+    font-size: 62.5%;
 }
 
 body {
@@ -17,14 +19,14 @@ body {
     padding: 0 20px;
     max-width: 960px;
     font-family: "Azeret Mono", "Courier New", serif;
-    font-size: 1rem;
+    font-size: 1.6rem;
     font-weight: 400;
 }
 
 button,
 select {
     border: none;
-    padding: 5px;
+    padding: 5px 10px;
     background-color: var(--secondary-accent-color);
     color: var(--font-color);
 }
@@ -48,6 +50,12 @@ select:disabled {
     cursor: auto;
 }
 
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px dashed var(--primary-accent-color);
+}
+
 .site-title,
 .site-description,
 .card-heading {
@@ -55,20 +63,20 @@ select:disabled {
 }
 
 .site-title {
-    margin-top: 25px;
+    margin-top: 20px;
     margin-bottom: 10px;
-    font-size: 2rem;
+    font-size: 3.2rem;
     font-weight: 400;
 }
 
 .card-heading {
-    padding: 5px;
-    font-size: 1rem;
+    padding: 5px 10px;
+    font-size: 1.6rem;
     font-weight: 400;
 }
 
 .card {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     border: 1px solid var(--primary-accent-color);
 }
 
@@ -84,6 +92,7 @@ select:disabled {
 .select-controls,
 .button-controls {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
@@ -104,6 +113,19 @@ select:disabled {
     flex: 1 1 0;
 }
 
+.special-registers-list,
+.v-registers-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.register-output {
+    display: block;
+    padding: 5px 10px;
+    background-color: var(--secondary-accent-color);
+}
+
 .emscripten {
     margin-left: auto;
     margin-right: auto;
@@ -111,9 +133,9 @@ select:disabled {
     display: block;
 }
 
-.emscripten-border {
-    margin-top: 25px;
-    margin-bottom: 25px;
+.display-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
     border: 1px solid var(--primary-accent-color);
 }
 

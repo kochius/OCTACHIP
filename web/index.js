@@ -100,6 +100,49 @@ const setRomDescription = (description) => {
     });
 };
 
+const hexFormat = (value, numDigits) => {
+    return `0x${value.toString(16).toUpperCase().padStart(numDigits, "0")}`;
+}
+
+const updateMonitoringInfo = () => {
+    const pcOutput = document.querySelector("#pc-output");
+    const iOutput = document.querySelector("#i-output");
+    const spOutput = document.querySelector("#sp-output");
+    const dtOutput = document.querySelector("#dt-output");
+    const stOutput = document.querySelector("#st-output");
+    
+    const pcValue = Module.ccall("getProgramCounterValue", "number", [], []);
+    const iValue = Module.ccall("getIndexRegisterValue", "number", [], []);
+    const spValue = Module.ccall("getStackPointerValue", "number", [], []);
+    const dtValue = Module.ccall("getDelayTimerValue", "number", [], []);
+    const stValue = Module.ccall("getSoundTimerValue", "number", [], []);
+
+    pcOutput.textContent = hexFormat(pcValue, 4);
+    iOutput.textContent = hexFormat(iValue, 4);
+    spOutput.textContent = hexFormat(spValue, 2);
+    dtOutput.textContent = hexFormat(dtValue, 2);
+    stOutput.textContent = hexFormat(stValue, 2);
+
+    const vRegCount = 16;
+    for (let i = 0; i < vRegCount; i++) {
+        const hexIndex = i.toString(16).toUpperCase();
+        const vRegOutput = document.querySelector(`#v${hexIndex}-output`);
+        const vRegValue = Module.ccall("getRegisterValue", "number", ["number"], 
+            [i]);
+        vRegOutput.textContent = hexFormat(vRegValue, 2);
+    }
+}
+
+const startMonitoring = () => {
+    updateMonitoringInfo();
+
+    if (!Module.running || Module.paused) {
+        return;
+    }
+
+    requestAnimationFrame(startMonitoring);
+}
+
 Module["onRuntimeInitialized"] = async () => {
     const roms = await fetchRomsMetadata();
 
@@ -123,22 +166,27 @@ Module["onRuntimeInitialized"] = async () => {
     startStopButton.addEventListener("click", () => {
         if (Module.running) {
             stopEmulator();
+            updateMonitoringInfo();
         }
         else {
             const selectedRom = roms[romSelector.value];
             startEmulator(selectedRom);
+            startMonitoring();
         }
     });
 
     pauseResumeButton.addEventListener("click", () => {
         if (Module.paused) {
             resumeEmulator();
+            startMonitoring();
         }
         else {
             pauseEmulator();
+            updateMonitoringInfo();
         }
     });
 
     const initialRom = roms[romSelector.value];
     setRomDescription(initialRom.description);
+    updateMonitoringInfo();
 };
