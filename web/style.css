@@ -82,39 +82,37 @@ hr {
 
 .card-header {
     background-color: var(--primary-accent-color);
-    color: var(--font-color);
 }
 
 .card-body {
     padding: 10px;
 }
 
-.select-controls,
-.button-controls {
+#select-controls,
+#button-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
 
-.select-controls {
+#select-controls {
     margin-bottom: 10px;
 }
 
-.select-controls > label {
+#select-controls > label {
     flex: none;
 }
 
-.select-controls > select {
+#select-controls > select {
     flex: auto;
 }
 
-.button-controls > button {
+#button-controls > button {
     flex: 1 1 0;
 }
 
-.special-registers-list,
-.v-registers-list {
+.registers-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 10px;

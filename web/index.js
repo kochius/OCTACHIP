@@ -20,7 +20,7 @@ const pauseResumeButton = document.querySelector("#pause-resume-button");
 const romDescription = document.querySelector("#rom-description");
 
 const constructVRegList = () => {
-    const vRegList = document.querySelector(".v-registers-list");
+    const vRegList = document.querySelector("#v-registers-list");
     const vRegCount = Module.ccall("getVRegCount", "number", [], []);
 
     for (let i = 0; i < vRegCount; i++) {

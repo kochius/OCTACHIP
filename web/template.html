@@ -33,12 +33,12 @@
                 </header>
 
                 <div class="card-body">
-                    <div class="select-controls">
+                    <div id="select-controls">
                         <label for="rom-select">Select a ROM:</label>
                         <select id="rom-select"></select>
                     </div>
 
-                    <div class="button-controls">
+                    <div id="button-controls">
                         <button id="start-stop-button" type="button">
                             Start
                         </button>
@@ -66,7 +66,7 @@
                 </header>
 
                 <div class="card-body">
-                    <ul class="special-registers-list">
+                    <ul class="registers-list" id="special-registers-list">
                         <li class="register-view">
                             <label for="pc-output">PC</label>
                             <span class="register-output" id="pc-output"></span>
@@ -91,7 +91,7 @@
 
                     <hr>
 
-                    <ol class="v-registers-list"></ol>
+                    <ol class="registers-list" id="v-registers-list"></ol>
                 </div>
             </section>
         </div>
