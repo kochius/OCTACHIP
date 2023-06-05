@@ -19,6 +19,33 @@ const startStopButton = document.querySelector("#start-stop-button");
 const pauseResumeButton = document.querySelector("#pause-resume-button");
 const romDescription = document.querySelector("#rom-description");
 
+const constructVRegList = () => {
+    const vRegList = document.querySelector(".v-registers-list");
+    const vRegCount = Module.ccall("getVRegCount", "number", [], []);
+
+    for (let i = 0; i < vRegCount; i++) {
+        console.log(i);
+        const hexIndex = i.toString(16).toUpperCase();
+        const registerId = `v${hexIndex}-output`;
+
+        const registerView = document.createElement("li");
+        registerView.classList.add("register-view");
+
+        const registerLabel = document.createElement("label");
+        registerLabel.htmlFor = registerId;
+        registerLabel.textContent = `V${hexIndex}`;
+
+        const registerOutput = document.createElement("span");
+        registerOutput.classList.add("register-output");
+        registerOutput.id = registerId;
+
+        registerView.appendChild(registerLabel);
+        registerView.appendChild(registerOutput);
+        
+        vRegList.appendChild(registerView);
+    }
+}
+
 const fetchRomsMetadata = async () => {
     try {
         const response = await fetch("roms.json");
@@ -123,7 +150,7 @@ const updateMonitoringInfo = () => {
     dtOutput.textContent = hexFormat(dtValue, 2);
     stOutput.textContent = hexFormat(stValue, 2);
 
-    const vRegCount = 16;
+    const vRegCount = Module.ccall("getVRegCount", "number", [], []);
     for (let i = 0; i < vRegCount; i++) {
         const hexIndex = i.toString(16).toUpperCase();
         const vRegOutput = document.querySelector(`#v${hexIndex}-output`);
@@ -144,6 +171,8 @@ const startMonitoring = () => {
 }
 
 Module["onRuntimeInitialized"] = async () => {
+    constructVRegList();
+
     const roms = await fetchRomsMetadata();
 
     roms.forEach((rom, index) => {
