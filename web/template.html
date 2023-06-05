@@ -5,7 +5,7 @@
         <title>CHIP-8 Emulator</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="reset.css">
         <link rel="stylesheet" href="style.css">
     </head>
@@ -15,13 +15,15 @@
             <p class="site-description">
                 A CHIP-8 emulator written in C++ and compiled into WebAssembly
             </p>
-    
-            <canvas 
-                class="emscripten" 
-                id="canvas" 
-                oncontextmenu="event.preventDefault()" 
-                tabindex=-1>
-            </canvas>
+            
+            <div class="emscripten-border">
+                <canvas 
+                    class="emscripten" 
+                    id="canvas" 
+                    oncontextmenu="event.preventDefault()" 
+                    tabindex=-1>
+                </canvas>
+            </div>
 
             <div class="card">
                 <header class="card-header">

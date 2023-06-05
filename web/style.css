@@ -1,14 +1,10 @@
 :root {
-    --background-color: #222225;
-    --font-color: #E8E9ED;
-    --inverted-background-color: #E8E9ED;
-    --inverted-font-color: #222225;
-    --primary-accent-color: #62C4FF;
-    --secondary-accent-color: #A3ABBA;
-    --button-disabled-background-color: #808080;
-    --button-disabled-font-color: #404040;
-    --button-hover-color: #C8C9CC;
-    --button-active-color: #BBBCBF;
+    --background-color: #0F0F0F;
+    --font-color: #FFFFFF;
+    --primary-accent-color: #606060;
+    --secondary-accent-color: #282828;
+    --button-hover-color: #3D3D3D;
+    --button-active-color: #474747;
 }
 
 body {
@@ -20,7 +16,7 @@ body {
     margin: 0 auto;
     padding: 0 20px;
     max-width: 960px;
-    font-family: "Azeret Mono", "Courier New", sans-serif;
+    font-family: "Azeret Mono", "Courier New", serif;
     font-size: 1rem;
     font-weight: 400;
 }
@@ -29,28 +25,27 @@ button,
 select {
     border: none;
     padding: 5px;
-    background-color: var(--inverted-background-color);
-    color: var(--inverted-font-color);
+    background-color: var(--secondary-accent-color);
+    color: var(--font-color);
 }
 
-button:hover,
-select:hover {
+button:hover:enabled,
+select:hover:enabled {
     cursor: pointer;
 }
 
-button:hover {
+button:hover:enabled {
     background-color: var(--button-hover-color);
 }
 
-button:active {
+button:active:enabled {
     background-color: var(--button-active-color);
 }
 
 button:disabled,
 select:disabled {
+    opacity: 0.5;
     cursor: auto;
-    background-color: var(--button-disabled-background-color);
-    color: var(--button-disabled-font-color);
 }
 
 .site-title,
@@ -59,30 +54,27 @@ select:disabled {
     text-align: center;
 }
 
-.site-title,
-.card-heading {
-    font-weight: 700;
-}
-
 .site-title {
-    font-size: 2rem;
-    margin-top: 20px;
+    margin-top: 25px;
     margin-bottom: 10px;
-    color: var(--primary-accent-color);
+    font-size: 2rem;
+    font-weight: 400;
 }
 
 .card-heading {
-    font-size: 1.5rem;
+    padding: 5px;
+    font-size: 1rem;
+    font-weight: 400;
 }
 
 .card {
-    margin-bottom: 20px;
-    border: 2px solid var(--secondary-accent-color);
+    margin-bottom: 25px;
+    border: 1px solid var(--primary-accent-color);
 }
 
 .card-header {
-    background-color: var(--secondary-accent-color);
-    color: var(--inverted-font-color);
+    background-color: var(--primary-accent-color);
+    color: var(--font-color);
 }
 
 .card-body {
@@ -119,10 +111,16 @@ select:disabled {
     display: block;
 }
 
-/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+.emscripten-border {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border: 1px solid var(--primary-accent-color);
+}
+
+/* the canvas *must not* have any border or padding, or mouse coords will be  */
+/* wrong */
 canvas.emscripten {
-    margin-top: 20px;
-    margin-bottom: 20px;
     border: 0px none;
+    width: 960px;
     background-color: black;
 }
