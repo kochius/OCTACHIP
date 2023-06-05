@@ -30,6 +30,14 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
+extern "C" int getVRegCount() {
+    return chip8.getVRegCount();
+}
+
+extern "C" int getStackSize() {
+    return chip8.getStackSize();
+}
+
 extern "C" uint8_t getRegisterValue(const int index) {
     return chip8.getRegisterValue(index);
 }

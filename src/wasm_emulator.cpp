@@ -58,6 +58,14 @@ void Emulator::update() {
     renderer.drawFrame(interpreter.getFrame());
 }
 
+int Emulator::getVRegCount() const {
+    return Registers::V_REG_COUNT;
+}
+
+int Emulator::getStackSize() const {
+    return STACK_SIZE;
+}
+
 uint8_t Emulator::getRegisterValue(const int index) const {
     return interpreter.getRegisterValue(index);
 }

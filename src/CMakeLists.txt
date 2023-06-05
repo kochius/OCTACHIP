@@ -65,6 +65,8 @@ if(EMSCRIPTEN)
                                           _setSpeed,\
                                           _stop,_pause,\
                                           _resume,\
+                                          _getVRegCount,\
+                                          _getStackSize,\
                                           _getRegisterValue,\
                                           _getProgramCounterValue,\
                                           _getIndexRegisterValue,\
