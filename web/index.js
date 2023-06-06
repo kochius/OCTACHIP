@@ -24,12 +24,8 @@ const constructVRegList = () => {
     const vRegCount = Module.ccall("getVRegCount", "number", [], []);
 
     for (let i = 0; i < vRegCount; i++) {
-        console.log(i);
         const hexIndex = i.toString(16).toUpperCase();
         const registerId = `v${hexIndex}-output`;
-
-        const registerView = document.createElement("li");
-        registerView.classList.add("register-view");
 
         const registerLabel = document.createElement("label");
         registerLabel.htmlFor = registerId;
@@ -39,12 +35,34 @@ const constructVRegList = () => {
         registerOutput.classList.add("register-output");
         registerOutput.id = registerId;
 
+        const registerView = document.createElement("li");
+        registerView.classList.add("register-view");
         registerView.appendChild(registerLabel);
         registerView.appendChild(registerOutput);
         
         vRegList.appendChild(registerView);
     }
-}
+};
+
+const constructStackTable = () => {
+    const stackTableBody = document.querySelector("#stack-table > tbody");
+    const stackSize = Module.ccall("getStackSize", "number", [], []);
+
+    for (let i = 0; i < stackSize; i++) {
+        const stackLevelCell = document.createElement("th");
+        stackLevelCell.id = `stack-level-${i}`;
+        stackLevelCell.textContent =  i.toString();
+
+        const stackOutputCell = document.createElement("td");
+        stackOutputCell.id = `stack-output-${i}`;
+
+        const stackRow = document.createElement("tr");
+        stackRow.appendChild(stackLevelCell);
+        stackRow.appendChild(stackOutputCell);
+
+        stackTableBody.append(stackRow);
+    }
+};
 
 const fetchRomsMetadata = async () => {
     try {
@@ -158,7 +176,23 @@ const updateMonitoringInfo = () => {
             [i]);
         vRegOutput.textContent = hexFormat(vRegValue, 2);
     }
-}
+
+    const stackSize = Module.ccall("getStackSize", "number", [], []);
+    for (let i = 0; i < stackSize; i++) {
+        const stackOutputCell = document.querySelector(`#stack-output-${i}`);
+        const stackValue = Module.ccall("getStackValue", "number", ["number"],
+            [i]);
+        stackOutputCell.textContent = hexFormat(stackValue, 4);
+    }
+
+    const previousStackTop = document.querySelector(".stack-top");
+    if (previousStackTop !== null) {
+        previousStackTop.classList.remove("stack-top");
+    }
+
+    const stackTop = document.querySelector(`#stack-level-${spValue}`);
+    stackTop.classList.add("stack-top");
+};
 
 const startMonitoring = () => {
     updateMonitoringInfo();
@@ -172,6 +206,7 @@ const startMonitoring = () => {
 
 Module["onRuntimeInitialized"] = async () => {
     constructVRegList();
+    constructStackTable();
 
     const roms = await fetchRomsMetadata();
 

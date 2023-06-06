@@ -3,6 +3,7 @@
     --font-color: #FFFFFF;
     --primary-accent-color: #606060;
     --secondary-accent-color: #282828;
+    --data-highlight-color: #FF0000;
     --button-hover-color: #3D3D3D;
     --button-active-color: #474747;
 
@@ -54,6 +55,23 @@ hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 1px dashed var(--primary-accent-color);
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid var(--primary-accent-color);
+}
+
+td, th {
+    padding: 5px 10px;
+}
+
+th {
+    text-align: center;
+    font-weight: 400;
 }
 
 .site-title,
@@ -122,6 +140,18 @@ hr {
     display: block;
     padding: 5px 10px;
     background-color: var(--secondary-accent-color);
+}
+
+#stack-table {
+    width: 100%;
+}
+
+#stack-level-col {
+    width: 25%;
+}
+
+.stack-top {
+    color: var(--data-highlight-color);
 }
 
 .emscripten {
