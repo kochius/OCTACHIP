@@ -1,123 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>CHIP-8 Emulator</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="reset.css">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="site-content">
-            <header>
-                <h1 class="site-title">CHIP-8 Emulator</h1>
-                <p class="site-description">
-                    A CHIP-8 emulator written in C++ and compiled into WebAssembly
-                </p>
-            </header>
 
-            <section class="display-container">
-                <canvas 
-                    class="emscripten" 
-                    id="canvas" 
-                    oncontextmenu="event.preventDefault()" 
-                    tabindex=-1>
-                </canvas>
-            </section>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHIP-8 Emulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+</head>
 
-            <section class="card">
-                <header class="card-header">
-                    <h2 class="card-heading">Controls</h2>
-                </header>
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <h1 class="page-title">CHIP-8 Emulator</h1>
+            <p class="page-description">
+                A CHIP-8 emulator written in C++ and compiled into WebAssembly
+            </p>
+            <hr>
+        </header>
 
-                <div class="card-body">
-                    <div id="select-controls">
-                        <label for="rom-select">Select a ROM:</label>
-                        <select id="rom-select"></select>
-                    </div>
-
-                    <div id="button-controls">
-                        <button id="start-stop-button" type="button">
-                            Start
-                        </button>
-
-                        <button id="pause-resume-button" type="button" disabled>
-                            Pause
-                        </button>
+        <div class="main-content">
+            <div class="main-grid">
+                <div id="display">
+                    <div class="display-border">
+                        <canvas id="canvas" class="emscripten" oncontextmenu="event.preventDefault()" tabindex=-1>
+                        </canvas>
                     </div>
                 </div>
-            </section>
 
-            <section class="card">
-                <header class="card-header">
-                    <h2 class="card-heading">About This ROM</h2>
-                </header>
+                <section id="controls-card" class="card">
+                    <header class="card-header">
+                        <h2 class="card-heading">Controls</h2>
+                    </header>
+                    <div class="card-body">
+                        <div id="select-controls" autocomplete="off">
+                            <label for="rom-select">Select a ROM:</label>
+                            <select id="rom-select"></select>
+                        </div>
+                        <div id="button-controls">
+                            <button id="start-stop-button" type="button" autocomplete="off">
+                                Start
+                            </button>
+                            <button id="pause-resume-button" type="button" autocomplete="off" disabled>
+                                Pause
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-                <div class="card-body">
-                    <p id="rom-description"></p>
-                </div>
-            </section>
+                <section id="about-rom-card" class="card">
+                    <header class="card-header">
+                        <h2 class="card-heading">About This ROM</h2>
+                    </header>
+                    <div class="card-body">
+                        <p id="rom-description"></p>
+                    </div>
+                </section>
 
-            <section class="card">
-                <header class="card-header">
-                    <h2 class="card-heading">Registers</h2>
-                </header>
+                <section id="registers-card" class="card">
+                    <header class="card-header">
+                        <h2 class="card-heading">Registers</h2>
+                    </header>
+                    <div class="card-body">
+                        <ul id="special-registers-list" class="registers-list">
+                            <li class="register-view">
+                                <label for="pc-output">PC</label>
+                                <span id="pc-output" class="register-output"></span>
+                            </li>
+                            <li class="register-view">
+                                <label for="i-output">I</label>
+                                <span id="i-output" class="register-output"></span>
+                            </li>
+                            <li class="register-view">
+                                <label for="sp-output">SP</label>
+                                <span id="sp-output" class="register-output"></span>
+                            </li>
+                            <li class="register-view">
+                                <label for="dt-output">DT</label>
+                                <span id="dt-output" class="register-output"></span>
+                            </li>
+                            <li class="register-view">
+                                <label for="st-output">ST</label>
+                                <span id="st-output" class="register-output"></span>
+                            </li>
+                        </ul>
+                        <hr>
+                        <ol id="v-registers-list" class="registers-list"></ol>
+                    </div>
+                </section>
 
-                <div class="card-body">
-                    <ul class="registers-list" id="special-registers-list">
-                        <li class="register-view">
-                            <label for="pc-output">PC</label>
-                            <span class="register-output" id="pc-output"></span>
-                        </li>
-                        <li class="register-view">
-                            <label for="i-output">I</label>
-                            <span class="register-output" id="i-output"></span>
-                        </li>
-                        <li class="register-view">
-                            <label for="sp-output">SP</label>
-                            <span class="register-output" id="sp-output"></span>
-                        </li>
-                        <li class="register-view">
-                            <label for="dt-output">DT</label>
-                            <span class="register-output" id="dt-output"></span>
-                        </li>
-                        <li class="register-view">
-                            <label for="st-output">ST</label>
-                            <span class="register-output" id="st-output"></span>
-                        </li>
-                    </ul>
-
-                    <hr>
-
-                    <ol class="registers-list" id="v-registers-list"></ol>
-                </div>
-            </section>
-
-            <section class="card">
-                <header class="card-header">
-                    <h2 class="card-heading">Stack</h2>
-                </header>
-
-                <div class="card-body">
-                    <table id="stack-table">
-                        <colgroup>
-                            <col id="stack-level-col">
-                            <col id="stack-address-col">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>Level</th>
-                                <th>Address</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </section>
+                <section id="stack-card" class="card">
+                    <header class="card-header">
+                        <h2 class="card-heading">Stack</h2>
+                    </header>
+                    <div class="card-body">
+                        <table id="stack-table">
+                            <colgroup>
+                                <col id="stack-level-col">
+                                <col id="stack-address-col">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Address</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </div>
-        <script src="index.js"></script>
-        {{{ SCRIPT }}}
-    </body>
+
+        <footer class="page-footer">
+            <hr>
+            <p class="page-footer-text">
+                Footer text
+            </p>
+        </footer>
+    </div>
+    <script src="index.js"></script>
+    {{{ SCRIPT }}}
+</body>
+
 </html>

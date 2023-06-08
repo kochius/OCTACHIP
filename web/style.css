@@ -1,4 +1,8 @@
+/* || Global variables and styles */
 :root {
+    --max-page-width: 1200px;
+    --global-space: 10px;
+
     --background-color: #0F0F0F;
     --font-color: #FFFFFF;
     --primary-accent-color: #606060;
@@ -13,21 +17,132 @@
 body {
     background-color: var(--background-color);
     color: var(--font-color);
-}
-
-.site-content {
-    margin: 0 auto;
-    padding: 0 20px;
-    max-width: 960px;
     font-family: "Azeret Mono", "Courier New", serif;
     font-size: 1.6rem;
     font-weight: 400;
 }
 
+/* || Page layout */
+.page-header {
+    padding-top: calc(2 * var(--global-space));
+    grid-area: page-header;
+}
+
+.main-content {
+    grid-area: main-content;
+}
+
+.page-footer {
+    grid-area: page-footer;
+    padding-bottom: calc(2 * var(--global-space));
+}
+
+.page-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "page-header"
+        "main-content"
+        "page-footer";
+    margin: 0 auto;
+    padding: 0 calc(2 * var(--global-space));
+    max-width: var(--max-page-width);
+    height: 100%;
+}
+
+/* Main grid layout */
+#display {
+    grid-area: display;
+}
+
+#controls-card {
+    grid-area: controls;
+}
+
+#about-rom-card {
+    grid-area: about-rom;
+    contain: size;
+}
+
+#registers-card {
+    grid-area: registers;
+}
+
+#stack-card {
+    grid-area: stack;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+        "display display about-rom"
+        "controls controls stack"
+        "registers registers stack";
+    gap: var(--global-space);
+}
+
+@media only screen and (min-width: 600px) and (max-width: 800px) {
+    #about-rom-card {
+        contain: revert;
+    }
+
+    .main-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            "display display"
+            "controls controls"
+            "about-rom about-rom"
+            "registers stack";
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #about-rom-card {
+        contain: revert;
+    }
+
+    .main-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            "display"
+            "controls"
+            "about-rom"
+            "registers"
+            "stack";
+    }
+}
+
+/* || General typography */
+.page-title,
+.page-description,
+.page-footer-text,
+.card-heading {
+    text-align: center;
+}
+
+.page-title {
+    margin-bottom: var(--global-space);
+    font-size: 3.2rem;
+    font-weight: 400;
+}
+
+/* || Horizontal rule */
+hr {
+    margin-top: calc(2 * var(--global-space));
+    margin-bottom: calc(2 * var(--global-space));
+    border: 1px dashed var(--primary-accent-color);
+}
+
+/* || Input elements */
 button,
 select {
     border: none;
-    padding: 5px 10px;
+    padding: calc(var(--global-space) / 2) var(--global-space);
     background-color: var(--secondary-accent-color);
     color: var(--font-color);
 }
@@ -51,22 +166,17 @@ select:disabled {
     cursor: auto;
 }
 
-hr {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: 1px dashed var(--primary-accent-color);
-}
-
+/* || Table */
 table {
     border-collapse: collapse;
 }
 
 table, td, th {
-    border: 1px solid var(--primary-accent-color);
+    border: 1px dashed var(--primary-accent-color);
 }
 
 td, th {
-    padding: 5px 10px;
+    padding: calc(var(--global-space) / 2) var(--global-space);
 }
 
 th {
@@ -74,27 +184,29 @@ th {
     font-weight: 400;
 }
 
-.site-title,
-.site-description,
-.card-heading {
-    text-align: center;
+/* || Display */
+.display-border {
+    border: 1px solid var(--primary-accent-color);
 }
 
-.site-title {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-size: 3.2rem;
-    font-weight: 400;
+.emscripten {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 0;
 }
 
-.card-heading {
-    padding: 5px 10px;
-    font-size: 1.6rem;
-    font-weight: 400;
+/* the canvas *must not* have any border or padding, or mouse coords will be  */
+/* wrong */
+canvas.emscripten {
+    border: 0px none;
+    background-color: black;
 }
 
+/* || Card */
 .card {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--primary-accent-color);
 }
 
@@ -102,16 +214,24 @@ th {
     background-color: var(--primary-accent-color);
 }
 
-.card-body {
-    padding: 10px;
+.card-heading {
+    padding: calc(var(--global-space) / 2) var(--global-space);
+    font-size: 1.6rem;
+    font-weight: 400;
 }
 
+.card-body {
+    padding: var(--global-space);
+    overflow: auto;
+}
+
+/* || Controls card */
 #select-controls,
 #button-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: var(--global-space);
 }
 
 #select-controls {
@@ -130,16 +250,23 @@ th {
     flex: 1 1 0;
 }
 
+/* || Registers card */
 .registers-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
+    gap: var(--global-space);
 }
 
 .register-output {
     display: block;
-    padding: 5px 10px;
+    padding: calc(var(--global-space) / 2) var(--global-space);
     background-color: var(--secondary-accent-color);
+}
+
+/* || Stack card */
+#stack-table {
+    border: none;
+    height: 100%;
 }
 
 #stack-table {
@@ -152,25 +279,4 @@ th {
 
 .stack-top {
     color: var(--data-highlight-color);
-}
-
-.emscripten {
-    margin-left: auto;
-    margin-right: auto;
-    padding-right: 0;
-    display: block;
-}
-
-.display-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--primary-accent-color);
-}
-
-/* the canvas *must not* have any border or padding, or mouse coords will be  */
-/* wrong */
-canvas.emscripten {
-    border: 0px none;
-    width: 960px;
-    background-color: black;
 }
