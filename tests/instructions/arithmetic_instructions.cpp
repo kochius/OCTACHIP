@@ -8,7 +8,7 @@
 
 using namespace CHIP8;
 
-TEST_F(InstructionTest, ADD_VX_BYTE_AddsByteToVx) {
+TEST_F(InstructionTest, ADD_VX_BYTE_NoCarry_AddsByteToVx) {
     const uint16_t x = 0x0;
     const uint8_t byte = 0x42;
     const Opcode opcode = 0x7000 | (x << 8) | byte;
@@ -21,6 +21,25 @@ TEST_F(InstructionTest, ADD_VX_BYTE_AddsByteToVx) {
     // ADD_VX_BYTE should add the specified byte to Vx and store the result in 
     // Vx
     EXPECT_EQ(vxPlusByte, registers.v[x]);
+}
+
+TEST_F(InstructionTest, ADD_VX_BYTE_Carry_AddsByteToVx) {
+    const uint16_t x = 0x0;
+    const uint8_t byte = 0xFF;
+    const Opcode opcode = 0x7000 | (x << 8) | byte;
+
+    registers.v[x] = 0xFF;
+    const uint8_t vxPlusByte = 0xFE;
+
+    ASSERT_EQ(0x00, registers.v[0xF]);
+
+    instructions::ADD_VX_BYTE(opcode, registers);
+
+    // ADD_VX_BYTE should add the specified byte to Vx and store the lower 8 
+    // bits of the result in Vx
+    // ADD_VX_BYTE should ignore carry and leave the carry flag as it is
+    EXPECT_EQ(vxPlusByte, registers.v[x]);
+    EXPECT_EQ(0x00, registers.v[0xF]);
 }
 
 TEST_F(InstructionTest, OR_VX_VY_OrsVxWithVy) {
