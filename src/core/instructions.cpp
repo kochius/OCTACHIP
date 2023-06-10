@@ -158,7 +158,7 @@ void instructions::XOR_VX_VY(const Opcode& opcode, Registers& registers) {
  */
 void instructions::ADD_VX_VY(const Opcode& opcode, Registers& registers) {
     const uint16_t sum = registers.v[opcode.x()] + registers.v[opcode.y()];
-    registers.v[opcode.x()] = sum & 0xFF;
+    registers.v[opcode.x()] = sum;
     registers.v[0xF] = sum > 0xFF ? 1 : 0;
 }
 
@@ -393,7 +393,7 @@ void instructions::ADD_I_VX(const Opcode& opcode, Registers& registers) {
  */
 void instructions::LD_F_VX(const Opcode& opcode, Registers& registers, 
     const uint16_t startAddress, const int spriteSize) {
-    const uint8_t digit = registers.v[opcode.x()] & 0x0F;
+    const uint8_t digit = registers.v[opcode.x()];
     registers.i = startAddress + spriteSize * digit;
 }
 
