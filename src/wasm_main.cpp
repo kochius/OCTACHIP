@@ -30,6 +30,42 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
+extern "C" int getVRegCount() {
+    return chip8.getVRegCount();
+}
+
+extern "C" int getStackSize() {
+    return chip8.getStackSize();
+}
+
+extern "C" uint8_t getRegisterValue(const int index) {
+    return chip8.getRegisterValue(index);
+}
+
+extern "C" uint16_t getProgramCounterValue() {
+    return chip8.getProgramCounterValue();
+}
+
+extern "C" uint16_t getIndexRegisterValue() {
+    return chip8.getIndexRegisterValue();
+}
+
+extern "C" uint8_t getStackPointerValue() {
+    return chip8.getStackPointerValue();
+}
+
+extern "C" uint8_t getDelayTimerValue() {
+    return chip8.getDelayTimerValue();
+}
+
+extern "C" uint8_t getSoundTimerValue() {
+    return chip8.getSoundTimerValue();
+}
+
+extern "C" uint16_t getStackValue(const int index) {
+    return chip8.getStackValue(index);
+}
+
 void mainLoop() {
     chip8.update();
 }

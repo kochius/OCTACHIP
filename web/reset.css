@@ -8,6 +8,11 @@
     margin: 0;
 }
 
+/* Allow percentage-based heights in the application */
+html, body {
+    height: 100%;
+}
+
 /* Add accessible line-height and improve text rendering */
 body {
     line-height: 1.5;
@@ -28,4 +33,11 @@ input, button, textarea, select {
 /* Avoid text overflows */
 p, h1, h2, h3, h4, h5, h6 {
     overflow-wrap: break-word;
+}
+
+/* Reset list formatting */
+ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }

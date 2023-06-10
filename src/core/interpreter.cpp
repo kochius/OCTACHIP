@@ -97,14 +97,6 @@ void Interpreter::updateTimers() {
     }
 }
 
-bool Interpreter::soundTimerOn() const {
-    return (registers.soundTimer > 0);
-}
-
-const Frame& Interpreter::getFrame() const {
-    return frame;
-}
-
 void Interpreter::setKey(const int key, const bool isPressed) {
     keypad[key] = isPressed;
 }
@@ -175,4 +167,44 @@ void Interpreter::tick() {
             }
         default: return instructions::ILLEGAL_OPCODE(opcode);
     }
+}
+
+uint8_t Interpreter::getRegisterValue(const int index) const {
+    if (index < 0 || index >= Registers::V_REG_COUNT) {
+        throw std::out_of_range("Invalid register index: " + 
+            std::to_string(index));
+    }
+    return registers.v[index];
+}
+
+uint16_t Interpreter::getProgramCounterValue() const {
+    return registers.pc;
+}
+
+uint16_t Interpreter::getIndexRegisterValue() const {
+    return registers.i;
+}
+
+uint8_t Interpreter::getStackPointerValue() const {
+    return registers.sp;
+}
+
+uint8_t Interpreter::getDelayTimerValue() const {
+    return registers.delayTimer;
+}
+
+uint8_t Interpreter::getSoundTimerValue() const {
+    return registers.soundTimer;
+}
+
+uint16_t Interpreter::getStackValue(const int index) const {
+    if (index < 0 || index >= STACK_SIZE) {
+        throw std::out_of_range("Invalid stack index: " + 
+            std::to_string(index));
+    }
+    return stack[index];
+}
+
+const Frame& Interpreter::getFrame() const {
+    return frame;
 }

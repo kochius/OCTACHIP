@@ -58,6 +58,42 @@ void Emulator::update() {
     renderer.drawFrame(interpreter.getFrame());
 }
 
+int Emulator::getVRegCount() const {
+    return Registers::V_REG_COUNT;
+}
+
+int Emulator::getStackSize() const {
+    return STACK_SIZE;
+}
+
+uint8_t Emulator::getRegisterValue(const int index) const {
+    return interpreter.getRegisterValue(index);
+}
+
+uint16_t Emulator::getProgramCounterValue() const {
+    return interpreter.getProgramCounterValue();
+}
+
+uint16_t Emulator::getIndexRegisterValue() const {
+    return interpreter.getIndexRegisterValue();
+}
+
+uint8_t Emulator::getStackPointerValue() const {
+    return interpreter.getStackPointerValue();
+}
+
+uint8_t Emulator::getDelayTimerValue() const {
+    return interpreter.getDelayTimerValue();
+}
+
+uint8_t Emulator::getSoundTimerValue() const {
+    return interpreter.getSoundTimerValue();
+}
+
+uint16_t Emulator::getStackValue(const int index) const {
+    return interpreter.getStackValue(index);
+}
+
 double Emulator::getDeltaTime() {
     const auto now = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double> deltaTime = now - lastUpdateTime;
