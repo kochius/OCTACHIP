@@ -7,7 +7,7 @@
     --font-color: #FFFFFF;
     --primary-accent-color: #606060;
     --secondary-accent-color: #282828;
-    --data-highlight-color: #FF0000;
+    --highlight-color: #FF0000;
     --button-hover-color: #3D3D3D;
     --button-active-color: #474747;
 
@@ -278,5 +278,5 @@ canvas.emscripten {
 }
 
 .stack-top {
-    color: var(--data-highlight-color);
+    color: var(--highlight-color);
 }
