@@ -1,6 +1,6 @@
 #include "io/input.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Input::Input() : keyMap{} {
     keyMap[SDLK_x] = 0;

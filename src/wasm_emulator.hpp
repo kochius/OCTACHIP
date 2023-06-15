@@ -7,7 +7,7 @@
 #include "io/input.hpp"
 #include "io/renderer.hpp"
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 class Emulator {
 public:

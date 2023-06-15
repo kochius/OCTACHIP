@@ -4,7 +4,7 @@
 #include <random>
 #include <type_traits>
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 template <typename T>
 class Random {

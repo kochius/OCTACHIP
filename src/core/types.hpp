@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdint>
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 static constexpr int MEMORY_SIZE = 4096;
 using Memory = std::array<uint8_t, MEMORY_SIZE>;

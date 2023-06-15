@@ -7,7 +7,7 @@
 #include "core/opcode.hpp"
 #include "core/types.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 TEST_F(InstructionTest, RND_VX_BYTE_SetsVxToRndAndByte) {
     const uint16_t x = 0x0;

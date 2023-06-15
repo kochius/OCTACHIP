@@ -3,12 +3,12 @@
 #include "emulator.hpp"
 #include "core/types.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Emulator::Emulator(const int windowScale) : 
     interpreter{},
     input{},
-    renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "CHIP-8"} {}
+    renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "OCTACHIP"} {}
 
 void Emulator::loadRom(const std::filesystem::path& romPath) {
     interpreter.loadRom(romPath);

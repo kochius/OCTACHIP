@@ -2,7 +2,7 @@
 
 #include "io/renderer.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Renderer::Renderer(const int width, const int height, const int scalar,
     const std::string& title) :

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 class Opcode {
 public:

@@ -6,7 +6,7 @@
 #include "core/random.hpp"
 #include "core/types.hpp"
 
-namespace CHIP8::instructions {
+namespace OCTACHIP::instructions {
 
 // 00E0 - Clear the display.
 void CLS(Frame& frame);

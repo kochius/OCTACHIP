@@ -10,7 +10,7 @@
 #include "core/interpreter.hpp"
 #include "core/opcode.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Interpreter::Interpreter() :
     memory{},

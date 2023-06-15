@@ -5,7 +5,7 @@
 
 #include "core/types.hpp"
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 class Renderer {
 public:
