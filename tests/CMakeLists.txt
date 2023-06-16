@@ -54,3 +54,8 @@ target_sources(${TESTS_EXECUTABLE}
         ${PROJECT_SRC_DIR}/core/random.hpp
         ${PROJECT_SRC_DIR}/core/types.hpp
 )
+
+add_test(
+    NAME ${TESTS_EXECUTABLE}
+    COMMAND $<TARGET_FILE:${TESTS_EXECUTABLE}>
+)
