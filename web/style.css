@@ -5,9 +5,10 @@
 
     --background-color: #0F0F0F;
     --font-color: #FFFFFF;
+    --inverted-font-color: #0F0F0F;
     --primary-accent-color: #606060;
     --secondary-accent-color: #282828;
-    --highlight-color: #FF0000;
+    --highlight-color: #FCF75E;
     --button-hover-color: #3D3D3D;
     --button-active-color: #474747;
 
@@ -127,8 +128,21 @@ body {
 
 .page-title {
     margin-bottom: var(--global-space);
+    color: var(--highlight-color);
     font-size: 3.2rem;
     font-weight: 700;
+}
+
+/* || Hyperlink */
+a {
+    text-decoration: underline;
+    color: var(--highlight-color);
+}
+
+a:hover {
+    text-decoration: none;
+    background-color: var(--highlight-color);
+    color: var(--inverted-font-color);
 }
 
 /* || Horizontal rule */
