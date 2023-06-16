@@ -2,7 +2,7 @@ var Module = {
     noInitialRun: true,
     canvas: (() => {
         var canvas = document.querySelector("#canvas");
-        
+
         canvas.addEventListener("webglcontextlost", (e) => {
             alert("WebGL context lost. You will need to reload the page.");
             e.preventDefault();
@@ -39,7 +39,7 @@ const constructVRegList = () => {
         registerView.classList.add("register-view");
         registerView.appendChild(registerLabel);
         registerView.appendChild(registerOutput);
-        
+
         vRegList.appendChild(registerView);
     }
 };
@@ -51,7 +51,7 @@ const constructStackTable = () => {
     for (let i = 0; i < stackSize; i++) {
         const stackLevelCell = document.createElement("th");
         stackLevelCell.id = `stack-level-${i}`;
-        stackLevelCell.textContent =  i.toString();
+        stackLevelCell.textContent = i.toString();
 
         const stackOutputCell = document.createElement("td");
         stackOutputCell.id = `stack-output-${i}`;
@@ -155,7 +155,7 @@ const updateMonitoringInfo = () => {
     const spOutput = document.querySelector("#sp-output");
     const dtOutput = document.querySelector("#dt-output");
     const stOutput = document.querySelector("#st-output");
-    
+
     const pcValue = Module.ccall("getProgramCounterValue", "number", [], []);
     const iValue = Module.ccall("getIndexRegisterValue", "number", [], []);
     const spValue = Module.ccall("getStackPointerValue", "number", [], []);
@@ -172,7 +172,7 @@ const updateMonitoringInfo = () => {
     for (let i = 0; i < vRegCount; i++) {
         const hexIndex = i.toString(16).toUpperCase();
         const vRegOutput = document.querySelector(`#v${hexIndex}-output`);
-        const vRegValue = Module.ccall("getRegisterValue", "number", ["number"], 
+        const vRegValue = Module.ccall("getRegisterValue", "number", ["number"],
             [i]);
         vRegOutput.textContent = hexFormat(vRegValue, 2);
     }

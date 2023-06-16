@@ -185,11 +185,14 @@ table {
     border-collapse: collapse;
 }
 
-table, td, th {
+table,
+td,
+th {
     border: 1px dashed var(--primary-accent-color);
 }
 
-td, th {
+td,
+th {
     padding: calc(var(--global-space) / 2) var(--global-space);
 }
 
@@ -252,15 +255,15 @@ canvas.emscripten {
     margin-bottom: 10px;
 }
 
-#select-controls > label {
+#select-controls>label {
     flex: none;
 }
 
-#select-controls > select {
+#select-controls>select {
     flex: auto;
 }
 
-#button-controls > button {
+#button-controls>button {
     flex: 1 1 0;
 }
 
