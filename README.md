@@ -1,1 +1,1 @@
-# CHIP-8
+# OCTACHIP

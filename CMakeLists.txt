@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(chip8)
+project(OCTACHIP)
 
 set(PROJECT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(PROJECT_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)

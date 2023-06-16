@@ -2,7 +2,7 @@
 
 #include "core/random.hpp"
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 template <typename T>
 class MockRandom : public Random<T> {

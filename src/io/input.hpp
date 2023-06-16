@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <unordered_map>
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 class Input {
 public:

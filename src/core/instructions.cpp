@@ -3,7 +3,7 @@
 
 #include "core/instructions.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 /**
  * 00E0 - Clear the display.

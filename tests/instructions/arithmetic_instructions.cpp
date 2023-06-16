@@ -6,7 +6,7 @@
 #include "core/opcode.hpp"
 #include "core/types.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 TEST_F(InstructionTest, ADD_VX_BYTE_NoCarry_AddsByteToVx) {
     const uint16_t x = 0x0;

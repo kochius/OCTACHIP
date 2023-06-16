@@ -6,7 +6,7 @@
 #include "core/opcode.hpp"
 #include "core/types.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 TEST_F(InstructionTest, RET_NonEmptyStack_ReturnsFromSubroutine) {
     const uint16_t address = 0x251;

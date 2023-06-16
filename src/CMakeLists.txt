@@ -1,15 +1,15 @@
-set(CHIP8_EXECUTABLE chip8)
+set(MAIN_EXECUTABLE octachip)
 
-add_executable(${CHIP8_EXECUTABLE})
+add_executable(${MAIN_EXECUTABLE})
 
-set_target_properties(${CHIP8_EXECUTABLE}
+set_target_properties(${MAIN_EXECUTABLE}
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-target_compile_features(${CHIP8_EXECUTABLE} PRIVATE cxx_std_17)
+target_compile_features(${MAIN_EXECUTABLE} PRIVATE cxx_std_17)
 
-target_compile_options(${CHIP8_EXECUTABLE}
+target_compile_options(${MAIN_EXECUTABLE}
     PRIVATE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:
             /W4
@@ -28,9 +28,9 @@ target_compile_options(${CHIP8_EXECUTABLE}
         >
 )
 
-target_include_directories(${CHIP8_EXECUTABLE} PRIVATE ${PROJECT_SRC_DIR})
+target_include_directories(${MAIN_EXECUTABLE} PRIVATE ${PROJECT_SRC_DIR})
 
-target_sources(${CHIP8_EXECUTABLE}
+target_sources(${MAIN_EXECUTABLE}
     PRIVATE
         core/instructions.cpp
         core/instructions.hpp
@@ -47,17 +47,17 @@ target_sources(${CHIP8_EXECUTABLE}
 )
 
 if(EMSCRIPTEN)
-    set_target_properties(${CHIP8_EXECUTABLE}
+    set_target_properties(${MAIN_EXECUTABLE}
         PROPERTIES
             SUFFIX ".html"
     )
     
-    target_compile_options(${CHIP8_EXECUTABLE}
+    target_compile_options(${MAIN_EXECUTABLE}
         PRIVATE
             "SHELL:-s USE_SDL=2"
     )
 
-    target_link_options(${CHIP8_EXECUTABLE}
+    target_link_options(${MAIN_EXECUTABLE}
         PRIVATE
             "SHELL:-s USE_SDL=2"
             "SHELL:-s EXPORTED_FUNCTIONS='_main,\
@@ -79,20 +79,20 @@ if(EMSCRIPTEN)
             "SHELL:--shell-file ${PROJECT_WEB_DIR}/template.html"
     )
 
-    target_sources(${CHIP8_EXECUTABLE}
+    target_sources(${MAIN_EXECUTABLE}
         PRIVATE
             wasm_emulator.cpp
             wasm_emulator.hpp
             wasm_main.cpp
     )
 else()
-    target_link_libraries(${CHIP8_EXECUTABLE}
+    target_link_libraries(${MAIN_EXECUTABLE}
         PRIVATE
             SDL2-static
             cxxopts
     )
 
-    target_sources(${CHIP8_EXECUTABLE}
+    target_sources(${MAIN_EXECUTABLE}
         PRIVATE
             emulator.cpp
             emulator.hpp

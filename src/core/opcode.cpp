@@ -1,6 +1,6 @@
 #include "core/opcode.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Opcode::Opcode(const uint16_t instructionCode) : opcode{instructionCode} {}
 

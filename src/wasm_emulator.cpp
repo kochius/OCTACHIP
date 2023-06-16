@@ -1,7 +1,7 @@
 #include "core/types.hpp"
 #include "wasm_emulator.hpp"
 
-using namespace CHIP8;
+using namespace OCTACHIP;
 
 Emulator::Emulator(const int windowScale, const int instructionsPerSecond) : 
     lastUpdateTime{},
@@ -10,7 +10,7 @@ Emulator::Emulator(const int windowScale, const int instructionsPerSecond) :
         UPDATES_PER_SECOND)},
     interpreter{},
     input{},
-    renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "CHIP-8 Emulator"} {}
+    renderer{FRAME_WIDTH, FRAME_HEIGHT, windowScale, "OCTACHIP"} {}
 
 void Emulator::reset() {
     accumulator = 0.0;

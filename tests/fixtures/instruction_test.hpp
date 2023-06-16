@@ -6,7 +6,7 @@
 #include "mocks/mock_random.hpp"
 #include "core/types.hpp"
 
-namespace CHIP8 {
+namespace OCTACHIP {
 
 class InstructionTest : public ::testing::Test {
 protected:

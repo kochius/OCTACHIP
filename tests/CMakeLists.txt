@@ -1,4 +1,4 @@
-set(TESTS_EXECUTABLE chip8_tests)
+set(TESTS_EXECUTABLE octachip_tests)
 
 enable_testing()
 

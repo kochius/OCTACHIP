@@ -11,7 +11,7 @@ int parseSpeed(const cxxopts::ParseResult& result);
 int parseScale(const cxxopts::ParseResult& result);
 
 int main(int argc, char* argv[]) {
-    cxxopts::Options options{"chip8", "A CHIP-8 emulator written in C++"};
+    cxxopts::Options options{"octachip", "A CHIP-8 interpreter written in C++"};
     options.add_options()
         ("h,help", "Print usage")
         ("r,rom", "ROM file path", cxxopts::value<std::string>())
@@ -32,9 +32,9 @@ int main(int argc, char* argv[]) {
         std::string romPath = parsePath(result);
         int emulationSpeed = parseSpeed(result);
 
-        CHIP8::Emulator chip8{windowScale};
-        chip8.loadRom(romPath);
-        chip8.run(emulationSpeed);
+        OCTACHIP::Emulator emulator{windowScale};
+        emulator.loadRom(romPath);
+        emulator.run(emulationSpeed);
     }
     catch (const cxxopts::exceptions::exception& e) {
         std::cerr << "Error parsing options: " << e.what() << "\n";
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 std::string parsePath(const cxxopts::ParseResult& result) {
     if (result.count("rom") == 0 || result["rom"].as<std::string>().empty()) {
         throw std::runtime_error("No ROM file path provided\n"
-            "Usage: ./chip8 -r <PATH>");
+            "Usage: ./octachip -r <PATH>");
     }
     return result["rom"].as<std::string>();
 }
