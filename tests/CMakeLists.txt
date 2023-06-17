@@ -13,20 +13,20 @@ target_compile_features(${TESTS_EXECUTABLE} PRIVATE cxx_std_17)
 
 target_compile_options(${TESTS_EXECUTABLE}
     PRIVATE
-        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:
+        $<$<CXX_COMPILER_ID:MSVC>:
             /W4
             /w14640
             /WX
-            /Zi
+            $<$<CONFIG:Debug>:/Zi>
         >
-        $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
             -Wall
             -Wextra
             -Wshadow
             -Wnon-virtual-dtor
             -pedantic
             -Werror
-            -g
+            $<$<CONFIG:Debug>:-g>
         >
 )
 
