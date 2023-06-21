@@ -88,8 +88,9 @@ if(EMSCRIPTEN)
 else()
     target_link_libraries(${MAIN_EXECUTABLE}
         PRIVATE
-            SDL2-static
             cxxopts
+            SDL2main
+            SDL2-static
     )
 
     target_sources(${MAIN_EXECUTABLE}
