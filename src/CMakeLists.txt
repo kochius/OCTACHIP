@@ -38,6 +38,7 @@ target_sources(${MAIN_EXECUTABLE}
         core/interpreter.hpp
         core/opcode.cpp
         core/opcode.hpp
+        core/random.cpp
         core/random.hpp
         core/types.hpp
         io/input.cpp
@@ -88,8 +89,9 @@ if(EMSCRIPTEN)
 else()
     target_link_libraries(${MAIN_EXECUTABLE}
         PRIVATE
-            SDL2-static
             cxxopts
+            SDL2main
+            SDL2-static
     )
 
     target_sources(${MAIN_EXECUTABLE}

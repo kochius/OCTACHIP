@@ -83,11 +83,9 @@ TEST_F(InstructionTest, LD_F_VX_SetsIndexRegisterToVxSpriteAddress) {
     const Opcode opcode = 0xF029 | (x << 8);
 
     registers.v[x] = 0xE;
-    const uint16_t startAddress = 0x050;
-    const int spriteSize = 5;
     const uint16_t spriteAddress = 0x096;
 
-    instructions::LD_F_VX(opcode, registers, startAddress, spriteSize);
+    instructions::LD_F_VX(opcode, registers);
 
     // LD_F_VX should set the index register to the address of the sprite for
     // the digit in Vx
@@ -128,7 +126,7 @@ TEST_F(InstructionTest, LD_B_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_I_VX_MemoryInRange_WritesRegistersToMemory) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t x = data.size() - 1;
+    const uint16_t x = static_cast<uint16_t>(data.size() - 1);
     const Opcode opcode = 0xF055 | (x << 8);
     
     // Load the data into registers V0 through Vx
@@ -162,7 +160,7 @@ TEST_F(InstructionTest, LD_I_VX_MemoryOutOfRange_ThrowsException) {
 TEST_F(InstructionTest, LD_VX_I_MemoryInRange_ReadsMemoryIntoRegisters) {
     const std::vector<uint8_t> data = {0x11, 0x22, 0x33, 0x44, 0x55};
 
-    const uint16_t x = data.size() - 1;
+    const uint16_t x = static_cast<uint16_t>(data.size() - 1);
     const Opcode opcode = 0xF065 | (x << 8);
 
     // Load the data into memory starting at the address in I

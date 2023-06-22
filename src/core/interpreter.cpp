@@ -18,7 +18,7 @@ Interpreter::Interpreter() :
     stack{},
     frame{},
     keypad{},
-    random{std::random_device{}(), 0u, 255u} {
+    random{} {
     const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -43,9 +43,10 @@ Interpreter::Interpreter() :
 }
 
 void Interpreter::reset() {
-    std::fill(std::begin(memory), std::begin(memory) + FONT_START_ADDRESS, 0);
+    std::fill(std::begin(memory), std::begin(memory) + FONT_START_ADDRESS, 
+        uint8_t{0});
     std::fill(std::begin(memory) + FONT_START_ADDRESS + FONT_SET_SIZE, 
-        std::end(memory), 0);
+        std::end(memory), uint8_t{0});
 
     registers.v.fill(0);
     registers.pc = PROG_START_ADDRESS;
@@ -155,8 +156,7 @@ void Interpreter::tick() {
                 case 0x15: return instructions::LD_DT_VX(opcode, registers);
                 case 0x18: return instructions::LD_ST_VX(opcode, registers);
                 case 0x1E: return instructions::ADD_I_VX(opcode, registers);
-                case 0x29: return instructions::LD_F_VX(opcode, registers, 
-                    FONT_START_ADDRESS, FONT_CHAR_SIZE);
+                case 0x29: return instructions::LD_F_VX(opcode, registers);
                 case 0x33: return instructions::LD_B_VX(opcode, memory, 
                     registers);
                 case 0x55: return instructions::LD_I_VX(opcode, memory, 
