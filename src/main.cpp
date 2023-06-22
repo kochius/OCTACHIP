@@ -32,9 +32,8 @@ int main(int argc, char* argv[]) {
         std::string romPath = parsePath(result);
         int emulationSpeed = parseSpeed(result);
 
-        OCTACHIP::Emulator emulator{windowScale};
-        emulator.loadRom(romPath);
-        emulator.run(emulationSpeed);
+        OCTACHIP::Emulator emulator{romPath, emulationSpeed, windowScale};
+        emulator.run();
     }
     catch (const cxxopts::exceptions::exception& e) {
         std::cerr << "Error parsing options: " << e.what() << "\n";

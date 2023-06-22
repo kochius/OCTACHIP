@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <filesystem>
 
 #include "core/interpreter.hpp"
@@ -10,17 +11,21 @@ namespace OCTACHIP {
 
 class Emulator {
 public:
-    Emulator(const int windowScale);
-    void loadRom(const std::filesystem::path& romPath);
-    void run(const int ticksPerSecond);
+    Emulator(const std::filesystem::path& romPath, 
+        const int instructionsPerSecond, const int windowScale);
+    void run();
 private:
-    static constexpr int FRAMES_PER_SECOND = 60;
+    static constexpr double UPDATES_PER_SECOND = 60.0;
+    static constexpr double UPDATE_INTERVAL = 1.0 / UPDATES_PER_SECOND;
+
+    const int instructionsPerUpdate;
 
     Interpreter interpreter;
     Input input;
     Renderer renderer;
-    
-    long getCurrentTime() const;
+
+    double getDeltaTime(
+        std::chrono::high_resolution_clock::time_point& lastUpdateTime);
 };
 
 }
