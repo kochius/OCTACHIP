@@ -47,7 +47,6 @@ void Emulator::update() {
     while (accumulator >= UPDATE_INTERVAL) {
         accumulator -= UPDATE_INTERVAL;
 
-
         for (int i = 0; i < instructionsPerUpdate; i++) {
             interpreter.tick();
         }
