@@ -185,7 +185,7 @@ TEST_F(InstructionTest, LD_VX_K_KeyPressed_SetVxToPressedKey) {
     const uint16_t x = 0x0;
     const Opcode opcode = 0xF00A | (x << 8);
 
-    const uint8_t initialPcValue = registers.pc;
+    const uint16_t initialPcValue = registers.pc;
     const uint8_t key = 0xE;
     keypad[key] = true; // Set key E as pressed
 
