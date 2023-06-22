@@ -4,12 +4,10 @@
 
 namespace OCTACHIP {
 
-template <typename T>
-class MockRandom : public Random<T> {
+class MockRandom : public Random {
 public:
-    MockRandom() :
-        Random<T>(0, T{}, T{}) {}
-    T generateNumber() override {
+    MockRandom() : Random() {}
+    uint8_t generateNumber() override {
         return 0x37;
     }
 };

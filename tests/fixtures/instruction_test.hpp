@@ -15,7 +15,7 @@ protected:
     Stack stack{};
     Frame frame{};
     Keypad keypad{};
-    MockRandom<uint8_t> random{};
+    MockRandom random{};
 };
 
 }

@@ -251,7 +251,7 @@ void instructions::JP_V0_ADDR(const Opcode& opcode, Registers& registers) {
  * with the value kk. The results are stored in Vx.
  */
 void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers, 
-    Random<uint8_t>& random) {
+    Random& random) {
     registers.v[opcode.x()] = random.generateNumber() & opcode.byte();
 }
 

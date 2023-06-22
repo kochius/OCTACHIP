@@ -39,7 +39,7 @@ private:
     Stack stack;
     Frame frame;
     Keypad keypad;
-    Random<uint8_t> random;
+    Random random;
 };
 
 }
