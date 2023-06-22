@@ -34,7 +34,7 @@ TEST_F(InstructionTest,
 
     const uint16_t x = 0x0;
     const uint16_t y = 0xA;
-    const uint8_t n = sprite.size();
+    const uint8_t n = static_cast<uint8_t>(sprite.size());
     const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
 
     // Load the sprite data into memory
@@ -71,7 +71,7 @@ TEST_F(InstructionTest,
 
     const uint16_t x = 0x0;
     const uint16_t y = 0xA;
-    const uint8_t n = sprite.size();
+    const uint8_t n = static_cast<uint8_t>(sprite.size());
     const Opcode opcode = 0xD000 | (x << 8) | (y << 4) | n;
 
     // Load the sprite data into memory

@@ -2,6 +2,7 @@
 #include <string>
 
 #include "core/instructions.hpp"
+#include "core/interpreter.hpp"
 
 using namespace OCTACHIP;
 
@@ -158,7 +159,7 @@ void instructions::XOR_VX_VY(const Opcode& opcode, Registers& registers) {
  */
 void instructions::ADD_VX_VY(const Opcode& opcode, Registers& registers) {
     const uint16_t sum = registers.v[opcode.x()] + registers.v[opcode.y()];
-    registers.v[opcode.x()] = sum;
+    registers.v[opcode.x()] = static_cast<uint8_t>(sum);
     registers.v[0xF] = sum > 0xFF ? 1 : 0;
 }
 
@@ -275,14 +276,12 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
     registers.v[0xF] = 0;
 
     for (int row = 0; row < height; row++) {
-        const uint16_t address = registers.i + row;
-
-        if (address >= MEMORY_SIZE) {
+        if (registers.i + row >= MEMORY_SIZE) {
             throw std::out_of_range("DRW_VX_VY_NIBBLE: out-of-bounds memory "
                 "access");
         }
 
-        const uint8_t spriteRow = memory[address];
+        const uint8_t spriteRow = memory[registers.i + row];
 
         for (int col = 0; col < 8; col++) {
             if (xPos + col >= 0 && xPos + col <= FRAME_WIDTH &&
@@ -349,7 +348,7 @@ void instructions::LD_VX_K(const Opcode& opcode, Registers& registers, const
     Keypad& keypad) {
     for (int keyValue = 0; keyValue < KEY_COUNT; keyValue++) {
         if (keypad[keyValue]) {
-            registers.v[opcode.x()] = keyValue;
+            registers.v[opcode.x()] = static_cast<uint8_t>(keyValue);
             return;
         }
     }
@@ -391,10 +390,10 @@ void instructions::ADD_I_VX(const Opcode& opcode, Registers& registers) {
  * The value of I is set to the location for the hexadecimal sprite 
  * corresponding to the value of Vx.
  */
-void instructions::LD_F_VX(const Opcode& opcode, Registers& registers, 
-    const uint16_t startAddress, const int spriteSize) {
+void instructions::LD_F_VX(const Opcode& opcode, Registers& registers) {
     const uint8_t digit = registers.v[opcode.x()];
-    registers.i = startAddress + spriteSize * digit;
+    registers.i = Interpreter::FONT_START_ADDRESS + 
+        Interpreter::FONT_CHAR_SIZE * digit;
 }
 
 /**
@@ -408,11 +407,10 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory,
     const Registers& registers) {
     uint8_t value = registers.v[opcode.x()];
     for (int i = 2; i >= 0; i--) {
-        const uint16_t address = registers.i + i;
-        if (address >= MEMORY_SIZE) {
+        if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_B_VX: out-of-bounds memory access");
         }
-        memory[address] = value % 10;
+        memory[registers.i + i] = value % 10;
         value /= 10;
     }
 }
@@ -428,11 +426,10 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory,
 void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, 
     const Registers& registers) {
     for (int i = 0; i <= opcode.x(); i++) {
-        const uint16_t address = registers.i + i;
-        if (address >= MEMORY_SIZE) {
+        if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
-        memory[address] = registers.v[i];
+        memory[registers.i + i] = registers.v[i];
     }
 }
 
@@ -445,11 +442,10 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory,
 void instructions::LD_VX_I(const Opcode& opcode, const Memory& memory, 
     Registers& registers) {
     for (int i = 0; i <= opcode.x(); i++) {
-        const uint16_t address = registers.i + i;
-        if (address >= MEMORY_SIZE) {
+        if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
-        registers.v[i] = memory[address];
+        registers.v[i] = memory[registers.i + i];
     }
 }
 

@@ -101,8 +101,7 @@ void LD_ST_VX(const Opcode& opcode, Registers& registers);
 void ADD_I_VX(const Opcode& opcode, Registers& registers);
 
 // Fx29 - Set I = location of sprite for digit Vx.
-void LD_F_VX(const Opcode& opcode, Registers& registers, 
-    const uint16_t startAddress, const int spriteSize);
+void LD_F_VX(const Opcode& opcode, Registers& registers);
 
 // Fx33 - Store BCD representation of Vx in memory locations I, I+1, and I+2.
 void LD_B_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
