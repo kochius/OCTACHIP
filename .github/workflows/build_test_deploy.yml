@@ -12,8 +12,15 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
+  build_and_test_native:
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+
+    runs-on: ${{matrix.os}}
 
     steps:
     - uses: actions/checkout@v3
