@@ -12,6 +12,10 @@ env:
   AWS_REGION: us-east-1
   BUILD_TYPE: Release
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build_and_test_native:
     strategy:
