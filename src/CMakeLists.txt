@@ -4,7 +4,7 @@ add_executable(${MAIN_EXECUTABLE})
 
 set_target_properties(${MAIN_EXECUTABLE}
     PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dist"
 )
 
 target_compile_features(${MAIN_EXECUTABLE} PRIVATE cxx_std_17)
@@ -50,7 +50,7 @@ target_sources(${MAIN_EXECUTABLE}
 if(EMSCRIPTEN)
     set_target_properties(${MAIN_EXECUTABLE}
         PROPERTIES
-            SUFFIX ".html"
+            SUFFIX ".js"
     )
     
     target_compile_options(${MAIN_EXECUTABLE}
@@ -77,7 +77,6 @@ if(EMSCRIPTEN)
                                           _getStackValue'"
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
-            "SHELL:--shell-file ${PROJECT_WEB_DIR}/template.html"
     )
 
     target_sources(${MAIN_EXECUTABLE}
