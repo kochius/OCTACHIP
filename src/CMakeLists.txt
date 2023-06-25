@@ -4,7 +4,7 @@ add_executable(${MAIN_EXECUTABLE})
 
 set_target_properties(${MAIN_EXECUTABLE}
     PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dist"
 )
 
 target_compile_features(${MAIN_EXECUTABLE} PRIVATE cxx_std_17)
