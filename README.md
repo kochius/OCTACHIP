@@ -131,3 +131,6 @@ Visit [www.octachip.com](https://www.octachip.com/) to view a live demo of the w
 - [CHIP-8 - Wikipedia](https://en.wikipedia.org/wiki/CHIP-8)
 - [Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
 - [CHIP-8 Technical Reference by Matthew Mikolay](https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference)
+
+## License
+The source code for OCTACHIP is licensed under the [MIT License](LICENSE).
