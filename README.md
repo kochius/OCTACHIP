@@ -1,6 +1,6 @@
 # OCTACHIP
 
-A CHIP-8 interpreter written in C++ that supports native code and WebAssembly as compile targets.
+A CHIP-8 interpreter written in C++ that compiles to native code and WebAssembly.
 
 Visit [www.octachip.com](https://www.octachip.com/) to access a live demo of the web application.
 
