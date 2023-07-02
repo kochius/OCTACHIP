@@ -76,12 +76,12 @@ body {
 
 .main-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     grid-template-rows: auto auto 1fr;
     grid-template-areas:
-        "display display about-rom"
-        "controls controls stack"
-        "registers registers stack";
+        "display about-rom"
+        "controls stack"
+        "registers stack";
     gap: var(--global-space);
 }
 
