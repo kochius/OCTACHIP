@@ -264,7 +264,7 @@ canvas.emscripten {
 }
 
 #button-controls>button {
-    flex: 1 1 0;
+    flex: 1 1 105px;
 }
 
 /* || Registers card */
