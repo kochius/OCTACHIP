@@ -133,6 +133,11 @@ body {
     font-weight: 700;
 }
 
+.card-heading {
+    font-size: 1.6rem;
+    font-weight: 400;
+}
+
 /* || Hyperlink */
 a {
     text-decoration: underline;
@@ -228,13 +233,8 @@ canvas.emscripten {
 }
 
 .card-header {
-    background-color: var(--primary-accent-color);
-}
-
-.card-heading {
     padding: calc(var(--global-space) / 2) var(--global-space);
-    font-size: 1.6rem;
-    font-weight: 400;
+    background-color: var(--primary-accent-color);
 }
 
 .card-body {
