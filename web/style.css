@@ -185,6 +185,26 @@ select:disabled {
     cursor: auto;
 }
 
+.button-group,
+.select-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--global-space);
+}
+
+.button-group>button {
+    flex: 1 1 105px;
+}
+
+.select-container>label {
+    flex: none;
+}
+
+.select-container>select {
+    flex: auto;
+}
+
 /* || Table */
 table {
     border-collapse: collapse;
@@ -243,28 +263,10 @@ canvas.emscripten {
 }
 
 /* || Controls card */
-#select-controls,
-#button-controls {
+#controls-body {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: var(--global-space);
-}
-
-#select-controls {
-    margin-bottom: 10px;
-}
-
-#select-controls>label {
-    flex: none;
-}
-
-#select-controls>select {
-    flex: auto;
-}
-
-#button-controls>button {
-    flex: 1 1 105px;
 }
 
 /* || Registers card */
