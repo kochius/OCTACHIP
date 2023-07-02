@@ -15,9 +15,12 @@ var Module = {
 };
 
 const romSelector = document.querySelector("#rom-select");
+const romDescription = document.querySelector("#rom-description");
 const startStopButton = document.querySelector("#start-stop-button");
 const pauseResumeButton = document.querySelector("#pause-resume-button");
-const romDescription = document.querySelector("#rom-description");
+const settingsButton = document.querySelector("#settings-button");
+const settingsMenu = document.querySelector("#settings-menu");
+const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
 
 const constructVRegList = () => {
     const vRegList = document.querySelector("#v-registers-list");
@@ -145,6 +148,18 @@ const setRomDescription = (description) => {
     });
 };
 
+const closeModalCallback = (event) => {
+    const modal = event.target;
+    modal.close();
+    modal.removeEventListener("animationend", closeModalCallback);
+    modal.classList.remove("close");
+};
+
+const closeModal = (modal) => {
+    modal.addEventListener("animationend", closeModalCallback);
+    modal.classList.add("close");
+};
+
 const hexFormat = (value, numDigits) => {
     return `0x${value.toString(16).toUpperCase().padStart(numDigits, "0")}`;
 }
@@ -248,6 +263,14 @@ Module["onRuntimeInitialized"] = async () => {
             pauseEmulator();
             updateMonitoringInfo();
         }
+    });
+
+    settingsButton.addEventListener("click", () => {
+        settingsMenu.showModal();
+    });
+
+    settingsMenuCloseButton.addEventListener("click", () => {
+        closeModal(settingsMenu);
     });
 
     const initialRom = roms[romSelector.value];

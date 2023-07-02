@@ -138,6 +138,11 @@ body {
     font-weight: 400;
 }
 
+.modal-heading {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 /* || Hyperlink */
 a {
     text-decoration: underline;
@@ -158,7 +163,7 @@ hr {
 }
 
 /* || Input elements */
-button,
+.main-button,
 select {
     border: none;
     padding: calc(var(--global-space) / 2) var(--global-space);
@@ -166,23 +171,30 @@ select {
     color: var(--font-color);
 }
 
-button:hover:enabled,
+.main-button:hover:enabled,
+.icon-button:hover:enabled,
 select:hover:enabled {
     cursor: pointer;
 }
 
-button:hover:enabled {
+.main-button:hover:enabled {
     background-color: var(--button-hover-color);
 }
 
-button:active:enabled {
+.main-button:active:enabled {
     background-color: var(--button-active-color);
 }
 
-button:disabled,
+.main-button:disabled,
 select:disabled {
     opacity: 0.5;
     cursor: auto;
+}
+
+.icon-button {
+    background-color: transparent;
+    border: none;
+    padding: calc(var(--global-space) / 2);
 }
 
 .button-group,
@@ -193,7 +205,7 @@ select:disabled {
     gap: var(--global-space);
 }
 
-.button-group>button {
+.button-group>.main-button {
     flex: 1 1 105px;
 }
 
@@ -298,4 +310,61 @@ canvas.emscripten {
 
 .stack-top {
     color: var(--highlight-color);
+}
+
+/* || Modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    border: none;
+    padding: 0;
+    width: 500px;
+    background-color: var(--primary-accent-color);
+    color: var(--font-color);
+}
+
+.modal[open] {
+    opacity: 1;
+    animation: fadein  0.2s forwards;
+}
+
+.modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: fadein 0.2s forwards;
+}
+
+.modal.close[open] {
+    animation: fadeout 0.2s forwards;
+}
+
+.modal.close::backdrop {
+    animation: fadeout 0.2s forwards;
+}
+
+.modal-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: var(--global-space);
+}
+
+/* || Animations */
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }

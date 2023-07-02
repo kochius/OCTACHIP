@@ -42,11 +42,14 @@
                             <select id="rom-select" autocomplete="off"></select>
                         </div>
                         <div class="button-group">
-                            <button id="start-stop-button" type="button" autocomplete="off">
+                            <button id="start-stop-button" class="main-button" type="button" autocomplete="off">
                                 Start
                             </button>
-                            <button id="pause-resume-button" type="button" autocomplete="off" disabled>
+                            <button id="pause-resume-button" class="main-button" type="button" autocomplete="off" disabled>
                                 Pause
+                            </button>
+                            <button id="settings-button" class="main-button" type="button" autocomplete="off">
+                                Settings
                             </button>
                         </div>
                     </div>
@@ -126,6 +129,19 @@
             </p>
         </footer>
     </div>
+    <dialog id="settings-menu" class="modal">
+        <div>
+            <header class="modal-header">
+                <h2 class="modal-heading">Settings</h2>
+                <button id="settings-menu-close-button" class="icon-button" type="button" autocomplete="off" title="Close settings menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10" overflow="visible" stroke="var(--font-color)" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="0" y1="0" x2="10" y2="10"></line>
+                        <line x1="10" y1="0" x2="0" y2="10"></line>
+                    </svg>
+                </button>
+            </header>
+        </div>
+    </dialog>
     <script src="index.js"></script>
     <script src="octachip.js" async></script>
 </body>
