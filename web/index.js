@@ -217,7 +217,90 @@ const startMonitoring = () => {
     }
 
     requestAnimationFrame(startMonitoring);
-}
+};
+
+let isKeyPressed = false;
+
+onKeyEvent = (key, down) => {
+    const keyMap = new Map([
+        ["0", "x"],
+        ["1", "1"],
+        ["2", "2"],
+        ["3", "3"],
+        ["4", "q"],
+        ["5", "w"],
+        ["6", "e"],
+        ["7", "a"],
+        ["8", "s"],
+        ["9", "d"],
+        ["A", "z"],
+        ["B", "c"],
+        ["C", "4"],
+        ["D", "r"],
+        ["E", "f"],
+        ["F", "v"]
+    ]);
+    const keyCharCode = keyMap.get(key).charCodeAt(0);
+    if (down) {
+        Module.ccall("pushKeyDownEvent", null, ["number"], [keyCharCode]);
+    }
+    else {
+        Module.ccall("pushKeyUpEvent", null, ["number"], [keyCharCode]);
+    }
+};
+
+const onKeyDown = (event) => {
+    event.preventDefault();
+    onKeyEvent(event.target.value, true);
+    event.target.classList.add("active");
+    isKeyPressed = true;
+};
+
+const onKeyUp = (event) => {
+    event.preventDefault();
+    if (isKeyPressed) {
+        onKeyEvent(event.target.value, false);
+        event.target.classList.remove("active");
+        isKeyPressed = false;
+    }
+};
+
+const addKeypad = () => {
+    const keypad = document.createElement("div");
+    keypad.id = "keypad";
+    const keys = ["1", "2", "3", "C",
+                  "4", "5", "6", "D",
+                  "7", "8", "9", "E",
+                  "A", "0", "B", "F"];
+    keys.forEach((key) => {
+        const keypadButton = document.createElement("button");
+        keypadButton.textContent = key;
+        keypadButton.classList.add("keypad-button");
+        keypadButton.setAttribute("type", "button");
+        keypadButton.setAttribute("autocomplete", "off");
+        keypadButton.setAttribute("value", key);
+
+        keypadButton.addEventListener("pointerdown", onKeyDown);
+        keypadButton.addEventListener("pointerup", onKeyUp);
+        keypadButton.addEventListener("pointerleave", onKeyUp);
+        keypadButton.addEventListener("contextmenu", (event) => {event.preventDefault()});
+
+        keypad.appendChild(keypadButton);
+    });
+    const controlsCard = document.querySelector("#controls-card");
+    const mainGrid = document.querySelector(".main-grid");
+    mainGrid.insertBefore(keypad, controlsCard);
+    mainGrid.classList.add("keypad-enabled");
+};
+
+const removeKeypad = () => {
+    const keypad = document.querySelector("#keypad");
+    if (keypad) {
+        keypad.remove();
+        const mainGrid = document.querySelector(".main-grid");
+        mainGrid.classList.remove("keypad-enabled");
+    }
+};
 
 Module["onRuntimeInitialized"] = async () => {
     constructVRegList();
@@ -271,6 +354,16 @@ Module["onRuntimeInitialized"] = async () => {
 
     settingsMenuCloseButton.addEventListener("click", () => {
         closeModal(settingsMenu);
+    });
+
+    const keypadToggle = document.querySelector("#keypad-toggle");
+    keypadToggle.addEventListener("change", () => {
+        if (keypadToggle.checked) {
+            addKeypad();
+        }
+        else {
+            removeKeypad();
+        }
     });
 
     const initialRom = roms[romSelector.value];

@@ -74,7 +74,9 @@ if(EMSCRIPTEN)
                                           _getStackPointerValue,\
                                           _getDelayTimerValue,\
                                           _getSoundTimerValue,\
-                                          _getStackValue'"
+                                          _getStackValue,\
+                                          _pushKeyDownEvent,\
+                                          _pushKeyUpEvent'"
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
     )

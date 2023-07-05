@@ -25,8 +25,8 @@ body {
 
 /* || Page layout */
 .page-header {
-    padding-top: calc(2 * var(--global-space));
     grid-area: page-header;
+    padding-top: calc(2 * var(--global-space));
 }
 
 .main-content {
@@ -57,6 +57,13 @@ body {
     grid-area: display;
 }
 
+#keypad {
+    grid-area: keypad;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+}
+
 #controls-card {
     grid-area: controls;
 }
@@ -85,6 +92,15 @@ body {
     gap: var(--global-space);
 }
 
+.main-grid.keypad-enabled {
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+        "display about-rom"
+        "keypad about-rom"
+        "controls stack"
+        "registers stack"; 
+}
+
 @media only screen and (min-width: 600px) and (max-width: 800px) {
     #about-rom-card {
         contain: revert;
@@ -99,6 +115,15 @@ body {
             "about-rom about-rom"
             "registers stack";
     }
+
+    .main-grid.keypad-enabled {
+        grid-template-areas:
+            "display display"
+            "keypad keypad"
+            "controls controls"
+            "about-rom about-rom"
+            "registers stack"
+    }
 }
 
 @media only screen and (max-width: 600px) {
@@ -111,6 +136,16 @@ body {
         grid-template-rows: auto;
         grid-template-areas:
             "display"
+            "controls"
+            "about-rom"
+            "registers"
+            "stack";
+    }
+
+    .main-grid.keypad-enabled {
+        grid-template-areas:
+            "display"
+            "keypad"
             "controls"
             "about-rom"
             "registers"
@@ -149,10 +184,12 @@ a {
     color: var(--highlight-color);
 }
 
-a:hover {
-    text-decoration: none;
-    background-color: var(--highlight-color);
-    color: var(--inverted-font-color);
+@media (hover: hover) {
+    a:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+        color: var(--inverted-font-color);
+    }
 }
 
 /* || Horizontal rule */
@@ -164,6 +201,7 @@ hr {
 
 /* || Input elements */
 .main-button,
+.keypad-button,
 select {
     border: none;
     padding: calc(var(--global-space) / 2) var(--global-space);
@@ -171,24 +209,38 @@ select {
     color: var(--font-color);
 }
 
-.main-button:hover:enabled,
-.icon-button:hover:enabled,
-select:hover:enabled {
-    cursor: pointer;
+@media (hover: hover) {
+    .main-button:hover:enabled,
+    .icon-button:hover:enabled,
+    .keypad-button:hover:enabled,
+    select:hover:enabled {
+        cursor: pointer;
+    }
+    
+    .main-button:hover:enabled,
+    .keypad-button:hover:enabled {
+        background-color: var(--button-hover-color);
+    }
 }
 
-.main-button:hover:enabled {
-    background-color: var(--button-hover-color);
-}
-
-.main-button:active:enabled {
+.main-button:active:enabled,
+.keypad-button.active:enabled {
     background-color: var(--button-active-color);
 }
 
 .main-button:disabled,
+.keypad-button:disabled,
 select:disabled {
     opacity: 0.5;
     cursor: auto;
+}
+
+.main-button,
+.keypad-button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .icon-button {
@@ -347,6 +399,10 @@ canvas.emscripten {
 .modal-header {
     display: grid;
     grid-template-columns: 1fr auto;
+    padding: var(--global-space);
+}
+
+.modal-body {
     padding: var(--global-space);
 }
 

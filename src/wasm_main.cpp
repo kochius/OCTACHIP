@@ -1,4 +1,5 @@
 #include <emscripten.h>
+#include <SDL.h>
 
 #include "wasm_emulator.hpp"
 
@@ -64,6 +65,20 @@ extern "C" uint8_t getSoundTimerValue() {
 
 extern "C" uint16_t getStackValue(const int index) {
     return emulator.getStackValue(index);
+}
+
+extern "C" void pushKeyDownEvent(const int key) {
+    SDL_Event event;
+    event.type = SDL_KEYDOWN;
+    event.key.keysym.sym = key;
+    SDL_PushEvent(&event);
+}
+
+extern "C" void pushKeyUpEvent(const int key) {
+    SDL_Event event;
+    event.type = SDL_KEYUP;
+    event.key.keysym.sym = key;
+    SDL_PushEvent(&event);
 }
 
 void mainLoop() {
