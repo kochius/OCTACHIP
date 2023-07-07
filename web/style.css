@@ -25,8 +25,8 @@ body {
 
 /* || Page layout */
 .page-header {
-    padding-top: calc(2 * var(--global-space));
     grid-area: page-header;
+    padding-top: calc(2 * var(--global-space));
 }
 
 .main-content {
@@ -57,6 +57,13 @@ body {
     grid-area: display;
 }
 
+#keypad {
+    grid-area: keypad;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+}
+
 #controls-card {
     grid-area: controls;
 }
@@ -76,13 +83,22 @@ body {
 
 .main-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     grid-template-rows: auto auto 1fr;
     grid-template-areas:
-        "display display about-rom"
-        "controls controls stack"
-        "registers registers stack";
+        "display about-rom"
+        "controls stack"
+        "registers stack";
     gap: var(--global-space);
+}
+
+.main-grid.keypad-enabled {
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+        "display about-rom"
+        "keypad about-rom"
+        "controls stack"
+        "registers stack"; 
 }
 
 @media only screen and (min-width: 600px) and (max-width: 800px) {
@@ -99,6 +115,15 @@ body {
             "about-rom about-rom"
             "registers stack";
     }
+
+    .main-grid.keypad-enabled {
+        grid-template-areas:
+            "display display"
+            "keypad keypad"
+            "controls controls"
+            "about-rom about-rom"
+            "registers stack"
+    }
 }
 
 @media only screen and (max-width: 600px) {
@@ -111,6 +136,16 @@ body {
         grid-template-rows: auto;
         grid-template-areas:
             "display"
+            "controls"
+            "about-rom"
+            "registers"
+            "stack";
+    }
+
+    .main-grid.keypad-enabled {
+        grid-template-areas:
+            "display"
+            "keypad"
             "controls"
             "about-rom"
             "registers"
@@ -133,16 +168,28 @@ body {
     font-weight: 700;
 }
 
+.card-heading {
+    font-size: 1.6rem;
+    font-weight: 400;
+}
+
+.modal-heading {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 /* || Hyperlink */
 a {
     text-decoration: underline;
     color: var(--highlight-color);
 }
 
-a:hover {
-    text-decoration: none;
-    background-color: var(--highlight-color);
-    color: var(--inverted-font-color);
+@media (hover: hover) {
+    a:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+        color: var(--inverted-font-color);
+    }
 }
 
 /* || Horizontal rule */
@@ -153,7 +200,8 @@ hr {
 }
 
 /* || Input elements */
-button,
+.main-button,
+.keypad-button,
 select {
     border: none;
     padding: calc(var(--global-space) / 2) var(--global-space);
@@ -161,23 +209,64 @@ select {
     color: var(--font-color);
 }
 
-button:hover:enabled,
-select:hover:enabled {
-    cursor: pointer;
+@media (hover: hover) {
+    .main-button:hover:enabled,
+    .icon-button:hover:enabled,
+    .keypad-button:hover:enabled,
+    select:hover:enabled {
+        cursor: pointer;
+    }
+    
+    .main-button:hover:enabled,
+    .keypad-button:hover:enabled {
+        background-color: var(--button-hover-color);
+    }
 }
 
-button:hover:enabled {
-    background-color: var(--button-hover-color);
-}
-
-button:active:enabled {
+.main-button:active:enabled,
+.keypad-button.active:enabled {
     background-color: var(--button-active-color);
 }
 
-button:disabled,
+.main-button:disabled,
+.keypad-button:disabled,
 select:disabled {
     opacity: 0.5;
     cursor: auto;
+}
+
+.main-button,
+.keypad-button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.icon-button {
+    background-color: transparent;
+    border: none;
+    padding: calc(var(--global-space) / 2);
+}
+
+.button-group,
+.select-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--global-space);
+}
+
+.button-group>.main-button {
+    flex: 1 1 105px;
+}
+
+.select-container>label {
+    flex: none;
+}
+
+.select-container>select {
+    flex: auto;
 }
 
 /* || Table */
@@ -228,13 +317,8 @@ canvas.emscripten {
 }
 
 .card-header {
-    background-color: var(--primary-accent-color);
-}
-
-.card-heading {
     padding: calc(var(--global-space) / 2) var(--global-space);
-    font-size: 1.6rem;
-    font-weight: 400;
+    background-color: var(--primary-accent-color);
 }
 
 .card-body {
@@ -243,28 +327,10 @@ canvas.emscripten {
 }
 
 /* || Controls card */
-#select-controls,
-#button-controls {
+#controls-body {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: var(--global-space);
-}
-
-#select-controls {
-    margin-bottom: 10px;
-}
-
-#select-controls>label {
-    flex: none;
-}
-
-#select-controls>select {
-    flex: auto;
-}
-
-#button-controls>button {
-    flex: 1 1 0;
 }
 
 /* || Registers card */
@@ -296,4 +362,65 @@ canvas.emscripten {
 
 .stack-top {
     color: var(--highlight-color);
+}
+
+/* || Modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    border: none;
+    padding: 0;
+    width: 500px;
+    background-color: var(--primary-accent-color);
+    color: var(--font-color);
+}
+
+.modal[open] {
+    opacity: 1;
+    animation: fadein  0.2s forwards;
+}
+
+.modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: fadein 0.2s forwards;
+}
+
+.modal.close[open] {
+    animation: fadeout 0.2s forwards;
+}
+
+.modal.close::backdrop {
+    animation: fadeout 0.2s forwards;
+}
+
+.modal-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: var(--global-space);
+}
+
+.modal-body {
+    padding: var(--global-space);
+}
+
+/* || Animations */
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
