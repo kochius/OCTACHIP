@@ -236,7 +236,8 @@ select:disabled {
 }
 
 .main-button,
-.keypad-button {
+.keypad-button,
+#keypad {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

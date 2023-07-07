@@ -251,6 +251,7 @@ onKeyEvent = (key, down) => {
 
 const onKeyDown = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     onKeyEvent(event.target.value, true);
     event.target.classList.add("active");
     isKeyPressed = true;
@@ -258,6 +259,7 @@ const onKeyDown = (event) => {
 
 const onKeyUp = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     if (isKeyPressed) {
         onKeyEvent(event.target.value, false);
         event.target.classList.remove("active");
@@ -268,6 +270,10 @@ const onKeyUp = (event) => {
 const addKeypad = () => {
     const keypad = document.createElement("div");
     keypad.id = "keypad";
+    keypad.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+    });
     const keys = ["1", "2", "3", "C",
                   "4", "5", "6", "D",
                   "7", "8", "9", "E",
@@ -283,7 +289,10 @@ const addKeypad = () => {
         keypadButton.addEventListener("pointerdown", onKeyDown);
         keypadButton.addEventListener("pointerup", onKeyUp);
         keypadButton.addEventListener("pointerleave", onKeyUp);
-        keypadButton.addEventListener("contextmenu", (event) => {event.preventDefault()});
+        keypadButton.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
 
         keypad.appendChild(keypadButton);
     });
