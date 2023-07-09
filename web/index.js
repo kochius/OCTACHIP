@@ -283,9 +283,13 @@ const addKeypad = () => {
         keypadButton.setAttribute("autocomplete", "off");
         keypadButton.setAttribute("value", key);
 
-        keypadButton.addEventListener("pointerdown", onKeyDown);
-        keypadButton.addEventListener("pointerup", onKeyUp);
-        keypadButton.addEventListener("pointerleave", onKeyUp);
+        keypadButton.addEventListener("touchstart", onKeyDown);
+        keypadButton.addEventListener("touchend", onKeyUp);
+
+        keypadButton.addEventListener("mousedown", onKeyDown);
+        keypadButton.addEventListener("mouseup", onKeyUp);
+        keypadButton.addEventListener("mouseleave", onKeyUp);
+        
         keypadButton.addEventListener("contextmenu", (event) => {event.preventDefault()});
 
         keypad.appendChild(keypadButton);
