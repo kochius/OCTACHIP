@@ -219,7 +219,7 @@ const startMonitoring = () => {
     requestAnimationFrame(startMonitoring);
 };
 
-let isKeyPressed = false;
+let pressedKeys = new Array(16).fill(false);
 
 onKeyEvent = (key, down) => {
     const keyMap = new Map([
@@ -253,36 +253,47 @@ const onKeyDown = (event) => {
     event.preventDefault();
     onKeyEvent(event.target.value, true);
     event.target.classList.add("active");
-    isKeyPressed = true;
+
+    pressedKeys[event.target.id] = true;
 };
 
 const onKeyUp = (event) => {
     event.preventDefault();
-    if (isKeyPressed) {
+    if (pressedKeys[event.target.id]) {
         onKeyEvent(event.target.value, false);
         event.target.classList.remove("active");
-        isKeyPressed = false;
+
+        pressedKeys[event.target.id] = false;
     }
 };
 
 const addKeypad = () => {
     const keypad = document.createElement("div");
     keypad.id = "keypad";
+
+    keypad.addEventListener("touchstart", (event) => {event.preventDefault()});
+    keypad.addEventListener("contextmenu", (event) => {event.preventDefault()});
+
     const keys = ["1", "2", "3", "C",
                   "4", "5", "6", "D",
                   "7", "8", "9", "E",
                   "A", "0", "B", "F"];
-    keys.forEach((key) => {
+    keys.forEach((key, index) => {
         const keypadButton = document.createElement("button");
         keypadButton.textContent = key;
+        keypadButton.id = index;
         keypadButton.classList.add("keypad-button");
         keypadButton.setAttribute("type", "button");
         keypadButton.setAttribute("autocomplete", "off");
         keypadButton.setAttribute("value", key);
 
-        keypadButton.addEventListener("pointerdown", onKeyDown);
-        keypadButton.addEventListener("pointerup", onKeyUp);
-        keypadButton.addEventListener("pointerleave", onKeyUp);
+        keypadButton.addEventListener("touchstart", onKeyDown);
+        keypadButton.addEventListener("touchend", onKeyUp);
+
+        keypadButton.addEventListener("mousedown", onKeyDown);
+        keypadButton.addEventListener("mouseup", onKeyUp);
+        keypadButton.addEventListener("mouseleave", onKeyUp);
+        
         keypadButton.addEventListener("contextmenu", (event) => {event.preventDefault()});
 
         keypad.appendChild(keypadButton);
@@ -354,6 +365,12 @@ Module["onRuntimeInitialized"] = async () => {
 
     settingsMenuCloseButton.addEventListener("click", () => {
         closeModal(settingsMenu);
+    });
+
+    settingsMenu.addEventListener("click", (event) => {
+        if (event.target.id === "settings-menu") {
+            closeModal(settingsMenu);
+        }
     });
 
     const keypadToggle = document.querySelector("#keypad-toggle");

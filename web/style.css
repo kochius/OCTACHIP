@@ -62,6 +62,8 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 2px;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 #controls-card {
@@ -238,8 +240,6 @@ select:disabled {
 .main-button,
 .keypad-button {
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
