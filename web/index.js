@@ -367,6 +367,12 @@ Module["onRuntimeInitialized"] = async () => {
         closeModal(settingsMenu);
     });
 
+    settingsMenu.addEventListener("click", (event) => {
+        if (event.target.id === "settings-menu") {
+            closeModal(settingsMenu);
+        }
+    });
+
     const keypadToggle = document.querySelector("#keypad-toggle");
     keypadToggle.addEventListener("change", () => {
         if (keypadToggle.checked) {
