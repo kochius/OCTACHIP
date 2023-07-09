@@ -270,6 +270,10 @@ const onKeyUp = (event) => {
 const addKeypad = () => {
     const keypad = document.createElement("div");
     keypad.id = "keypad";
+
+    keypad.addEventListener("touchstart", (event) => {event.preventDefault()});
+    keypad.addEventListener("contextmenu", (event) => {event.preventDefault()});
+
     const keys = ["1", "2", "3", "C",
                   "4", "5", "6", "D",
                   "7", "8", "9", "E",
