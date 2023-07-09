@@ -219,7 +219,7 @@ const startMonitoring = () => {
     requestAnimationFrame(startMonitoring);
 };
 
-let isKeyPressed = false;
+let pressedKeys = new Array(16).fill(false);
 
 onKeyEvent = (key, down) => {
     const keyMap = new Map([
@@ -253,15 +253,17 @@ const onKeyDown = (event) => {
     event.preventDefault();
     onKeyEvent(event.target.value, true);
     event.target.classList.add("active");
-    isKeyPressed = true;
+
+    pressedKeys[event.target.id] = true;
 };
 
 const onKeyUp = (event) => {
     event.preventDefault();
-    if (isKeyPressed) {
+    if (pressedKeys[event.target.id]) {
         onKeyEvent(event.target.value, false);
         event.target.classList.remove("active");
-        isKeyPressed = false;
+
+        pressedKeys[event.target.id] = false;
     }
 };
 
@@ -272,9 +274,10 @@ const addKeypad = () => {
                   "4", "5", "6", "D",
                   "7", "8", "9", "E",
                   "A", "0", "B", "F"];
-    keys.forEach((key) => {
+    keys.forEach((key, index) => {
         const keypadButton = document.createElement("button");
         keypadButton.textContent = key;
+        keypadButton.id = index;
         keypadButton.classList.add("keypad-button");
         keypadButton.setAttribute("type", "button");
         keypadButton.setAttribute("autocomplete", "off");
