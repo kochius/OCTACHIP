@@ -221,7 +221,7 @@ const startMonitoring = () => {
 
 let pressedKeys = new Array(16).fill(false);
 
-onKeyEvent = (key, down) => {
+const onKeyEvent = (key, down) => {
     const keyMap = new Map([
         ["0", "x"],
         ["1", "1"],
