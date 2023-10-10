@@ -9,39 +9,46 @@ export const createApp = () => {
     const monitor = createMonitor();
 
     let selectedRom;
+    let running = false;
+    let paused = false;
 
     const handleRomChange = (roms, romIndex) => {
         selectedRom = roms[romIndex];
         userInterface.setRomDescription(selectedRom.description);
-        if (Module.running) {
+        if (running) {
             emulatorController.loadRom(selectedRom.filename);
             emulatorController.setSpeed(selectedRom.speed);
         }
     };
 
     const handleStartButtonClick = () => {
-        if (Module.running) {
+        if (running) {
+            paused = false;
             emulatorController.stopEmulator();
+            monitor.cancelMonitoring();
             monitor.updateAllInfo();
         }
         else {
             emulatorController.startEmulator(selectedRom);
             monitor.startMonitoring();
         }
-        userInterface.toggleStartButton(Module.running);
-        userInterface.togglePauseButton(Module.paused, Module.running);
+        running = !running;
+        userInterface.toggleStartButton(running);
+        userInterface.togglePauseButton(paused, running);
     };
 
     const handlePauseButtonClick = () => {
-        if (Module.paused) {
+        if (paused) {
             emulatorController.resumeEmulator();
             monitor.startMonitoring();
         }
         else {
             emulatorController.pauseEmulator();
+            monitor.cancelMonitoring();
             monitor.updateAllInfo();
         }
-        userInterface.togglePauseButton(Module.paused, Module.running);
+        paused = !paused;
+        userInterface.togglePauseButton(paused, running);
     };
 
     const init = async () => {    

@@ -68,18 +68,20 @@ export const createMonitor = () => {
         updateStackPointer();
     };
     
+    let requestID;
+
     const startMonitoring = () => {
         updateAllInfo();
-    
-        if (!Module.running || Module.paused) {
-            return;
-        }
-    
-        requestAnimationFrame(startMonitoring);
+        requestID = requestAnimationFrame(startMonitoring);
+    };
+
+    const cancelMonitoring = () => {
+        cancelAnimationFrame(requestID);
     };
 
     return {
         updateAllInfo,
         startMonitoring,
+        cancelMonitoring,
     };
 };

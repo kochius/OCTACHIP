@@ -20,23 +20,18 @@ export const createEmulatorController = () => {
         setSpeed(rom.speed);
     
         Module.ccall("main", "null", [], []);
-        Module.running = true;
     };
     
     const stopEmulator = () => {
         Module.ccall("stop", "null", [], []);
-        Module.running = false;
-        Module.paused = false;
     };
     
     const pauseEmulator = () => {
         Module.ccall("pause", "null", [], []);
-        Module.paused = true;
     };
     
     const resumeEmulator = () => {
         Module.ccall("resume", "null", [], []);
-        Module.paused = false;
     };
 
     return {
