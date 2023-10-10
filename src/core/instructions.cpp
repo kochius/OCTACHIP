@@ -183,7 +183,11 @@ void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers) {
+void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk) {
+    if (shiftQuirk) {
+        registers.v[opcode.x()] = registers.v[opcode.y()];
+    }
     registers.v[0xF] = registers.v[opcode.x()] & 0x01;
     registers.v[opcode.x()] >>= 1;
 }
@@ -208,7 +212,11 @@ void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers) {
+void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk) {
+    if (shiftQuirk) {
+        registers.v[opcode.x()] = registers.v[opcode.y()];
+    }
     registers.v[0xF] = registers.v[opcode.x()] >> 7;
     registers.v[opcode.x()] <<= 1;
 }

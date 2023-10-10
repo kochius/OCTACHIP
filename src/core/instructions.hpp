@@ -54,13 +54,15 @@ void ADD_VX_VY(const Opcode& opcode, Registers& registers);
 void SUB_VX_VY(const Opcode& opcode, Registers& registers);
 
 // 8xy6 - Set Vx = Vx SHR 1.
-void SHR_VX_VY(const Opcode& opcode, Registers& registers);
+void SHR_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk);
 
 // 8xy7 - Set Vx = Vy - Vx, set VF = NOT borrow.
 void SUBN_VX_VY(const Opcode& opcode, Registers& registers);
 
 // 8xyE - Set Vx = Vx SHL 1.
-void SHL_VX_VY(const Opcode& opcode, Registers& registers);
+void SHL_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk);
 
 // 9xy0 - Skip next instruction if Vx != Vy.
 void SNE_VX_VY(const Opcode& opcode, Registers& registers);

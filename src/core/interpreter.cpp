@@ -19,6 +19,7 @@ Interpreter::Interpreter() :
     frame{},
     keypad{},
     random{},
+    shiftQuirk{true},
     clipQuirk{true} {
     const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -60,6 +61,7 @@ void Interpreter::reset() {
     frame.fill(false);
     keypad.fill(false);
 
+    shiftQuirk = true;
     clipQuirk = true;
 }
 
@@ -105,6 +107,10 @@ void Interpreter::setKey(const int key, const bool isPressed) {
     keypad[key] = isPressed;
 }
 
+void Interpreter::setShiftQuirk(const bool isEnabled) {
+    shiftQuirk = isEnabled;
+}
+
 void Interpreter::setClipQuirk(const bool isEnabled) {
     clipQuirk = isEnabled;
 }
@@ -136,9 +142,11 @@ void Interpreter::tick() {
                 case 0x3: return instructions::XOR_VX_VY(opcode, registers);
                 case 0x4: return instructions::ADD_VX_VY(opcode, registers);
                 case 0x5: return instructions::SUB_VX_VY(opcode, registers);
-                case 0x6: return instructions::SHR_VX_VY(opcode, registers);
+                case 0x6: return instructions::SHR_VX_VY(opcode, registers, 
+                    shiftQuirk);
                 case 0x7: return instructions::SUBN_VX_VY(opcode, registers);
-                case 0xE: return instructions::SHL_VX_VY(opcode, registers);
+                case 0xE: return instructions::SHL_VX_VY(opcode, registers,
+                    shiftQuirk);
                 default: return instructions::ILLEGAL_OPCODE(opcode);
             }
         case 0x9: return instructions::SNE_VX_VY(opcode, registers);

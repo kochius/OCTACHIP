@@ -17,6 +17,7 @@ public:
     void refreshUpdateTimer();
     void loadRom(const std::filesystem::path& romPath);
     void setSpeed(const int instructionsPerSecond);
+    void setShiftQuirk(const bool isEnabled);
     void setClipQuirk(const bool isEnabled);
     void update();
 

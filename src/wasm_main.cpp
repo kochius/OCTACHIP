@@ -31,6 +31,10 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
+extern "C" void setShiftQuirk(bool isEnabled) {
+    emulator.setShiftQuirk(isEnabled);
+}
+
 extern "C" void setClipQuirk(bool isEnabled) {
     emulator.setClipQuirk(isEnabled);
 }

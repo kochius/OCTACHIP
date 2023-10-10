@@ -23,6 +23,7 @@ public:
     void loadRom(const std::filesystem::path& romPath);
     void updateTimers();
     void setKey(const int key, const bool isPressed);
+    void setShiftQuirk(const bool isEnabled);
     void setClipQuirk(const bool isEnabled);
     void tick();
 
@@ -41,6 +42,7 @@ private:
     Frame frame;
     Keypad keypad;
     Random random;
+    bool shiftQuirk;
     bool clipQuirk;
 };
 
