@@ -1,0 +1,85 @@
+import { hexFormat } from "./utils.js";
+
+export const createMonitor = () => {
+    const V_REG_COUNT = 16;
+    const STACK_SIZE = 16;
+    const SP_INDEX = 2;
+
+    const createDataEntry = (selector, formatLength, getter, arg=null) => {
+        return {
+            element: document.querySelector(selector),
+            value: null,
+            formatLength,
+            getter,
+            arg,
+        };
+    };
+
+    let specialRegisters = [
+        createDataEntry("#pc-output", 4, "getProgramCounterValue"),
+        createDataEntry("#i-output", 4, "getIndexRegisterValue"),
+        createDataEntry("#sp-output", 2, "getStackPointerValue"),
+        createDataEntry("#dt-output", 2, "getDelayTimerValue"),
+        createDataEntry("#st-output", 2, "getSoundTimerValue")
+    ];
+
+    let vRegisters = [];
+    for (let i = 0; i < V_REG_COUNT; i++) {
+        const hexIndex = i.toString(16).toUpperCase();
+        const vRegData = createDataEntry(`#v${hexIndex}-output`, 2, "getRegisterValue", i);
+        vRegisters.push(vRegData);
+    }
+
+    let stack = [];
+    for (let i = 0; i < STACK_SIZE; i++) {
+        const stackData = createDataEntry(`#stack-output-${i}`, 4, "getStackValue", i);
+        stack.push(stackData);
+    }
+
+    const displayOutputValue = (outputElement, value, formatLength) => {
+        outputElement.textContent = hexFormat(value, formatLength);
+    };
+
+    const updateData = (dataArr) => {
+        dataArr.forEach((item, index) => {
+            let argTypes = item.arg !== null ? ["number"] : [];
+            let args = item.arg !== null ? [item.arg] : [];
+            const value = Module.ccall(item.getter, "number", argTypes, args);
+            if (value !== item.value) {
+                item.value = value;
+                displayOutputValue(item.element, item.value, item.formatLength);
+            }
+        })
+    };
+
+    const updateStackPointer = () => {
+        const previousStackTop = document.querySelector(".stack-top");
+        previousStackTop?.classList.remove("stack-top");
+
+        const spValue = specialRegisters[SP_INDEX].value;
+        const stackTop = document.querySelector(`#stack-level-${spValue}`);
+        stackTop.classList.add("stack-top");
+    };
+    
+    const updateMonitoringInfo = () => {
+        updateData(specialRegisters);
+        updateData(vRegisters);
+        updateData(stack);
+        updateStackPointer();
+    };
+    
+    const startMonitoring = () => {
+        updateMonitoringInfo();
+    
+        if (!Module.running || Module.paused) {
+            return;
+        }
+    
+        requestAnimationFrame(startMonitoring);
+    };
+
+    return {
+        updateMonitoringInfo,
+        startMonitoring,
+    };
+};

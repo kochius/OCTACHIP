@@ -1,4 +1,7 @@
-var Module = {
+// get rid of size methods
+import { createMonitor } from "./scripts/monitor.js";
+
+window.Module = {
     noInitialRun: true,
     canvas: (() => {
         var canvas = document.querySelector("#canvas");
@@ -21,51 +24,6 @@ const pauseResumeButton = document.querySelector("#pause-resume-button");
 const settingsButton = document.querySelector("#settings-button");
 const settingsMenu = document.querySelector("#settings-menu");
 const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
-
-const constructVRegList = () => {
-    const vRegList = document.querySelector("#v-registers-list");
-    const vRegCount = Module.ccall("getVRegCount", "number", [], []);
-
-    for (let i = 0; i < vRegCount; i++) {
-        const hexIndex = i.toString(16).toUpperCase();
-        const registerId = `v${hexIndex}-output`;
-
-        const registerLabel = document.createElement("label");
-        registerLabel.htmlFor = registerId;
-        registerLabel.textContent = `V${hexIndex}`;
-
-        const registerOutput = document.createElement("span");
-        registerOutput.classList.add("register-output");
-        registerOutput.id = registerId;
-
-        const registerView = document.createElement("li");
-        registerView.classList.add("register-view");
-        registerView.appendChild(registerLabel);
-        registerView.appendChild(registerOutput);
-
-        vRegList.appendChild(registerView);
-    }
-};
-
-const constructStackTable = () => {
-    const stackTableBody = document.querySelector("#stack-table > tbody");
-    const stackSize = Module.ccall("getStackSize", "number", [], []);
-
-    for (let i = 0; i < stackSize; i++) {
-        const stackLevelCell = document.createElement("th");
-        stackLevelCell.id = `stack-level-${i}`;
-        stackLevelCell.textContent = i.toString();
-
-        const stackOutputCell = document.createElement("td");
-        stackOutputCell.id = `stack-output-${i}`;
-
-        const stackRow = document.createElement("tr");
-        stackRow.appendChild(stackLevelCell);
-        stackRow.appendChild(stackOutputCell);
-
-        stackTableBody.append(stackRow);
-    }
-};
 
 const fetchRomsMetadata = async () => {
     try {
@@ -158,65 +116,6 @@ const closeModalCallback = (event) => {
 const closeModal = (modal) => {
     modal.addEventListener("animationend", closeModalCallback);
     modal.classList.add("close");
-};
-
-const hexFormat = (value, numDigits) => {
-    return `0x${value.toString(16).toUpperCase().padStart(numDigits, "0")}`;
-}
-
-const updateMonitoringInfo = () => {
-    const pcOutput = document.querySelector("#pc-output");
-    const iOutput = document.querySelector("#i-output");
-    const spOutput = document.querySelector("#sp-output");
-    const dtOutput = document.querySelector("#dt-output");
-    const stOutput = document.querySelector("#st-output");
-
-    const pcValue = Module.ccall("getProgramCounterValue", "number", [], []);
-    const iValue = Module.ccall("getIndexRegisterValue", "number", [], []);
-    const spValue = Module.ccall("getStackPointerValue", "number", [], []);
-    const dtValue = Module.ccall("getDelayTimerValue", "number", [], []);
-    const stValue = Module.ccall("getSoundTimerValue", "number", [], []);
-
-    pcOutput.textContent = hexFormat(pcValue, 4);
-    iOutput.textContent = hexFormat(iValue, 4);
-    spOutput.textContent = hexFormat(spValue, 2);
-    dtOutput.textContent = hexFormat(dtValue, 2);
-    stOutput.textContent = hexFormat(stValue, 2);
-
-    const vRegCount = Module.ccall("getVRegCount", "number", [], []);
-    for (let i = 0; i < vRegCount; i++) {
-        const hexIndex = i.toString(16).toUpperCase();
-        const vRegOutput = document.querySelector(`#v${hexIndex}-output`);
-        const vRegValue = Module.ccall("getRegisterValue", "number", ["number"],
-            [i]);
-        vRegOutput.textContent = hexFormat(vRegValue, 2);
-    }
-
-    const stackSize = Module.ccall("getStackSize", "number", [], []);
-    for (let i = 0; i < stackSize; i++) {
-        const stackOutputCell = document.querySelector(`#stack-output-${i}`);
-        const stackValue = Module.ccall("getStackValue", "number", ["number"],
-            [i]);
-        stackOutputCell.textContent = hexFormat(stackValue, 4);
-    }
-
-    const previousStackTop = document.querySelector(".stack-top");
-    if (previousStackTop !== null) {
-        previousStackTop.classList.remove("stack-top");
-    }
-
-    const stackTop = document.querySelector(`#stack-level-${spValue}`);
-    stackTop.classList.add("stack-top");
-};
-
-const startMonitoring = () => {
-    updateMonitoringInfo();
-
-    if (!Module.running || Module.paused) {
-        return;
-    }
-
-    requestAnimationFrame(startMonitoring);
 };
 
 let pressedKeys = new Array(16).fill(false);
@@ -314,8 +213,7 @@ const removeKeypad = () => {
 };
 
 Module["onRuntimeInitialized"] = async () => {
-    constructVRegList();
-    constructStackTable();
+    const hwMonitor = createMonitor();
 
     const roms = await fetchRomsMetadata();
 
@@ -339,23 +237,23 @@ Module["onRuntimeInitialized"] = async () => {
     startStopButton.addEventListener("click", () => {
         if (Module.running) {
             stopEmulator();
-            updateMonitoringInfo();
+            hwMonitor.updateMonitoringInfo();
         }
         else {
             const selectedRom = roms[romSelector.value];
             startEmulator(selectedRom);
-            startMonitoring();
+            hwMonitor.startMonitoring();
         }
     });
 
     pauseResumeButton.addEventListener("click", () => {
         if (Module.paused) {
             resumeEmulator();
-            startMonitoring();
+            hwMonitor.startMonitoring();
         }
         else {
             pauseEmulator();
-            updateMonitoringInfo();
+            hwMonitor.updateMonitoringInfo();
         }
     });
 
@@ -385,5 +283,5 @@ Module["onRuntimeInitialized"] = async () => {
 
     const initialRom = roms[romSelector.value];
     setRomDescription(initialRom.description);
-    updateMonitoringInfo();
+    hwMonitor.updateMonitoringInfo();
 };
