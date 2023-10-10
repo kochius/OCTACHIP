@@ -18,6 +18,7 @@ export const createApp = () => {
         if (running) {
             emulatorController.loadRom(selectedRom.filename);
             emulatorController.setSpeed(selectedRom.speed);
+            emulatorController.setClipQuirk(selectedRom.clipQuirk);
         }
     };
 

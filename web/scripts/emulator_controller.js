@@ -14,10 +14,15 @@ export const createEmulatorController = () => {
     const setSpeed = (emulationSpeed) => {
         Module.ccall("setSpeed", null, ["number"], [emulationSpeed]);
     };
+
+    const setClipQuirk = (isEnabled) => {
+        Module.ccall("setClipQuirk", null, ["number"], [isEnabled ? 1 : 0]);
+    };
     
     const startEmulator = (rom) => {
         loadRom(rom.filename);
         setSpeed(rom.speed);
+        setClipQuirk(rom.clipQuirk);
     
         Module.ccall("main", "null", [], []);
     };
@@ -37,6 +42,7 @@ export const createEmulatorController = () => {
     return {
         loadRom,
         setSpeed,
+        setClipQuirk,
         startEmulator,
         stopEmulator,
         pauseEmulator,

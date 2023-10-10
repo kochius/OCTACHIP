@@ -268,7 +268,7 @@ void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers,
  * wraps around to the opposite side of the screen.
  */
 void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame) {
+    Registers& registers, Frame& frame, const bool clipQuirk) {
     const int xPos = registers.v[opcode.x()] % FRAME_WIDTH;
     const int yPos = registers.v[opcode.y()] % FRAME_HEIGHT;
     const int height = opcode.nibble();
@@ -284,11 +284,14 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
         const uint8_t spriteRow = memory[registers.i + row];
 
         for (int col = 0; col < 8; col++) {
-            if (xPos + col >= 0 && xPos + col <= FRAME_WIDTH &&
-                yPos + row >= 0 && yPos + row <= FRAME_HEIGHT &&
-                spriteRow & (0b10000000 >> col)) {
-                const int pixel = (xPos + col) + ((yPos + row) * FRAME_WIDTH);
-
+            const int pixel = ((xPos + col) % FRAME_WIDTH) + ((yPos + row) % 
+                FRAME_HEIGHT) * FRAME_WIDTH;
+            if (clipQuirk) {
+                if (xPos + col >= FRAME_WIDTH || yPos + row >= FRAME_HEIGHT) {
+                    continue;
+                }
+            }
+            if (spriteRow & (0b10000000 >> col)) {
                 if (frame[pixel]) {
                     registers.v[0xF] = 1;
                 }

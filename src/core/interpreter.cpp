@@ -18,7 +18,8 @@ Interpreter::Interpreter() :
     stack{},
     frame{},
     keypad{},
-    random{} {
+    random{},
+    clipQuirk{true} {
     const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -58,6 +59,8 @@ void Interpreter::reset() {
     stack.fill(0);
     frame.fill(false);
     keypad.fill(false);
+
+    clipQuirk = true;
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
@@ -102,6 +105,10 @@ void Interpreter::setKey(const int key, const bool isPressed) {
     keypad[key] = isPressed;
 }
 
+void Interpreter::setClipQuirk(const bool isEnabled) {
+    clipQuirk = isEnabled;
+}
+
 void Interpreter::tick() {
     const Opcode opcode = memory[registers.pc] << 8 | memory[registers.pc + 1];
 
@@ -139,7 +146,7 @@ void Interpreter::tick() {
         case 0xB: return instructions::JP_V0_ADDR(opcode, registers);
         case 0xC: return instructions::RND_VX_BYTE(opcode, registers, random);
         case 0xD: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
-            registers, frame);
+            registers, frame, clipQuirk);
         case 0xE:
             switch(opcode.byte()) {
                 case 0x9E: return instructions::SKP_VX(opcode, registers, 

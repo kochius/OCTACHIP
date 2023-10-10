@@ -77,7 +77,7 @@ void RND_VX_BYTE(const Opcode& opcode, Registers& registers, Random& random);
 // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set 
 //        VF = collision.
 void DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame);
+    Registers& registers, Frame& frame, const bool clipQuirk);
 
 // Ex9E - Skip next instruction if key with the value of Vx is pressed.
 void SKP_VX(const Opcode& opcode, Registers& registers, const Keypad& keypad);

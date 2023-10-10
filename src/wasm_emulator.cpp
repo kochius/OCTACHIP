@@ -31,6 +31,10 @@ void Emulator::setSpeed(const int instructionsPerSecond) {
         UPDATES_PER_SECOND);
 }
 
+void Emulator::setClipQuirk(const bool isEnabled) {
+    interpreter.setClipQuirk(isEnabled);
+}
+
 void Emulator::update() {
     input.processInput([&](const int key, const bool isPressed) {
         interpreter.setKey(key, isPressed);

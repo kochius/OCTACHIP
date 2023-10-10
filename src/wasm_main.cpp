@@ -31,6 +31,10 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
+extern "C" void setClipQuirk(bool isEnabled) {
+    emulator.setClipQuirk(isEnabled);
+}
+
 extern "C" uint8_t getRegisterValue(const int index) {
     return emulator.getRegisterValue(index);
 }
