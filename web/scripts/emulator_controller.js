@@ -1,4 +1,4 @@
-export const createEmulatorControls = () => {
+export const createEmulatorController = () => {
     const loadRom = (filename) => {
         try {
             const encoder = new TextEncoder();
@@ -22,11 +22,11 @@ export const createEmulatorControls = () => {
         Module.ccall("main", "null", [], []);
         Module.running = true;
     
-        const startStopButton = document.querySelector("#start-stop-button");
-        startStopButton.textContent = "Stop";
+        const startButton = document.querySelector("#start-button");
+        startButton.textContent = "Stop";
     
-        const pauseResumeButton = document.querySelector("#pause-resume-button");
-        pauseResumeButton.disabled = false;
+        const pauseButton = document.querySelector("#pause-button");
+        pauseButton.disabled = false;
     };
     
     const stopEmulator = () => {
@@ -34,28 +34,28 @@ export const createEmulatorControls = () => {
         Module.running = false;
         Module.paused = false;
     
-        const startStopButton = document.querySelector("#start-stop-button");
-        startStopButton.textContent = "Start";
+        const startButton = document.querySelector("#start-button");
+        startButton.textContent = "Start";
     
-        const pauseResumeButton = document.querySelector("#pause-resume-button");
-        pauseResumeButton.textContent = "Pause";
-        pauseResumeButton.disabled = true;
+        const pauseButton = document.querySelector("#pause-button");
+        pauseButton.textContent = "Pause";
+        pauseButton.disabled = true;
     };
     
     const pauseEmulator = () => {
         Module.ccall("pause", "null", [], []);
         Module.paused = true;
     
-        const pauseResumeButton = document.querySelector("#pause-resume-button");
-        pauseResumeButton.textContent = "Resume";
+        const pauseButton = document.querySelector("#pause-button");
+        pauseButton.textContent = "Resume";
     };
     
     const resumeEmulator = () => {
         Module.ccall("resume", "null", [], []);
         Module.paused = false;
     
-        const pauseResumeButton = document.querySelector("#pause-resume-button");
-        pauseResumeButton.textContent = "Pause";
+        const pauseButton = document.querySelector("#pause-button");
+        pauseButton.textContent = "Pause";
     };
 
     return {

@@ -2,7 +2,8 @@
 import { createMonitor } from "./scripts/monitor.js";
 import { createKeypad } from "./scripts/keypad.js";
 import { fetchRomsMetadata } from "./scripts/utils.js";
-import { createEmulatorControls } from "./scripts/emulator_controls.js";
+import { createEmulatorController } from "./scripts/emulator_controller.js";
+import { createUI } from "./scripts/ui.js";
 
 window.Module = {
     noInitialRun: true,
@@ -20,103 +21,69 @@ window.Module = {
     paused: false,
 };
 
-const romSelector = document.querySelector("#rom-select");
-const romDescription = document.querySelector("#rom-description");
-const startStopButton = document.querySelector("#start-stop-button");
-const pauseResumeButton = document.querySelector("#pause-resume-button");
-const settingsButton = document.querySelector("#settings-button");
-const settingsMenu = document.querySelector("#settings-menu");
-const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
-
-const setRomDescription = (description) => {
-    romDescription.textContent = "";
-
-    const lines = description.split("\n");
-
-    lines.forEach((line, index) => {
-        const lineText = document.createTextNode(line);
-        romDescription.appendChild(lineText);
-
-        if (index < lines.length - 1) {
-            const lineBreak = document.createElement("br");
-            romDescription.appendChild(lineBreak);
-        }
-    });
-};
-
-const closeModalCallback = (event) => {
-    const modal = event.target;
-    modal.close();
-    modal.removeEventListener("animationend", closeModalCallback);
-    modal.classList.remove("close");
-};
-
-const closeModal = (modal) => {
-    modal.addEventListener("animationend", closeModalCallback);
-    modal.classList.add("close");
-};
-
 Module["onRuntimeInitialized"] = async () => {
+    const emulatorController = createEmulatorController();
     const hwMonitor = createMonitor();
-    const emulatorControls = createEmulatorControls();
+    const keypad = createKeypad();
+    const ui = createUI();
 
     const roms = await fetchRomsMetadata();
 
-    roms.forEach((rom, index) => {
-        const romOption = document.createElement("option");
-        romOption.textContent = rom.title;
-        romOption.value = index;
-        romSelector.add(romOption);
-    });
+    ui.buildRomDropdown(roms);
 
+    const romSelector = document.querySelector("#rom-select");
     romSelector.addEventListener("change", (event) => {
         const selectedRom = roms[event.target.value];
-        setRomDescription(selectedRom.description);
+        ui.setRomDescription(selectedRom.description);
 
         if (Module.running) {
-            emulatorControls.loadRom(selectedRom.filename);
-            emulatorControls.setSpeed(selectedRom.speed);
+            emulatorController.loadRom(selectedRom.filename);
+            emulatorController.setSpeed(selectedRom.speed);
         }
     });
 
-    startStopButton.addEventListener("click", () => {
+    const startButton = document.querySelector("#start-button");
+    startButton.addEventListener("click", () => {
         if (Module.running) {
-            emulatorControls.stopEmulator();
+            emulatorController.stopEmulator();
             hwMonitor.updateMonitoringInfo();
         }
         else {
             const selectedRom = roms[romSelector.value];
-            emulatorControls.startEmulator(selectedRom);
+            emulatorController.startEmulator(selectedRom);
             hwMonitor.startMonitoring();
         }
     });
 
-    pauseResumeButton.addEventListener("click", () => {
+    const pauseButton = document.querySelector("#pause-button");
+    pauseButton.addEventListener("click", () => {
         if (Module.paused) {
-            emulatorControls.resumeEmulator();
+            emulatorController.resumeEmulator();
             hwMonitor.startMonitoring();
         }
         else {
-            emulatorControls.pauseEmulator();
+            emulatorController.pauseEmulator();
             hwMonitor.updateMonitoringInfo();
         }
     });
 
+    const settingsButton = document.querySelector("#settings-button");
+    const settingsMenu = document.querySelector("#settings-menu");
     settingsButton.addEventListener("click", () => {
         settingsMenu.showModal();
     });
 
+    const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
     settingsMenuCloseButton.addEventListener("click", () => {
-        closeModal(settingsMenu);
+        ui.closeModal(settingsMenu);
     });
 
     settingsMenu.addEventListener("click", (event) => {
         if (event.target.id === "settings-menu") {
-            closeModal(settingsMenu);
+            ui.closeModal(settingsMenu);
         }
     });
 
-    const keypad = createKeypad();
     const keypadToggle = document.querySelector("#keypad-toggle");
     keypadToggle.addEventListener("change", () => {
         if (keypadToggle.checked) {
@@ -128,6 +95,6 @@ Module["onRuntimeInitialized"] = async () => {
     });
 
     const initialRom = roms[romSelector.value];
-    setRomDescription(initialRom.description);
+    ui.setRomDescription(initialRom.description);
     hwMonitor.updateMonitoringInfo();
 };
