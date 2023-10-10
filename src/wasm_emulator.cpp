@@ -69,6 +69,10 @@ void Emulator::update() {
     renderer.drawFrame(interpreter.getFrame());
 }
 
+std::string Emulator::getDisassembledInstructions() const {
+    return interpreter.getDisassembledInstructions();
+}
+
 uint8_t Emulator::getRegisterValue(const int index) const {
     return interpreter.getRegisterValue(index);
 }

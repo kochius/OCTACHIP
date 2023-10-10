@@ -10,6 +10,11 @@ export const createEmulatorController = () => {
             console.error(`Failed to load ROM: ${error.message}`);
         }
     };
+
+    const getDisassembledInstructions = () => {
+        const instructionsText = Module.getDisassembledInstructions();
+        return instructionsText.split("\n");
+    };
     
     const setSpeed = (emulationSpeed) => {
         Module.ccall("setSpeed", null, ["number"], [emulationSpeed]);
@@ -43,6 +48,7 @@ export const createEmulatorController = () => {
 
     return {
         loadRom,
+        getDisassembledInstructions,
         setSpeed,
         setQuirk,
         startEmulator,

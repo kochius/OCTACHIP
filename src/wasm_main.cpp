@@ -1,4 +1,6 @@
 #include <emscripten.h>
+#include <emscripten/bind.h>
+#include <string>
 #include <SDL.h>
 
 #include "wasm_emulator.hpp"
@@ -83,6 +85,15 @@ extern "C" void pushKeyUpEvent(const int key) {
     event.type = SDL_KEYUP;
     event.key.keysym.sym = key;
     SDL_PushEvent(&event);
+}
+
+std::string getDisassembledInstructions() {
+    return emulator.getDisassembledInstructions();
+}
+
+EMSCRIPTEN_BINDINGS(my_module) {
+    emscripten::function("getDisassembledInstructions", 
+        &getDisassembledInstructions);
 }
 
 void mainLoop() {

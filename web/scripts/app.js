@@ -14,14 +14,19 @@ export const createApp = () => {
 
     const handleRomChange = (roms, romIndex) => {
         selectedRom = roms[romIndex];
+
         userInterface.setRomDescription(selectedRom.description);
-        if (running) {
-            emulatorController.loadRom(selectedRom.filename);
-            emulatorController.setSpeed(selectedRom.speed);
-            emulatorController.setQuirk("setLoadStoreQuirk", selectedRom.loadStoreQuirk);
-            emulatorController.setQuirk("setShiftQuirk", selectedRom.shiftQuirk);
-            emulatorController.setQuirk("setWrapQuirk", selectedRom.wrapQuirk);
-        }
+        
+        emulatorController.loadRom(selectedRom.filename);
+
+        const instructionsArr = emulatorController.getDisassembledInstructions();
+        userInterface.displayInstructions(instructionsArr);
+
+        emulatorController.setSpeed(selectedRom.speed);
+
+        emulatorController.setQuirk("setLoadStoreQuirk", selectedRom.loadStoreQuirk);
+        emulatorController.setQuirk("setShiftQuirk", selectedRom.shiftQuirk);
+        emulatorController.setQuirk("setWrapQuirk", selectedRom.wrapQuirk);
     };
 
     const handleStartButtonClick = () => {
@@ -91,8 +96,7 @@ export const createApp = () => {
             userInterface.toggleKeypad(event.target.checked);
         });
     
-        selectedRom = roms[romSelector.value];
-        userInterface.setRomDescription(selectedRom.description);
+        handleRomChange(roms, romSelector.value);
         monitor.updateAllInfo();
     };
 

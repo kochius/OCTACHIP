@@ -3,6 +3,7 @@ import { hexFormat } from "./utils.js";
 export const createMonitor = () => {
     const V_REG_COUNT = 16;
     const STACK_SIZE = 16;
+    const PC_INDEX = 0;
     const SP_INDEX = 2;
 
     const createDataEntry = (selector, formatLength, getter, arg=null) => {
@@ -60,12 +61,30 @@ export const createMonitor = () => {
         const stackTop = document.querySelector(`#stack-level-${spValue}`);
         stackTop.classList.add("stack-top");
     };
+
+    const instructionsContainer = document.querySelector("#instructions-container");
+
+    const updateCurrentInstruction = () => {
+        const oldInstruction = document.querySelector(".current-instruction");
+        if (oldInstruction) {
+            oldInstruction.classList.remove("current-instruction");
+        }
+
+        const pcValue = specialRegisters[PC_INDEX].value;
+        const newInstruction = document.querySelector(`#instruction-${pcValue}`);
+        if (newInstruction) {
+            newInstruction.classList.add("current-instruction");
+            instructionsContainer.scrollTo(0, newInstruction.offsetTop - 
+                newInstruction.parentElement.offsetTop - 60);
+        }
+    }
     
     const updateAllInfo = () => {
         updateData(specialRegisters);
         updateData(vRegisters);
         updateData(stack);
         updateStackPointer();
+        updateCurrentInstruction();
     };
     
     let requestID;

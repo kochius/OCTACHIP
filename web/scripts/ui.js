@@ -30,6 +30,20 @@ export const createUI = () => {
         });
     };
 
+    const displayInstructions = (instructionsArr) => {
+        let fragment = new DocumentFragment();
+        instructionsArr.forEach((instructionText, index) => {
+            let div = document.createElement("div");
+            div.textContent = instructionText;
+            div.id = `instruction-${0x200 + index}`;
+            fragment.appendChild(div);
+        });
+
+        const instructionsContainer = document.querySelector("#instructions-container");
+        instructionsContainer.textContent = "";
+        instructionsContainer.appendChild(fragment);
+    };
+
     const toggleStartButton = (isRunning) => {
         const startButton = document.querySelector("#start-button");
         if (isRunning) {
@@ -85,6 +99,7 @@ export const createUI = () => {
     return {
         buildRomDropdown,
         setRomDescription,
+        displayInstructions,
         toggleStartButton,
         togglePauseButton,
         toggleKeypad,

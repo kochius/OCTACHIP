@@ -75,6 +75,11 @@ body {
     contain: size;
 }
 
+#instructions-card {
+    grid-area: instructions;
+    height: 200px;
+}
+
 #registers-card {
     grid-area: registers;
 }
@@ -90,6 +95,7 @@ body {
     grid-template-areas:
         "display about-rom"
         "controls stack"
+        "instructions stack"
         "registers stack";
     gap: var(--global-space);
 }
@@ -100,6 +106,7 @@ body {
         "display about-rom"
         "keypad about-rom"
         "controls stack"
+        "instructions stack"
         "registers stack"; 
 }
 
@@ -115,6 +122,7 @@ body {
             "display display"
             "controls controls"
             "about-rom about-rom"
+            "instructions instructions"
             "registers stack";
     }
 
@@ -124,6 +132,7 @@ body {
             "keypad keypad"
             "controls controls"
             "about-rom about-rom"
+            "instructions instructions"
             "registers stack"
     }
 }
@@ -140,6 +149,7 @@ body {
             "display"
             "controls"
             "about-rom"
+            "instructions"
             "registers"
             "stack";
     }
@@ -150,6 +160,7 @@ body {
             "keypad"
             "controls"
             "about-rom"
+            "instructions"
             "registers"
             "stack";
     }
@@ -331,6 +342,12 @@ canvas.emscripten {
     display: flex;
     flex-direction: column;
     gap: var(--global-space);
+}
+
+/* || Instructions card */
+.current-instruction {
+    background-color: var(--highlight-color);
+    color: var(--inverted-font-color);
 }
 
 /* || Registers card */

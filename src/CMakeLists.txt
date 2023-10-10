@@ -81,6 +81,7 @@ if(EMSCRIPTEN)
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            "SHELL:-s -lembind"
     )
 
     target_sources(${MAIN_EXECUTABLE}

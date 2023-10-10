@@ -22,6 +22,7 @@ public:
     void setWrapQuirk(const bool isEnabled);
     void update();
 
+    std::string getDisassembledInstructions() const;
     uint8_t getRegisterValue(const int index) const;
     uint16_t getProgramCounterValue() const;
     uint16_t getIndexRegisterValue() const;
