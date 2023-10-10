@@ -1,5 +1,6 @@
 // get rid of size methods
 import { createMonitor } from "./scripts/monitor.js";
+import { createKeypad } from "./scripts/keypad.js";
 
 window.Module = {
     noInitialRun: true,
@@ -118,100 +119,6 @@ const closeModal = (modal) => {
     modal.classList.add("close");
 };
 
-let pressedKeys = new Array(16).fill(false);
-
-const onKeyEvent = (key, down) => {
-    const keyMap = new Map([
-        ["0", "x"],
-        ["1", "1"],
-        ["2", "2"],
-        ["3", "3"],
-        ["4", "q"],
-        ["5", "w"],
-        ["6", "e"],
-        ["7", "a"],
-        ["8", "s"],
-        ["9", "d"],
-        ["A", "z"],
-        ["B", "c"],
-        ["C", "4"],
-        ["D", "r"],
-        ["E", "f"],
-        ["F", "v"]
-    ]);
-    const keyCharCode = keyMap.get(key).charCodeAt(0);
-    if (down) {
-        Module.ccall("pushKeyDownEvent", null, ["number"], [keyCharCode]);
-    }
-    else {
-        Module.ccall("pushKeyUpEvent", null, ["number"], [keyCharCode]);
-    }
-};
-
-const onKeyDown = (event) => {
-    event.preventDefault();
-    onKeyEvent(event.target.value, true);
-    event.target.classList.add("active");
-
-    pressedKeys[event.target.id] = true;
-};
-
-const onKeyUp = (event) => {
-    event.preventDefault();
-    if (pressedKeys[event.target.id]) {
-        onKeyEvent(event.target.value, false);
-        event.target.classList.remove("active");
-
-        pressedKeys[event.target.id] = false;
-    }
-};
-
-const addKeypad = () => {
-    const keypad = document.createElement("div");
-    keypad.id = "keypad";
-
-    keypad.addEventListener("touchstart", (event) => {event.preventDefault()});
-    keypad.addEventListener("contextmenu", (event) => {event.preventDefault()});
-
-    const keys = ["1", "2", "3", "C",
-                  "4", "5", "6", "D",
-                  "7", "8", "9", "E",
-                  "A", "0", "B", "F"];
-    keys.forEach((key, index) => {
-        const keypadButton = document.createElement("button");
-        keypadButton.textContent = key;
-        keypadButton.id = index;
-        keypadButton.classList.add("keypad-button");
-        keypadButton.setAttribute("type", "button");
-        keypadButton.setAttribute("autocomplete", "off");
-        keypadButton.setAttribute("value", key);
-
-        keypadButton.addEventListener("touchstart", onKeyDown);
-        keypadButton.addEventListener("touchend", onKeyUp);
-
-        keypadButton.addEventListener("mousedown", onKeyDown);
-        keypadButton.addEventListener("mouseup", onKeyUp);
-        keypadButton.addEventListener("mouseleave", onKeyUp);
-        
-        keypadButton.addEventListener("contextmenu", (event) => {event.preventDefault()});
-
-        keypad.appendChild(keypadButton);
-    });
-    const controlsCard = document.querySelector("#controls-card");
-    const mainGrid = document.querySelector(".main-grid");
-    mainGrid.insertBefore(keypad, controlsCard);
-    mainGrid.classList.add("keypad-enabled");
-};
-
-const removeKeypad = () => {
-    const keypad = document.querySelector("#keypad");
-    if (keypad) {
-        keypad.remove();
-        const mainGrid = document.querySelector(".main-grid");
-        mainGrid.classList.remove("keypad-enabled");
-    }
-};
-
 Module["onRuntimeInitialized"] = async () => {
     const hwMonitor = createMonitor();
 
@@ -271,13 +178,14 @@ Module["onRuntimeInitialized"] = async () => {
         }
     });
 
+    const keypad = createKeypad();
     const keypadToggle = document.querySelector("#keypad-toggle");
     keypadToggle.addEventListener("change", () => {
         if (keypadToggle.checked) {
-            addKeypad();
+            keypad.addKeypad();
         }
         else {
-            removeKeypad();
+            keypad.removeKeypad();
         }
     });
 
