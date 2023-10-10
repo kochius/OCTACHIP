@@ -28,6 +28,8 @@ export const createApp = () => {
             emulatorController.startEmulator(selectedRom);
             monitor.startMonitoring();
         }
+        userInterface.toggleStartButton(Module.running);
+        userInterface.togglePauseButton(Module.paused, Module.running);
     };
 
     const handlePauseButtonClick = () => {
@@ -39,6 +41,7 @@ export const createApp = () => {
             emulatorController.pauseEmulator();
             monitor.updateAllInfo();
         }
+        userInterface.togglePauseButton(Module.paused, Module.running);
     };
 
     const init = async () => {    

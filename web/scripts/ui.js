@@ -30,6 +30,27 @@ export const createUI = () => {
         });
     };
 
+    const toggleStartButton = (isRunning) => {
+        const startButton = document.querySelector("#start-button");
+        if (isRunning) {
+            startButton.textContent = "Stop";
+        }
+        else {
+            startButton.textContent = "Start";
+        }
+    }
+
+    const togglePauseButton = (isPaused, isRunning) => {
+        const pauseButton = document.querySelector("#pause-button");
+        if (isPaused) {
+            pauseButton.textContent = "Resume";
+        }
+        else {
+            pauseButton.textContent = "Pause";
+        }
+        pauseButton.disabled = !isRunning;
+    };
+
     const toggleKeypad = (isEnabled) => {
         if (isEnabled) {
             keypad.addKeypad();
@@ -64,6 +85,8 @@ export const createUI = () => {
     return {
         buildRomDropdown,
         setRomDescription,
+        toggleStartButton,
+        togglePauseButton,
         toggleKeypad,
         toggleSettingsMenu,
     };
