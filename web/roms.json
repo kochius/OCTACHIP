@@ -4,15 +4,17 @@
         "filename": "space_invaders.ch8",
         "description": "Space Invaders, by David Winter\n\nQ (Keypad: 4) - Move left\nE (Keypad: 6) - Move right\nW (Keypad: 5) - Start/Shoot",
         "speed": 900,
-        "shiftQuirk": false,
-        "clipQuirk": true
+        "loadStoreQuirk": true,
+        "shiftQuirk": true,
+        "wrapQuirk": false
     },
     {
         "title": "Tetris",
         "filename": "tetris.ch8",
         "description": "Tetris (1991), by Fran Dachille\n\nW (Keypad: 5) - Move left\nE (Keypad: 6) - Move right\nQ (Keypad: 4) - Rotate left\nA (Keypad: 7) - Fast drop",
         "speed": 700,
-        "shiftQuirk": false,
-        "clipQuirk": true
+        "loadStoreQuirk": true,
+        "shiftQuirk": true,
+        "wrapQuirk": false
     }
 ]

@@ -19,8 +19,9 @@ Interpreter::Interpreter() :
     frame{},
     keypad{},
     random{},
+    loadStoreQuirk{true},
     shiftQuirk{true},
-    clipQuirk{true} {
+    wrapQuirk{false} {
     const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -61,8 +62,9 @@ void Interpreter::reset() {
     frame.fill(false);
     keypad.fill(false);
 
+    loadStoreQuirk = true;
     shiftQuirk = true;
-    clipQuirk = true;
+    wrapQuirk = false;
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
@@ -107,12 +109,16 @@ void Interpreter::setKey(const int key, const bool isPressed) {
     keypad[key] = isPressed;
 }
 
+void Interpreter::setLoadStoreQuirk(const bool isEnabled) {
+    loadStoreQuirk = isEnabled;
+}
+
 void Interpreter::setShiftQuirk(const bool isEnabled) {
     shiftQuirk = isEnabled;
 }
 
-void Interpreter::setClipQuirk(const bool isEnabled) {
-    clipQuirk = isEnabled;
+void Interpreter::setWrapQuirk(const bool isEnabled) {
+    wrapQuirk = isEnabled;
 }
 
 void Interpreter::tick() {
@@ -154,7 +160,7 @@ void Interpreter::tick() {
         case 0xB: return instructions::JP_V0_ADDR(opcode, registers);
         case 0xC: return instructions::RND_VX_BYTE(opcode, registers, random);
         case 0xD: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
-            registers, frame, clipQuirk);
+            registers, frame, wrapQuirk);
         case 0xE:
             switch(opcode.byte()) {
                 case 0x9E: return instructions::SKP_VX(opcode, registers, 
@@ -175,9 +181,9 @@ void Interpreter::tick() {
                 case 0x33: return instructions::LD_B_VX(opcode, memory, 
                     registers);
                 case 0x55: return instructions::LD_I_VX(opcode, memory, 
-                    registers);
+                    registers, loadStoreQuirk);
                 case 0x65: return instructions::LD_VX_I(opcode, memory, 
-                    registers);
+                    registers, loadStoreQuirk);
                 default: return instructions::ILLEGAL_OPCODE(opcode);
             }
         default: return instructions::ILLEGAL_OPCODE(opcode);

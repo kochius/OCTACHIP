@@ -66,8 +66,9 @@ if(EMSCRIPTEN)
                                           _setSpeed,\
                                           _stop,_pause,\
                                           _resume,\
+                                          _setLoadStoreQuirk,\
                                           _setShiftQuirk,\
-                                          _setClipQuirk,\
+                                          _setWrapQuirk,\
                                           _getRegisterValue,\
                                           _getProgramCounterValue,\
                                           _getIndexRegisterValue,\

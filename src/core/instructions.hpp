@@ -79,7 +79,7 @@ void RND_VX_BYTE(const Opcode& opcode, Registers& registers, Random& random);
 // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set 
 //        VF = collision.
 void DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame, const bool clipQuirk);
+    Registers& registers, Frame& frame, const bool wrapQuirk);
 
 // Ex9E - Skip next instruction if key with the value of Vx is pressed.
 void SKP_VX(const Opcode& opcode, Registers& registers, const Keypad& keypad);
@@ -109,10 +109,12 @@ void LD_F_VX(const Opcode& opcode, Registers& registers);
 void LD_B_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
 
 // Fx55 - Store registers V0 through Vx in memory starting at location I.
-void LD_I_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
+void LD_I_VX(const Opcode& opcode, Memory& memory, Registers& registers, 
+    const bool loadStoreQuirk);
 
 // Fx65 - Read registers V0 through Vx from memory starting at location I.
-void LD_VX_I(const Opcode& opcode, const Memory& memory, Registers& registers);
+void LD_VX_I(const Opcode& opcode, const Memory& memory, Registers& registers,
+    const bool loadStoreQuirk);
 
 // Illegal opcode - Throws exception when no matching instruction is found.
 void ILLEGAL_OPCODE(const Opcode& opcode);

@@ -22,8 +22,9 @@ export const createEmulatorController = () => {
     const startEmulator = (rom) => {
         loadRom(rom.filename);
         setSpeed(rom.speed);
+        setQuirk("setLoadStoreQuirk", rom.loadStoreQuirk);
         setQuirk("setShiftQuirk", rom.shiftQuirk);
-        setQuirk("setClipQuirk", rom.clipQuirk);
+        setQuirk("setWrapQuirk", rom.wrapQuirk);
     
         Module.ccall("main", "null", [], []);
     };

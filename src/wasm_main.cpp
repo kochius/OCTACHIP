@@ -31,12 +31,16 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
+extern "C" void setLoadStoreQuirk(bool isEnabled) {
+    emulator.setLoadStoreQuirk(isEnabled);
+}
+
 extern "C" void setShiftQuirk(bool isEnabled) {
     emulator.setShiftQuirk(isEnabled);
 }
 
-extern "C" void setClipQuirk(bool isEnabled) {
-    emulator.setClipQuirk(isEnabled);
+extern "C" void setWrapQuirk(bool isEnabled) {
+    emulator.setWrapQuirk(isEnabled);
 }
 
 extern "C" uint8_t getRegisterValue(const int index) {

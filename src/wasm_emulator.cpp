@@ -31,12 +31,16 @@ void Emulator::setSpeed(const int instructionsPerSecond) {
         UPDATES_PER_SECOND);
 }
 
+void Emulator::setLoadStoreQuirk(const bool isEnabled) {
+    interpreter.setLoadStoreQuirk(isEnabled);
+}
+
 void Emulator::setShiftQuirk(const bool isEnabled) {
     interpreter.setShiftQuirk(isEnabled);
 }
 
-void Emulator::setClipQuirk(const bool isEnabled) {
-    interpreter.setClipQuirk(isEnabled);
+void Emulator::setWrapQuirk(const bool isEnabled) {
+    interpreter.setWrapQuirk(isEnabled);
 }
 
 void Emulator::update() {

@@ -185,7 +185,7 @@ void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
  */
 void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers, 
     const bool shiftQuirk) {
-    if (shiftQuirk) {
+    if (!shiftQuirk) {
         registers.v[opcode.x()] = registers.v[opcode.y()];
     }
     registers.v[0xF] = registers.v[opcode.x()] & 0x01;
@@ -214,7 +214,7 @@ void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
  */
 void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers, 
     const bool shiftQuirk) {
-    if (shiftQuirk) {
+    if (!shiftQuirk) {
         registers.v[opcode.x()] = registers.v[opcode.y()];
     }
     registers.v[0xF] = registers.v[opcode.x()] >> 7;
@@ -276,7 +276,7 @@ void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers,
  * wraps around to the opposite side of the screen.
  */
 void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame, const bool clipQuirk) {
+    Registers& registers, Frame& frame, const bool wrapQuirk) {
     const int xPos = registers.v[opcode.x()] % FRAME_WIDTH;
     const int yPos = registers.v[opcode.y()] % FRAME_HEIGHT;
     const int height = opcode.nibble();
@@ -294,7 +294,7 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
         for (int col = 0; col < 8; col++) {
             const int pixel = ((xPos + col) % FRAME_WIDTH) + ((yPos + row) % 
                 FRAME_HEIGHT) * FRAME_WIDTH;
-            if (clipQuirk) {
+            if (!wrapQuirk) {
                 if (xPos + col >= FRAME_WIDTH || yPos + row >= FRAME_HEIGHT) {
                     continue;
                 }
@@ -435,12 +435,15 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory,
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, 
-    const Registers& registers) {
+    Registers& registers, const bool loadStoreQuirk) {
     for (int i = 0; i <= opcode.x(); i++) {
         if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         memory[registers.i + i] = registers.v[i];
+    }
+    if (!loadStoreQuirk) {
+        registers.i = (registers.i + opcode.x() + 1) & 0xFFFF;
     }
 }
 
@@ -451,12 +454,15 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory,
  * registers V0 through Vx.
  */
 void instructions::LD_VX_I(const Opcode& opcode, const Memory& memory, 
-    Registers& registers) {
+    Registers& registers, const bool loadStoreQuirk) {
     for (int i = 0; i <= opcode.x(); i++) {
         if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         registers.v[i] = memory[registers.i + i];
+    }
+    if (!loadStoreQuirk) {
+        registers.i = (registers.i + opcode.x() + 1) & 0xFFFF;
     }
 }
 

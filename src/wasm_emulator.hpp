@@ -17,8 +17,9 @@ public:
     void refreshUpdateTimer();
     void loadRom(const std::filesystem::path& romPath);
     void setSpeed(const int instructionsPerSecond);
+    void setLoadStoreQuirk(const bool isEnabled);
     void setShiftQuirk(const bool isEnabled);
-    void setClipQuirk(const bool isEnabled);
+    void setWrapQuirk(const bool isEnabled);
     void update();
 
     uint8_t getRegisterValue(const int index) const;
