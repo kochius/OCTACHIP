@@ -30,12 +30,13 @@ export const createUI = () => {
         });
     };
 
-    const showKeypad = () => {
-        keypad.addKeypad();
-    };
-
-    const hideKeypad = () => {
-        keypad.removeKeypad();
+    const toggleKeypad = (isEnabled) => {
+        if (isEnabled) {
+            keypad.addKeypad();
+        }
+        else {
+            keypad.removeKeypad();
+        }
     };
 
     const closeModalCallback = (event) => {
@@ -50,11 +51,20 @@ export const createUI = () => {
         modal.classList.add("close");
     };
 
+    const toggleSettingsMenu = (isEnabled) => {
+        const settingsMenu = document.querySelector("#settings-menu");
+        if (isEnabled) {
+            settingsMenu.showModal();
+        }
+        else {
+            closeModal(settingsMenu);
+        }
+    };
+
     return {
         buildRomDropdown,
         setRomDescription,
-        showKeypad,
-        hideKeypad,
-        closeModal,
-    }
-}
+        toggleKeypad,
+        toggleSettingsMenu,
+    };
+};
