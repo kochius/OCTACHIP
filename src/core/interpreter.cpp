@@ -18,6 +18,7 @@ Interpreter::Interpreter() :
     stack{},
     frame{},
     keypad{},
+    prevKeypadState{},
     random{},
     loadStoreQuirk{true},
     shiftQuirk{true},
@@ -61,6 +62,7 @@ void Interpreter::reset() {
     stack.fill(0);
     frame.fill(false);
     keypad.fill(false);
+    prevKeypadState.fill(false);
 
     loadStoreQuirk = true;
     shiftQuirk = true;
@@ -173,7 +175,7 @@ void Interpreter::tick() {
             switch(opcode.byte()) {
                 case 0x07: return instructions::LD_VX_DT(opcode, registers);
                 case 0x0A: return instructions::LD_VX_K(opcode, registers, 
-                    keypad);
+                    keypad, prevKeypadState);
                 case 0x15: return instructions::LD_DT_VX(opcode, registers);
                 case 0x18: return instructions::LD_ST_VX(opcode, registers);
                 case 0x1E: return instructions::ADD_I_VX(opcode, registers);

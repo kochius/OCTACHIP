@@ -356,11 +356,15 @@ void instructions::LD_VX_DT(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::LD_VX_K(const Opcode& opcode, Registers& registers, const 
-    Keypad& keypad) {
+    Keypad& keypad, Keypad& prevKeypadState) {
     for (int keyValue = 0; keyValue < KEY_COUNT; keyValue++) {
-        if (keypad[keyValue]) {
+        if (prevKeypadState[keyValue] && !keypad[keyValue]) {
             registers.v[opcode.x()] = static_cast<uint8_t>(keyValue);
+            prevKeypadState[keyValue] = false;
             return;
+        }
+        else if (!prevKeypadState[keyValue] && keypad[keyValue]) {
+            prevKeypadState[keyValue] = true;
         }
     }
     registers.pc -= 2;

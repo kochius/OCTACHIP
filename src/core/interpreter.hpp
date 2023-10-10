@@ -42,6 +42,7 @@ private:
     Stack stack;
     Frame frame;
     Keypad keypad;
+    Keypad prevKeypadState;
     Random random;
     bool loadStoreQuirk;
     bool shiftQuirk;

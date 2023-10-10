@@ -91,7 +91,8 @@ void SKNP_VX(const Opcode& opcode, Registers& registers, const Keypad& keypad);
 void LD_VX_DT(const Opcode& opcode, Registers& registers);
 
 // Fx0A - Wait for a key press, store the value of the key in Vx.
-void LD_VX_K(const Opcode& opcode, Registers& registers, const Keypad& keypad);
+void LD_VX_K(const Opcode& opcode, Registers& registers, const Keypad& keypad, 
+    Keypad& prevKeypadState);
 
 // Fx15 - Set delay timer = Vx.
 void LD_DT_VX(const Opcode& opcode, Registers& registers);

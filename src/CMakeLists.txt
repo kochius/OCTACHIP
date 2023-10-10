@@ -80,6 +80,7 @@ if(EMSCRIPTEN)
                                           _pushKeyUpEvent'"
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
+            "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
     )
 
     target_sources(${MAIN_EXECUTABLE}
