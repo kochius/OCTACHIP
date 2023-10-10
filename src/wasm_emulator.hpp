@@ -19,8 +19,6 @@ public:
     void setSpeed(const int instructionsPerSecond);
     void update();
 
-    int getVRegCount() const;
-    int getStackSize() const;
     uint8_t getRegisterValue(const int index) const;
     uint16_t getProgramCounterValue() const;
     uint16_t getIndexRegisterValue() const;

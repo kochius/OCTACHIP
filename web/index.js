@@ -1,4 +1,3 @@
-// get rid of size methods
 import { createApp } from "./scripts/app.js";
 
 window.Module = {

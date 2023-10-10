@@ -31,14 +31,6 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
-extern "C" int getVRegCount() {
-    return emulator.getVRegCount();
-}
-
-extern "C" int getStackSize() {
-    return emulator.getStackSize();
-}
-
 extern "C" uint8_t getRegisterValue(const int index) {
     return emulator.getRegisterValue(index);
 }
