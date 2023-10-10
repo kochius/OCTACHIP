@@ -61,7 +61,7 @@ export const createMonitor = () => {
         stackTop.classList.add("stack-top");
     };
     
-    const updateMonitoringInfo = () => {
+    const updateAllInfo = () => {
         updateData(specialRegisters);
         updateData(vRegisters);
         updateData(stack);
@@ -69,7 +69,7 @@ export const createMonitor = () => {
     };
     
     const startMonitoring = () => {
-        updateMonitoringInfo();
+        updateAllInfo();
     
         if (!Module.running || Module.paused) {
             return;
@@ -79,7 +79,7 @@ export const createMonitor = () => {
     };
 
     return {
-        updateMonitoringInfo,
+        updateAllInfo,
         startMonitoring,
     };
 };

@@ -1,4 +1,8 @@
+import { createKeypad } from "./keypad.js"
+
 export const createUI = () => {
+    const keypad = createKeypad();
+
     const buildRomDropdown = (roms) => {
         const romSelector = document.querySelector("#rom-select");
         roms.forEach((rom, index) => {
@@ -7,18 +11,6 @@ export const createUI = () => {
             romOption.value = index;
             romSelector.add(romOption);
         });
-    };
-
-    const closeModalCallback = (event) => {
-        const modal = event.target;
-        modal.close();
-        modal.removeEventListener("animationend", closeModalCallback);
-        modal.classList.remove("close");
-    };
-    
-    const closeModal = (modal) => {
-        modal.addEventListener("animationend", closeModalCallback);
-        modal.classList.add("close");
     };
 
     const setRomDescription = (description) => {
@@ -38,9 +30,31 @@ export const createUI = () => {
         });
     };
 
+    const showKeypad = () => {
+        keypad.addKeypad();
+    };
+
+    const hideKeypad = () => {
+        keypad.removeKeypad();
+    };
+
+    const closeModalCallback = (event) => {
+        const modal = event.target;
+        modal.close();
+        modal.removeEventListener("animationend", closeModalCallback);
+        modal.classList.remove("close");
+    };
+    
+    const closeModal = (modal) => {
+        modal.addEventListener("animationend", closeModalCallback);
+        modal.classList.add("close");
+    };
+
     return {
         buildRomDropdown,
         setRomDescription,
+        showKeypad,
+        hideKeypad,
         closeModal,
     }
 }

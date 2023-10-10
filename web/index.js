@@ -1,9 +1,8 @@
 // get rid of size methods
-import { createMonitor } from "./scripts/monitor.js";
-import { createKeypad } from "./scripts/keypad.js";
-import { fetchRomsMetadata } from "./scripts/utils.js";
 import { createEmulatorController } from "./scripts/emulator_controller.js";
 import { createUI } from "./scripts/ui.js";
+import { createMonitor } from "./scripts/monitor.js";
+import { fetchRomsMetadata } from "./scripts/utils.js";
 
 window.Module = {
     noInitialRun: true,
@@ -23,9 +22,8 @@ window.Module = {
 
 Module["onRuntimeInitialized"] = async () => {
     const emulatorController = createEmulatorController();
-    const hwMonitor = createMonitor();
-    const keypad = createKeypad();
     const ui = createUI();
+    const monitor = createMonitor();
 
     const roms = await fetchRomsMetadata();
 
@@ -46,12 +44,12 @@ Module["onRuntimeInitialized"] = async () => {
     startButton.addEventListener("click", () => {
         if (Module.running) {
             emulatorController.stopEmulator();
-            hwMonitor.updateMonitoringInfo();
+            monitor.updateAllInfo();
         }
         else {
             const selectedRom = roms[romSelector.value];
             emulatorController.startEmulator(selectedRom);
-            hwMonitor.startMonitoring();
+            monitor.startMonitoring();
         }
     });
 
@@ -59,11 +57,11 @@ Module["onRuntimeInitialized"] = async () => {
     pauseButton.addEventListener("click", () => {
         if (Module.paused) {
             emulatorController.resumeEmulator();
-            hwMonitor.startMonitoring();
+            monitor.startMonitoring();
         }
         else {
             emulatorController.pauseEmulator();
-            hwMonitor.updateMonitoringInfo();
+            monitor.updateAllInfo();
         }
     });
 
@@ -87,14 +85,14 @@ Module["onRuntimeInitialized"] = async () => {
     const keypadToggle = document.querySelector("#keypad-toggle");
     keypadToggle.addEventListener("change", () => {
         if (keypadToggle.checked) {
-            keypad.addKeypad();
+            ui.showKeypad();
         }
         else {
-            keypad.removeKeypad();
+            ui.hideKeypad();
         }
     });
 
     const initialRom = roms[romSelector.value];
     ui.setRomDescription(initialRom.description);
-    hwMonitor.updateMonitoringInfo();
+    monitor.updateAllInfo();
 };
