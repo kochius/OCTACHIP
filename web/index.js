@@ -2,6 +2,7 @@
 import { createMonitor } from "./scripts/monitor.js";
 import { createKeypad } from "./scripts/keypad.js";
 import { fetchRomsMetadata } from "./scripts/utils.js";
+import { createEmulatorControls } from "./scripts/emulator_controls.js";
 
 window.Module = {
     noInitialRun: true,
@@ -26,55 +27,6 @@ const pauseResumeButton = document.querySelector("#pause-resume-button");
 const settingsButton = document.querySelector("#settings-button");
 const settingsMenu = document.querySelector("#settings-menu");
 const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
-
-const loadRom = (rom) => {
-    try {
-        const encoder = new TextEncoder();
-        const romPath = `roms/${rom.filename}\0`;
-        const encodedPath = encoder.encode(romPath);
-        Module.ccall("loadRom", null, ["array"], [encodedPath]);
-    }
-    catch (error) {
-        console.error(`Failed to load ROM: ${error.message}`);
-    }
-};
-
-const setSpeed = (emulationSpeed) => {
-    Module.ccall("setSpeed", null, ["number"], [emulationSpeed]);
-};
-
-const startEmulator = (rom) => {
-    loadRom(rom);
-    setSpeed(rom.speed);
-
-    Module.ccall("main", "null", [], []);
-    Module.running = true;
-    startStopButton.textContent = "Stop";
-
-    pauseResumeButton.disabled = false;
-};
-
-const stopEmulator = () => {
-    Module.ccall("stop", "null", [], []);
-    Module.running = false;
-    startStopButton.textContent = "Start";
-
-    Module.paused = false;
-    pauseResumeButton.textContent = "Pause";
-    pauseResumeButton.disabled = true;
-};
-
-const pauseEmulator = () => {
-    Module.ccall("pause", "null", [], []);
-    Module.paused = true;
-    pauseResumeButton.textContent = "Resume";
-};
-
-const resumeEmulator = () => {
-    Module.ccall("resume", "null", [], []);
-    Module.paused = false;
-    pauseResumeButton.textContent = "Pause";
-};
 
 const setRomDescription = (description) => {
     romDescription.textContent = "";
@@ -106,6 +58,7 @@ const closeModal = (modal) => {
 
 Module["onRuntimeInitialized"] = async () => {
     const hwMonitor = createMonitor();
+    const emulatorControls = createEmulatorControls();
 
     const roms = await fetchRomsMetadata();
 
@@ -121,30 +74,30 @@ Module["onRuntimeInitialized"] = async () => {
         setRomDescription(selectedRom.description);
 
         if (Module.running) {
-            loadRom(selectedRom);
-            setSpeed(selectedRom.speed);
+            emulatorControls.loadRom(selectedRom.filename);
+            emulatorControls.setSpeed(selectedRom.speed);
         }
     });
 
     startStopButton.addEventListener("click", () => {
         if (Module.running) {
-            stopEmulator();
+            emulatorControls.stopEmulator();
             hwMonitor.updateMonitoringInfo();
         }
         else {
             const selectedRom = roms[romSelector.value];
-            startEmulator(selectedRom);
+            emulatorControls.startEmulator(selectedRom);
             hwMonitor.startMonitoring();
         }
     });
 
     pauseResumeButton.addEventListener("click", () => {
         if (Module.paused) {
-            resumeEmulator();
+            emulatorControls.resumeEmulator();
             hwMonitor.startMonitoring();
         }
         else {
-            pauseEmulator();
+            emulatorControls.pauseEmulator();
             hwMonitor.updateMonitoringInfo();
         }
     });
