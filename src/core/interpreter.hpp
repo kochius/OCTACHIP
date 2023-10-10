@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <string>
 
 #include "core/random.hpp"
 #include "core/types.hpp"
@@ -28,6 +29,7 @@ public:
     void setWrapQuirk(const bool isEnabled);
     void tick();
 
+    std::string getDisassembledInstructions() const;
     uint8_t getRegisterValue(const int index) const;
     uint16_t getProgramCounterValue() const;
     uint16_t getIndexRegisterValue() const;
@@ -37,6 +39,7 @@ public:
     uint16_t getStackValue(const int index) const;
     const Frame& getFrame() const;
 private:
+    std::string disassembleOpcode(const int address) const;
     Memory memory;
     Registers registers;
     Stack stack;
