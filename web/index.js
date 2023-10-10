@@ -1,6 +1,7 @@
 // get rid of size methods
 import { createMonitor } from "./scripts/monitor.js";
 import { createKeypad } from "./scripts/keypad.js";
+import { fetchRomsMetadata } from "./scripts/utils.js";
 
 window.Module = {
     noInitialRun: true,
@@ -25,22 +26,6 @@ const pauseResumeButton = document.querySelector("#pause-resume-button");
 const settingsButton = document.querySelector("#settings-button");
 const settingsMenu = document.querySelector("#settings-menu");
 const settingsMenuCloseButton = document.querySelector("#settings-menu-close-button");
-
-const fetchRomsMetadata = async () => {
-    try {
-        const response = await fetch("roms.json");
-
-        if (!response.ok) {
-            throw new Error(`HTTP status ${response.status}`);
-        }
-
-        return await response.json();
-    }
-    catch (error) {
-        console.error(`Failed to fetch roms.json: ${error.message}`);
-        return [];
-    }
-};
 
 const loadRom = (rom) => {
     try {
