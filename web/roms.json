@@ -1,5 +1,23 @@
 [
     {
+        "title": "Cave Explorer",
+        "filename": "caveexplorer.ch8",
+        "description": "Cave Explorer, by John Earnest\n\nDiscover the secrets of a mysterious tunnel system.\n\nW (Keypad: 5) - Move up\nA (Keypad: 7) - Move left\nS (Keypad: 8) - Move down\nD (Keypad: 9) - Move right\nE (Keypad: 6) - Pick up/set down blocks\nQ (Keypad: 4) - Reset level",
+        "speed": 1200,
+        "loadStoreQuirk": false,
+        "shiftQuirk": false,
+        "wrapQuirk": true
+    },
+    {
+        "title": "Danm8ku",
+        "filename": "danm8ku.ch8",
+        "description": "Danm8ku, by buffi\n\nBullet hell for the CHIP-8! Survive 8 waves of exciting bullet patterns!\n\nW (Keypad: 5) - Move up\nA (Keypad: 7) - Move left\nS (Keypad: 8) - Move down\nD (Keypad: 9) - Move right",
+        "speed": 60000,
+        "loadStoreQuirk": false,
+        "shiftQuirk": false,
+        "wrapQuirk": true
+    },
+    {
         "title": "Space Invaders",
         "filename": "space_invaders.ch8",
         "description": "Space Invaders, by David Winter\n\nQ (Keypad: 4) - Move left\nE (Keypad: 6) - Move right\nW (Keypad: 5) - Start/Shoot",
