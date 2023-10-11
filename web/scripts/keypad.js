@@ -61,7 +61,7 @@ export const createKeypad = () => {
 
         const touchEvents = ["touchstart", "touchend"];
         touchEvents.forEach((event) => {
-            btn.addEventListener(event, event === "touchstart" ? onKeyDown : onKeyDown);
+            btn.addEventListener(event, event === "touchstart" ? onKeyDown : onKeyUp);
         })
 
         const mouseEvents = ["mousedown", "mouseup", "mouseleave"]
