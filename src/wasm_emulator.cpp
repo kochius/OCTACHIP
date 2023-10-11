@@ -31,6 +31,18 @@ void Emulator::setSpeed(const int instructionsPerSecond) {
         UPDATES_PER_SECOND);
 }
 
+void Emulator::setLoadStoreQuirk(const bool isEnabled) {
+    interpreter.setLoadStoreQuirk(isEnabled);
+}
+
+void Emulator::setShiftQuirk(const bool isEnabled) {
+    interpreter.setShiftQuirk(isEnabled);
+}
+
+void Emulator::setWrapQuirk(const bool isEnabled) {
+    interpreter.setWrapQuirk(isEnabled);
+}
+
 void Emulator::update() {
     input.processInput([&](const int key, const bool isPressed) {
         interpreter.setKey(key, isPressed);
@@ -57,12 +69,8 @@ void Emulator::update() {
     renderer.drawFrame(interpreter.getFrame());
 }
 
-int Emulator::getVRegCount() const {
-    return Registers::V_REG_COUNT;
-}
-
-int Emulator::getStackSize() const {
-    return STACK_SIZE;
+std::string Emulator::getDisassembledInstructions() const {
+    return interpreter.getDisassembledInstructions();
 }
 
 uint8_t Emulator::getRegisterValue(const int index) const {

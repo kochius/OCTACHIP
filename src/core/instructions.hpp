@@ -54,13 +54,15 @@ void ADD_VX_VY(const Opcode& opcode, Registers& registers);
 void SUB_VX_VY(const Opcode& opcode, Registers& registers);
 
 // 8xy6 - Set Vx = Vx SHR 1.
-void SHR_VX_VY(const Opcode& opcode, Registers& registers);
+void SHR_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk=true);
 
 // 8xy7 - Set Vx = Vy - Vx, set VF = NOT borrow.
 void SUBN_VX_VY(const Opcode& opcode, Registers& registers);
 
 // 8xyE - Set Vx = Vx SHL 1.
-void SHL_VX_VY(const Opcode& opcode, Registers& registers);
+void SHL_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk=true);
 
 // 9xy0 - Skip next instruction if Vx != Vy.
 void SNE_VX_VY(const Opcode& opcode, Registers& registers);
@@ -77,7 +79,7 @@ void RND_VX_BYTE(const Opcode& opcode, Registers& registers, Random& random);
 // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set 
 //        VF = collision.
 void DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame);
+    Registers& registers, Frame& frame, const bool wrapQuirk=false);
 
 // Ex9E - Skip next instruction if key with the value of Vx is pressed.
 void SKP_VX(const Opcode& opcode, Registers& registers, const Keypad& keypad);
@@ -89,7 +91,8 @@ void SKNP_VX(const Opcode& opcode, Registers& registers, const Keypad& keypad);
 void LD_VX_DT(const Opcode& opcode, Registers& registers);
 
 // Fx0A - Wait for a key press, store the value of the key in Vx.
-void LD_VX_K(const Opcode& opcode, Registers& registers, const Keypad& keypad);
+void LD_VX_K(const Opcode& opcode, Registers& registers, const Keypad& keypad, 
+    Keypad& prevKeypadState);
 
 // Fx15 - Set delay timer = Vx.
 void LD_DT_VX(const Opcode& opcode, Registers& registers);
@@ -107,10 +110,12 @@ void LD_F_VX(const Opcode& opcode, Registers& registers);
 void LD_B_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
 
 // Fx55 - Store registers V0 through Vx in memory starting at location I.
-void LD_I_VX(const Opcode& opcode, Memory& memory, const Registers& registers);
+void LD_I_VX(const Opcode& opcode, Memory& memory, Registers& registers, 
+    const bool loadStoreQuirk=true);
 
 // Fx65 - Read registers V0 through Vx from memory starting at location I.
-void LD_VX_I(const Opcode& opcode, const Memory& memory, Registers& registers);
+void LD_VX_I(const Opcode& opcode, const Memory& memory, Registers& registers,
+    const bool loadStoreQuirk=true);
 
 // Illegal opcode - Throws exception when no matching instruction is found.
 void ILLEGAL_OPCODE(const Opcode& opcode);

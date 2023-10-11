@@ -183,7 +183,11 @@ void instructions::SUB_VX_VY(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers) {
+void instructions::SHR_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk) {
+    if (!shiftQuirk) {
+        registers.v[opcode.x()] = registers.v[opcode.y()];
+    }
     registers.v[0xF] = registers.v[opcode.x()] & 0x01;
     registers.v[opcode.x()] >>= 1;
 }
@@ -208,7 +212,11 @@ void instructions::SUBN_VX_VY(const Opcode& opcode, Registers& registers) {
  * 
  * TODO: Implement configurable quirks for this instruction
  */
-void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers) {
+void instructions::SHL_VX_VY(const Opcode& opcode, Registers& registers, 
+    const bool shiftQuirk) {
+    if (!shiftQuirk) {
+        registers.v[opcode.x()] = registers.v[opcode.y()];
+    }
     registers.v[0xF] = registers.v[opcode.x()] >> 7;
     registers.v[opcode.x()] <<= 1;
 }
@@ -268,7 +276,7 @@ void instructions::RND_VX_BYTE(const Opcode& opcode, Registers& registers,
  * wraps around to the opposite side of the screen.
  */
 void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory, 
-    Registers& registers, Frame& frame) {
+    Registers& registers, Frame& frame, const bool wrapQuirk) {
     const int xPos = registers.v[opcode.x()] % FRAME_WIDTH;
     const int yPos = registers.v[opcode.y()] % FRAME_HEIGHT;
     const int height = opcode.nibble();
@@ -284,11 +292,14 @@ void instructions::DRW_VX_VY_NIBBLE(const Opcode& opcode, const Memory& memory,
         const uint8_t spriteRow = memory[registers.i + row];
 
         for (int col = 0; col < 8; col++) {
-            if (xPos + col >= 0 && xPos + col <= FRAME_WIDTH &&
-                yPos + row >= 0 && yPos + row <= FRAME_HEIGHT &&
-                spriteRow & (0b10000000 >> col)) {
-                const int pixel = (xPos + col) + ((yPos + row) * FRAME_WIDTH);
-
+            const int pixel = ((xPos + col) % FRAME_WIDTH) + ((yPos + row) % 
+                FRAME_HEIGHT) * FRAME_WIDTH;
+            if (!wrapQuirk) {
+                if (xPos + col >= FRAME_WIDTH || yPos + row >= FRAME_HEIGHT) {
+                    continue;
+                }
+            }
+            if (spriteRow & (0b10000000 >> col)) {
                 if (frame[pixel]) {
                     registers.v[0xF] = 1;
                 }
@@ -345,11 +356,15 @@ void instructions::LD_VX_DT(const Opcode& opcode, Registers& registers) {
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::LD_VX_K(const Opcode& opcode, Registers& registers, const 
-    Keypad& keypad) {
+    Keypad& keypad, Keypad& prevKeypadState) {
     for (int keyValue = 0; keyValue < KEY_COUNT; keyValue++) {
-        if (keypad[keyValue]) {
+        if (prevKeypadState[keyValue] && !keypad[keyValue]) {
             registers.v[opcode.x()] = static_cast<uint8_t>(keyValue);
+            prevKeypadState[keyValue] = false;
             return;
+        }
+        else if (!prevKeypadState[keyValue] && keypad[keyValue]) {
+            prevKeypadState[keyValue] = true;
         }
     }
     registers.pc -= 2;
@@ -424,12 +439,15 @@ void instructions::LD_B_VX(const Opcode& opcode, Memory& memory,
  * TODO: Implement configurable quirks for this instruction
  */
 void instructions::LD_I_VX(const Opcode& opcode, Memory& memory, 
-    const Registers& registers) {
+    Registers& registers, const bool loadStoreQuirk) {
     for (int i = 0; i <= opcode.x(); i++) {
         if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         memory[registers.i + i] = registers.v[i];
+    }
+    if (!loadStoreQuirk) {
+        registers.i = (registers.i + opcode.x() + 1) & 0xFFFF;
     }
 }
 
@@ -440,12 +458,15 @@ void instructions::LD_I_VX(const Opcode& opcode, Memory& memory,
  * registers V0 through Vx.
  */
 void instructions::LD_VX_I(const Opcode& opcode, const Memory& memory, 
-    Registers& registers) {
+    Registers& registers, const bool loadStoreQuirk) {
     for (int i = 0; i <= opcode.x(); i++) {
         if (registers.i + i >= MEMORY_SIZE) {
             throw std::out_of_range("LD_I_VX: out-of-bounds memory access");
         }
         registers.v[i] = memory[registers.i + i];
+    }
+    if (!loadStoreQuirk) {
+        registers.i = (registers.i + opcode.x() + 1) & 0xFFFF;
     }
 }
 

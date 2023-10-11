@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="reset.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 
 <body ontouchstart="">
@@ -42,10 +42,10 @@
                             <select id="rom-select" autocomplete="off"></select>
                         </div>
                         <div class="button-group">
-                            <button id="start-stop-button" class="main-button" type="button" autocomplete="off">
+                            <button id="start-button" class="main-button" type="button" autocomplete="off">
                                 Start
                             </button>
-                            <button id="pause-resume-button" class="main-button" type="button" autocomplete="off" disabled>
+                            <button id="pause-button" class="main-button" type="button" autocomplete="off" disabled>
                                 Pause
                             </button>
                             <button id="settings-button" class="main-button" type="button" autocomplete="off">
@@ -64,6 +64,13 @@
                     </div>
                 </section>
 
+                <section id="instructions-card" class="card">
+                    <header class="card-header">
+                        <h2 class="card-heading">Instructions</h2>
+                    </header>
+                    <div id="instructions-container" class="card-body"></div>
+                </section>
+
                 <section id="registers-card" class="card">
                     <header class="card-header">
                         <h2 class="card-heading">Registers</h2>
@@ -72,27 +79,92 @@
                         <ul id="special-registers-list" class="registers-list">
                             <li class="register-view">
                                 <label for="pc-output">PC</label>
-                                <span id="pc-output" class="register-output"></span>
+                                <span id="pc-output" class="register-output">-</span>
                             </li>
                             <li class="register-view">
                                 <label for="i-output">I</label>
-                                <span id="i-output" class="register-output"></span>
+                                <span id="i-output" class="register-output">-</span>
                             </li>
                             <li class="register-view">
                                 <label for="sp-output">SP</label>
-                                <span id="sp-output" class="register-output"></span>
+                                <span id="sp-output" class="register-output">-</span>
                             </li>
                             <li class="register-view">
                                 <label for="dt-output">DT</label>
-                                <span id="dt-output" class="register-output"></span>
+                                <span id="dt-output" class="register-output">-</span>
                             </li>
                             <li class="register-view">
                                 <label for="st-output">ST</label>
-                                <span id="st-output" class="register-output"></span>
+                                <span id="st-output" class="register-output">-</span>
                             </li>
                         </ul>
                         <hr>
-                        <ol id="v-registers-list" class="registers-list"></ol>
+                        <ol id="v-registers-list" class="registers-list">
+                            <li class="register-view">
+                                <label for="v0-output">V0</label>
+                                <span class="register-output" id="v0-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v1-output">V1</label>
+                                <span class="register-output" id="v1-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v2-output">V2</label>
+                                <span class="register-output" id="v2-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v3-output">V3</label>
+                                <span class="register-output" id="v3-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v4-output">V4</label>
+                                <span class="register-output" id="v4-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v5-output">V5</label>
+                                <span class="register-output" id="v5-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v6-output">V6</label>
+                                <span class="register-output" id="v6-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v7-output">V7</label>
+                                <span class="register-output" id="v7-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v8-output">V8</label>
+                                <span class="register-output" id="v8-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="v9-output">V9</label>
+                                <span class="register-output" id="v9-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vA-output">VA</label>
+                                <span class="register-output" id="vA-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vB-output">VB</label>
+                                <span class="register-output" id="vB-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vC-output">VC</label>
+                                <span class="register-output" id="vC-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vD-output">VD</label>
+                                <span class="register-output" id="vD-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vE-output">VE</label>
+                                <span class="register-output" id="vE-output">-</span>
+                            </li>
+                            <li class="register-view">
+                                <label for="vF-output">VF</label>
+                                <span class="register-output" id="vF-output">-</span>
+                            </li>
+                        </ol>
                     </div>
                 </section>
 
@@ -112,7 +184,72 @@
                                     <th>Address</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                <tr>
+                                    <th id="stack-level-0">0</th>
+                                    <td id="stack-output-0">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-1">1</th>
+                                    <td id="stack-output-1">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-2">2</th>
+                                    <td id="stack-output-2">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-3">3</th>
+                                    <td id="stack-output-3">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-4">4</th>
+                                    <td id="stack-output-4">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-5">5</th>
+                                    <td id="stack-output-5">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-6">6</th>
+                                    <td id="stack-output-6">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-7">7</th>
+                                    <td id="stack-output-7">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-8">8</th>
+                                    <td id="stack-output-8">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-9">9</th>
+                                    <td id="stack-output-9">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-10">10</th>
+                                    <td id="stack-output-10">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-11">11</th>
+                                    <td id="stack-output-11">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-12">12</th>
+                                    <td id="stack-output-12">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-13">13</th>
+                                    <td id="stack-output-13">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-14">14</th>
+                                    <td id="stack-output-14">-</th>
+                                </tr>
+                                <tr>
+                                    <th id="stack-level-15">15</th>
+                                    <td id="stack-output-15">-</th>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </section>
@@ -144,8 +281,8 @@
             </div>
         </div>
     </dialog>
-    <script src="index.js"></script>
-    <script src="octachip.js" async></script>
+    <script type="module" src="index.js"></script>
+    <script src="octachip.js" defer></script>
 </body>
 
 </html>

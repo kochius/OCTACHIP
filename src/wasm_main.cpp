@@ -1,4 +1,6 @@
 #include <emscripten.h>
+#include <emscripten/bind.h>
+#include <string>
 #include <SDL.h>
 
 #include "wasm_emulator.hpp"
@@ -31,12 +33,16 @@ extern "C" void resume() {
     emscripten_resume_main_loop();
 }
 
-extern "C" int getVRegCount() {
-    return emulator.getVRegCount();
+extern "C" void setLoadStoreQuirk(bool isEnabled) {
+    emulator.setLoadStoreQuirk(isEnabled);
 }
 
-extern "C" int getStackSize() {
-    return emulator.getStackSize();
+extern "C" void setShiftQuirk(bool isEnabled) {
+    emulator.setShiftQuirk(isEnabled);
+}
+
+extern "C" void setWrapQuirk(bool isEnabled) {
+    emulator.setWrapQuirk(isEnabled);
 }
 
 extern "C" uint8_t getRegisterValue(const int index) {
@@ -79,6 +85,15 @@ extern "C" void pushKeyUpEvent(const int key) {
     event.type = SDL_KEYUP;
     event.key.keysym.sym = key;
     SDL_PushEvent(&event);
+}
+
+std::string getDisassembledInstructions() {
+    return emulator.getDisassembledInstructions();
+}
+
+EMSCRIPTEN_BINDINGS(my_module) {
+    emscripten::function("getDisassembledInstructions", 
+        &getDisassembledInstructions);
 }
 
 void mainLoop() {

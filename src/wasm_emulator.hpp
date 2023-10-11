@@ -17,10 +17,12 @@ public:
     void refreshUpdateTimer();
     void loadRom(const std::filesystem::path& romPath);
     void setSpeed(const int instructionsPerSecond);
+    void setLoadStoreQuirk(const bool isEnabled);
+    void setShiftQuirk(const bool isEnabled);
+    void setWrapQuirk(const bool isEnabled);
     void update();
 
-    int getVRegCount() const;
-    int getStackSize() const;
+    std::string getDisassembledInstructions() const;
     uint8_t getRegisterValue(const int index) const;
     uint16_t getProgramCounterValue() const;
     uint16_t getIndexRegisterValue() const;

@@ -175,21 +175,26 @@ TEST_F(InstructionTest, LD_VX_K_NoKeyPressed_DecrementsProgramCounter) {
     registers.pc = 0x002;
     const uint16_t decrementedPcValue = registers.pc - 2;
 
-    instructions::LD_VX_K(opcode, registers, keypad);
+    Keypad prevKeypad{};
+
+    instructions::LD_VX_K(opcode, registers, keypad, prevKeypad);
 
     // No key press detected, so LD_VX_K should decrement the program counter
     EXPECT_EQ(decrementedPcValue, registers.pc);
 }
 
 TEST_F(InstructionTest, LD_VX_K_KeyPressed_SetVxToPressedKey) {
+    Keypad prevKeypad{};
+
     const uint16_t x = 0x0;
     const Opcode opcode = 0xF00A | (x << 8);
 
     const uint16_t initialPcValue = registers.pc;
     const uint8_t key = 0xE;
-    keypad[key] = true; // Set key E as pressed
+    prevKeypad[key] = true; // Set key E as pressed before
+    keypad[key] = false; // Set key E as previously released
 
-    instructions::LD_VX_K(opcode, registers, keypad);
+    instructions::LD_VX_K(opcode, registers, keypad, prevKeypad);
 
     // Key press detected, so LD_VX_K should NOT decrement the program counter
     EXPECT_EQ(initialPcValue, registers.pc);

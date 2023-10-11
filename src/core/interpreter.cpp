@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <random>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -18,7 +20,11 @@ Interpreter::Interpreter() :
     stack{},
     frame{},
     keypad{},
-    random{} {
+    prevKeypadState{},
+    random{},
+    loadStoreQuirk{true},
+    shiftQuirk{true},
+    wrapQuirk{false} {
     const std::array<uint8_t, FONT_SET_SIZE> fontSet = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -58,6 +64,11 @@ void Interpreter::reset() {
     stack.fill(0);
     frame.fill(false);
     keypad.fill(false);
+    prevKeypadState.fill(false);
+
+    loadStoreQuirk = true;
+    shiftQuirk = true;
+    wrapQuirk = false;
 }
 
 void Interpreter::loadRom(const std::filesystem::path& romPath) {
@@ -102,6 +113,18 @@ void Interpreter::setKey(const int key, const bool isPressed) {
     keypad[key] = isPressed;
 }
 
+void Interpreter::setLoadStoreQuirk(const bool isEnabled) {
+    loadStoreQuirk = isEnabled;
+}
+
+void Interpreter::setShiftQuirk(const bool isEnabled) {
+    shiftQuirk = isEnabled;
+}
+
+void Interpreter::setWrapQuirk(const bool isEnabled) {
+    wrapQuirk = isEnabled;
+}
+
 void Interpreter::tick() {
     const Opcode opcode = memory[registers.pc] << 8 | memory[registers.pc + 1];
 
@@ -129,9 +152,11 @@ void Interpreter::tick() {
                 case 0x3: return instructions::XOR_VX_VY(opcode, registers);
                 case 0x4: return instructions::ADD_VX_VY(opcode, registers);
                 case 0x5: return instructions::SUB_VX_VY(opcode, registers);
-                case 0x6: return instructions::SHR_VX_VY(opcode, registers);
+                case 0x6: return instructions::SHR_VX_VY(opcode, registers, 
+                    shiftQuirk);
                 case 0x7: return instructions::SUBN_VX_VY(opcode, registers);
-                case 0xE: return instructions::SHL_VX_VY(opcode, registers);
+                case 0xE: return instructions::SHL_VX_VY(opcode, registers,
+                    shiftQuirk);
                 default: return instructions::ILLEGAL_OPCODE(opcode);
             }
         case 0x9: return instructions::SNE_VX_VY(opcode, registers);
@@ -139,7 +164,7 @@ void Interpreter::tick() {
         case 0xB: return instructions::JP_V0_ADDR(opcode, registers);
         case 0xC: return instructions::RND_VX_BYTE(opcode, registers, random);
         case 0xD: return instructions::DRW_VX_VY_NIBBLE(opcode, memory, 
-            registers, frame);
+            registers, frame, wrapQuirk);
         case 0xE:
             switch(opcode.byte()) {
                 case 0x9E: return instructions::SKP_VX(opcode, registers, 
@@ -152,7 +177,7 @@ void Interpreter::tick() {
             switch(opcode.byte()) {
                 case 0x07: return instructions::LD_VX_DT(opcode, registers);
                 case 0x0A: return instructions::LD_VX_K(opcode, registers, 
-                    keypad);
+                    keypad, prevKeypadState);
                 case 0x15: return instructions::LD_DT_VX(opcode, registers);
                 case 0x18: return instructions::LD_ST_VX(opcode, registers);
                 case 0x1E: return instructions::ADD_I_VX(opcode, registers);
@@ -160,13 +185,186 @@ void Interpreter::tick() {
                 case 0x33: return instructions::LD_B_VX(opcode, memory, 
                     registers);
                 case 0x55: return instructions::LD_I_VX(opcode, memory, 
-                    registers);
+                    registers, loadStoreQuirk);
                 case 0x65: return instructions::LD_VX_I(opcode, memory, 
-                    registers);
+                    registers, loadStoreQuirk);
                 default: return instructions::ILLEGAL_OPCODE(opcode);
             }
         default: return instructions::ILLEGAL_OPCODE(opcode);
     }
+}
+
+std::string hexFormat(const int value, const int length) {
+    std::stringstream stream;
+    stream << std::uppercase << std::setfill('0') << std::setw(length)
+        << std::hex << value;
+    return stream.str();
+}
+
+std::string Interpreter::disassembleOpcode(const int address) const {
+    const Opcode opcode = memory[address] << 8 | memory[address + 1];
+    std::stringstream instruction;
+    switch (opcode.prefix()) {
+        case 0x0: 
+            switch (opcode.byte()) {
+                case 0xE0:
+                    instruction << "CLS";
+                    break;
+                case 0xEE:
+                    instruction << "RET";
+                    break;
+                default:
+                    instruction << "-";
+            }
+            break;
+        case 0x1:
+            instruction << "JP 0x" << hexFormat(opcode.address(), 4);
+            break;
+        case 0x2:
+            instruction << "CALL 0x" << hexFormat(opcode.address(), 4);
+            break;
+        case 0x3:
+            instruction << "SE V" << hexFormat(opcode.x(), 1) << ", 0x" 
+                << hexFormat(opcode.byte(), 2);
+            break;
+        case 0x4:
+            instruction << "SNE V" << hexFormat(opcode.x(), 1) << ", 0x"
+                << hexFormat(opcode.byte(), 2);
+            break;
+        case 0x5:
+            instruction << "SE V" << hexFormat(opcode.x(), 1) << ", V" 
+                << hexFormat(opcode.y(), 1);
+            break;
+        case 0x6:
+            instruction << "LD V" << hexFormat(opcode.x(), 1) << ", 0x"
+                << hexFormat(opcode.byte(), 2);
+            break;
+        case 0x7:
+            instruction << "ADD V" << hexFormat(opcode.x(), 1) << ", 0x"
+                << hexFormat(opcode.byte(), 2);
+            break;
+        case 0x8:
+            switch (opcode.nibble()) {
+                case 0x0:
+                    instruction << "LD V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x1:
+                    instruction << "OR V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x2:
+                    instruction << "AND V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x3:
+                    instruction << "XOR V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x4:
+                    instruction << "ADD V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x5:
+                    instruction << "SUB V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x6:
+                    instruction << "SHR V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0x7:
+                    instruction << "SUBN V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                case 0xE:
+                    instruction << "SHL V" << hexFormat(opcode.x(), 1) << ", V" 
+                        << hexFormat(opcode.y(), 1);
+                    break;
+                default:
+                    instruction << "-";
+            }
+            break;
+        case 0x9:
+            instruction << "SNE V" << hexFormat(opcode.x(), 1) << ", V" 
+                << hexFormat(opcode.y(), 1);
+            break;
+        case 0xA:
+            instruction << "LD I, 0x" << hexFormat(opcode.address(), 4);
+            break;
+        case 0xB:
+            instruction << "JP V0, 0x" << hexFormat(opcode.address(), 4);
+            break;
+        case 0xC:
+            instruction << "RND V" << hexFormat(opcode.x(), 1) << ", 0x" 
+                << hexFormat(opcode.byte(), 2);
+            break;
+        case 0xD:
+            instruction << "DRW V" << hexFormat(opcode.x(), 1) << ", V"
+                << hexFormat(opcode.y(), 1) << ", 0x" 
+                << hexFormat(opcode.nibble(), 1);
+            break;
+        case 0xE:
+            switch(opcode.byte()) {
+                case 0x9E:
+                    instruction << "SKP V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0xA1:
+                    instruction << "SKNP V" << hexFormat(opcode.x(), 1);
+                    break;
+                default:
+                    instruction << "-";
+            }
+            break;
+        case 0xF:
+            switch(opcode.byte()) {
+                case 0x07:
+                    instruction << "LD V" << hexFormat(opcode.x(), 1) << ", DT";
+                    break;
+                case 0x0A:
+                    instruction << "LD V" << hexFormat(opcode.x(), 1) << ", K";
+                    break;
+                case 0x15:
+                    instruction << "LD DT, V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x18:
+                    instruction << "LD ST, V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x1E:
+                    instruction << "ADD I, V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x29:
+                    instruction << "LD F, V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x33: 
+                    instruction << "LD B, V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x55:
+                    instruction << "LD [I], V" << hexFormat(opcode.x(), 1);
+                    break;
+                case 0x65: 
+                    instruction << "LD V" << hexFormat(opcode.x(), 1) 
+                        << ", [I]";
+                    break;
+                default:
+                    instruction << "-";
+            }
+            break;
+        default:
+            instruction << "-";
+    }
+    return instruction.str();
+}
+
+std::string Interpreter::getDisassembledInstructions() const {
+    std::stringstream stream;
+
+    for (int i = PROG_START_ADDRESS; i < MEMORY_SIZE; i++) {
+        const std::string instruction = disassembleOpcode(i);
+        stream << "0x" << hexFormat(i, 4) << ": " << instruction << "\n";
+    }
+
+    return stream.str();
 }
 
 uint8_t Interpreter::getRegisterValue(const int index) const {

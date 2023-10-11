@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <string>
 
 #include "core/random.hpp"
 #include "core/types.hpp"
@@ -23,8 +24,12 @@ public:
     void loadRom(const std::filesystem::path& romPath);
     void updateTimers();
     void setKey(const int key, const bool isPressed);
+    void setLoadStoreQuirk(const bool isEnabled);
+    void setShiftQuirk(const bool isEnabled);
+    void setWrapQuirk(const bool isEnabled);
     void tick();
 
+    std::string getDisassembledInstructions() const;
     uint8_t getRegisterValue(const int index) const;
     uint16_t getProgramCounterValue() const;
     uint16_t getIndexRegisterValue() const;
@@ -34,12 +39,17 @@ public:
     uint16_t getStackValue(const int index) const;
     const Frame& getFrame() const;
 private:
+    std::string disassembleOpcode(const int address) const;
     Memory memory;
     Registers registers;
     Stack stack;
     Frame frame;
     Keypad keypad;
+    Keypad prevKeypadState;
     Random random;
+    bool loadStoreQuirk;
+    bool shiftQuirk;
+    bool wrapQuirk;
 };
 
 }

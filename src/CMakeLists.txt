@@ -66,8 +66,9 @@ if(EMSCRIPTEN)
                                           _setSpeed,\
                                           _stop,_pause,\
                                           _resume,\
-                                          _getVRegCount,\
-                                          _getStackSize,\
+                                          _setLoadStoreQuirk,\
+                                          _setShiftQuirk,\
+                                          _setWrapQuirk,\
                                           _getRegisterValue,\
                                           _getProgramCounterValue,\
                                           _getIndexRegisterValue,\
@@ -79,6 +80,8 @@ if(EMSCRIPTEN)
                                           _pushKeyUpEvent'"
             "SHELL:-s EXPORTED_RUNTIME_METHODS=ccall"
             "SHELL:--preload-file ../../roms"
+            "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            "SHELL:-s -lembind"
     )
 
     target_sources(${MAIN_EXECUTABLE}
