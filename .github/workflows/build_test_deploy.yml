@@ -52,8 +52,22 @@ jobs:
       - name: Configure CMake
         run: emcmake cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-      - name: Build
+      - name: Build WASM
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npx eslint .
+      
+      - name: Run Prettier
+        run: npx prettier --check .
 
       - name: Combine distribution files
         run: rsync -av ${{github.workspace}}/web/ ${{github.workspace}}/build/dist/
