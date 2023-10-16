@@ -106,3 +106,9 @@ jobs:
 
       - name: Deploy website to S3 bucket
         run: aws s3 sync ${{github.workspace}}/dist s3://www.octachip.com --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          INVALIDATION_PATHS="index.html octachip.data octachip.js octachip.wasm roms.json fonts/*"
+          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID_1}} --paths $INVALIDATION_PATHS
+          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID_2}} --paths $INVALIDATION_PATHS
