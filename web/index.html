@@ -1,288 +1,387 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OCTACHIP</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="styles/reset.css" />
+        <link rel="stylesheet" href="styles/style.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCTACHIP</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/reset.css">
-    <link rel="stylesheet" href="styles/style.css">
-</head>
-
-<body ontouchstart="">
-    <div class="page-container">
-        <header class="page-header">
-            <h1 class="page-title">OCTACHIP</h1>
-            <p class="page-description">
-                A CHIP-8 interpreter written in C++ and compiled into WebAssembly
-            </p>
-            <hr>
-        </header>
-
-        <div class="main-content">
-            <div class="main-grid">
-                <div id="display">
-                    <div class="display-border">
-                        <canvas id="canvas" class="emscripten" oncontextmenu="event.preventDefault()" tabindex=-1>
-                        </canvas>
-                    </div>
-                </div>
-
-                <section id="controls-card" class="card">
-                    <header class="card-header">
-                        <h2 class="card-heading">Controls</h2>
-                    </header>
-                    <div id="controls-body" class="card-body">
-                        <div class="select-container">
-                            <label for="rom-select">Select a ROM:</label>
-                            <select id="rom-select" autocomplete="off"></select>
-                        </div>
-                        <div class="button-group">
-                            <button id="start-button" class="main-button" type="button" autocomplete="off">
-                                Start
-                            </button>
-                            <button id="pause-button" class="main-button" type="button" autocomplete="off" disabled>
-                                Pause
-                            </button>
-                            <button id="settings-button" class="main-button" type="button" autocomplete="off">
-                                Settings
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="about-rom-card" class="card">
-                    <header class="card-header">
-                        <h2 class="card-heading">About This ROM</h2>
-                    </header>
-                    <div class="card-body">
-                        <p id="rom-description"></p>
-                    </div>
-                </section>
-
-                <section id="instructions-card" class="card">
-                    <header class="card-header">
-                        <h2 class="card-heading">Instructions</h2>
-                    </header>
-                    <div id="instructions-container" class="card-body"></div>
-                </section>
-
-                <section id="registers-card" class="card">
-                    <header class="card-header">
-                        <h2 class="card-heading">Registers</h2>
-                    </header>
-                    <div class="card-body">
-                        <ul id="special-registers-list" class="registers-list">
-                            <li class="register-view">
-                                <label for="pc-output">PC</label>
-                                <span id="pc-output" class="register-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="i-output">I</label>
-                                <span id="i-output" class="register-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="sp-output">SP</label>
-                                <span id="sp-output" class="register-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="dt-output">DT</label>
-                                <span id="dt-output" class="register-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="st-output">ST</label>
-                                <span id="st-output" class="register-output">-</span>
-                            </li>
-                        </ul>
-                        <hr>
-                        <ol id="v-registers-list" class="registers-list">
-                            <li class="register-view">
-                                <label for="v0-output">V0</label>
-                                <span class="register-output" id="v0-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v1-output">V1</label>
-                                <span class="register-output" id="v1-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v2-output">V2</label>
-                                <span class="register-output" id="v2-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v3-output">V3</label>
-                                <span class="register-output" id="v3-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v4-output">V4</label>
-                                <span class="register-output" id="v4-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v5-output">V5</label>
-                                <span class="register-output" id="v5-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v6-output">V6</label>
-                                <span class="register-output" id="v6-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v7-output">V7</label>
-                                <span class="register-output" id="v7-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v8-output">V8</label>
-                                <span class="register-output" id="v8-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="v9-output">V9</label>
-                                <span class="register-output" id="v9-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vA-output">VA</label>
-                                <span class="register-output" id="vA-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vB-output">VB</label>
-                                <span class="register-output" id="vB-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vC-output">VC</label>
-                                <span class="register-output" id="vC-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vD-output">VD</label>
-                                <span class="register-output" id="vD-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vE-output">VE</label>
-                                <span class="register-output" id="vE-output">-</span>
-                            </li>
-                            <li class="register-view">
-                                <label for="vF-output">VF</label>
-                                <span class="register-output" id="vF-output">-</span>
-                            </li>
-                        </ol>
-                    </div>
-                </section>
-
-                <section id="stack-card" class="card">
-                    <header class="card-header">
-                        <h2 class="card-heading">Stack</h2>
-                    </header>
-                    <div class="card-body">
-                        <table id="stack-table">
-                            <colgroup>
-                                <col id="stack-level-col">
-                                <col id="stack-address-col">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>Level</th>
-                                    <th>Address</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th id="stack-level-0">0</th>
-                                    <td id="stack-output-0">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-1">1</th>
-                                    <td id="stack-output-1">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-2">2</th>
-                                    <td id="stack-output-2">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-3">3</th>
-                                    <td id="stack-output-3">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-4">4</th>
-                                    <td id="stack-output-4">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-5">5</th>
-                                    <td id="stack-output-5">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-6">6</th>
-                                    <td id="stack-output-6">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-7">7</th>
-                                    <td id="stack-output-7">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-8">8</th>
-                                    <td id="stack-output-8">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-9">9</th>
-                                    <td id="stack-output-9">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-10">10</th>
-                                    <td id="stack-output-10">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-11">11</th>
-                                    <td id="stack-output-11">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-12">12</th>
-                                    <td id="stack-output-12">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-13">13</th>
-                                    <td id="stack-output-13">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-14">14</th>
-                                    <td id="stack-output-14">-</th>
-                                </tr>
-                                <tr>
-                                    <th id="stack-level-15">15</th>
-                                    <td id="stack-output-15">-</th>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        <footer class="page-footer">
-            <hr>
-            <p class="page-footer-text">
-                Made by Kevin Long |
-                <a href="https://github.com/kochius/OCTACHIP" target="_blank" rel="noopener noreferrer">Source</a>
-            </p>
-        </footer>
-    </div>
-    <dialog id="settings-menu" class="modal">
-        <div>
-            <header class="modal-header">
-                <h2 class="modal-heading">Settings</h2>
-                <button id="settings-menu-close-button" class="icon-button" type="button" autocomplete="off" title="Close settings menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10" overflow="visible" stroke="var(--font-color)" stroke-width="2.5" stroke-linecap="round">
-                        <line x1="0" y1="0" x2="10" y2="10"></line>
-                        <line x1="10" y1="0" x2="0" y2="10"></line>
-                    </svg>
-                </button>
+    <body ontouchstart="">
+        <div class="page-container">
+            <header class="page-header">
+                <h1 class="page-title">OCTACHIP</h1>
+                <p class="page-description">
+                    A CHIP-8 interpreter written in C++ and compiled into
+                    WebAssembly
+                </p>
+                <hr />
             </header>
-            <div class="modal-body">
-                <input id="keypad-toggle" type="checkbox" name="keypad-toggle" autocomplete="off">
-                <label for="keypad-toggle">Enable on-screen keypad</label>
-            </div>
-        </div>
-    </dialog>
-    <script type="module" src="index.js"></script>
-    <script src="octachip.js" defer></script>
-</body>
 
+            <div class="main-content">
+                <div class="main-grid">
+                    <div id="display">
+                        <div class="display-border">
+                            <canvas
+                                id="canvas"
+                                class="emscripten"
+                                oncontextmenu="event.preventDefault()"
+                                tabindex="-1"
+                            >
+                            </canvas>
+                        </div>
+                    </div>
+
+                    <section id="controls-card" class="card">
+                        <header class="card-header">
+                            <h2 class="card-heading">Controls</h2>
+                        </header>
+                        <div id="controls-body" class="card-body">
+                            <div class="select-container">
+                                <label for="rom-select">Select a ROM:</label>
+                                <select
+                                    id="rom-select"
+                                    autocomplete="off"
+                                ></select>
+                            </div>
+                            <div class="button-group">
+                                <button
+                                    id="start-button"
+                                    class="main-button"
+                                    type="button"
+                                    autocomplete="off"
+                                >
+                                    Start
+                                </button>
+                                <button
+                                    id="pause-button"
+                                    class="main-button"
+                                    type="button"
+                                    autocomplete="off"
+                                    disabled
+                                >
+                                    Pause
+                                </button>
+                                <button
+                                    id="settings-button"
+                                    class="main-button"
+                                    type="button"
+                                    autocomplete="off"
+                                >
+                                    Settings
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="about-rom-card" class="card">
+                        <header class="card-header">
+                            <h2 class="card-heading">About This ROM</h2>
+                        </header>
+                        <div class="card-body">
+                            <p id="rom-description"></p>
+                        </div>
+                    </section>
+
+                    <section id="instructions-card" class="card">
+                        <header class="card-header">
+                            <h2 class="card-heading">Instructions</h2>
+                        </header>
+                        <div
+                            id="instructions-container"
+                            class="card-body"
+                        ></div>
+                    </section>
+
+                    <section id="registers-card" class="card">
+                        <header class="card-header">
+                            <h2 class="card-heading">Registers</h2>
+                        </header>
+                        <div class="card-body">
+                            <ul
+                                id="special-registers-list"
+                                class="registers-list"
+                            >
+                                <li class="register-view">
+                                    <label for="pc-output">PC</label>
+                                    <span id="pc-output" class="register-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="i-output">I</label>
+                                    <span id="i-output" class="register-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="sp-output">SP</label>
+                                    <span id="sp-output" class="register-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="dt-output">DT</label>
+                                    <span id="dt-output" class="register-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="st-output">ST</label>
+                                    <span id="st-output" class="register-output"
+                                        >-</span
+                                    >
+                                </li>
+                            </ul>
+                            <hr />
+                            <ol id="v-registers-list" class="registers-list">
+                                <li class="register-view">
+                                    <label for="v0-output">V0</label>
+                                    <span class="register-output" id="v0-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v1-output">V1</label>
+                                    <span class="register-output" id="v1-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v2-output">V2</label>
+                                    <span class="register-output" id="v2-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v3-output">V3</label>
+                                    <span class="register-output" id="v3-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v4-output">V4</label>
+                                    <span class="register-output" id="v4-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v5-output">V5</label>
+                                    <span class="register-output" id="v5-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v6-output">V6</label>
+                                    <span class="register-output" id="v6-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v7-output">V7</label>
+                                    <span class="register-output" id="v7-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v8-output">V8</label>
+                                    <span class="register-output" id="v8-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="v9-output">V9</label>
+                                    <span class="register-output" id="v9-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vA-output">VA</label>
+                                    <span class="register-output" id="vA-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vB-output">VB</label>
+                                    <span class="register-output" id="vB-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vC-output">VC</label>
+                                    <span class="register-output" id="vC-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vD-output">VD</label>
+                                    <span class="register-output" id="vD-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vE-output">VE</label>
+                                    <span class="register-output" id="vE-output"
+                                        >-</span
+                                    >
+                                </li>
+                                <li class="register-view">
+                                    <label for="vF-output">VF</label>
+                                    <span class="register-output" id="vF-output"
+                                        >-</span
+                                    >
+                                </li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="stack-card" class="card">
+                        <header class="card-header">
+                            <h2 class="card-heading">Stack</h2>
+                        </header>
+                        <div class="card-body">
+                            <table id="stack-table">
+                                <colgroup>
+                                    <col id="stack-level-col" />
+                                    <col id="stack-address-col" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Level</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th id="stack-level-0">0</th>
+                                        <td id="stack-output-0">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-1">1</th>
+                                        <td id="stack-output-1">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-2">2</th>
+                                        <td id="stack-output-2">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-3">3</th>
+                                        <td id="stack-output-3">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-4">4</th>
+                                        <td id="stack-output-4">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-5">5</th>
+                                        <td id="stack-output-5">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-6">6</th>
+                                        <td id="stack-output-6">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-7">7</th>
+                                        <td id="stack-output-7">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-8">8</th>
+                                        <td id="stack-output-8">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-9">9</th>
+                                        <td id="stack-output-9">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-10">10</th>
+                                        <td id="stack-output-10">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-11">11</th>
+                                        <td id="stack-output-11">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-12">12</th>
+                                        <td id="stack-output-12">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-13">13</th>
+                                        <td id="stack-output-13">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-14">14</th>
+                                        <td id="stack-output-14">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th id="stack-level-15">15</th>
+                                        <td id="stack-output-15">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <footer class="page-footer">
+                <hr />
+                <p class="page-footer-text">
+                    Made by Kevin Long |
+                    <a
+                        href="https://github.com/kochius/OCTACHIP"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Source</a
+                    >
+                </p>
+            </footer>
+        </div>
+        <dialog id="settings-menu" class="modal">
+            <div>
+                <header class="modal-header">
+                    <h2 class="modal-heading">Settings</h2>
+                    <button
+                        id="settings-menu-close-button"
+                        class="icon-button"
+                        type="button"
+                        autocomplete="off"
+                        title="Close settings menu"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 10 10"
+                            width="10"
+                            height="10"
+                            overflow="visible"
+                            stroke="var(--font-color)"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                        >
+                            <line x1="0" y1="0" x2="10" y2="10"></line>
+                            <line x1="10" y1="0" x2="0" y2="10"></line>
+                        </svg>
+                    </button>
+                </header>
+                <div class="modal-body">
+                    <input
+                        id="keypad-toggle"
+                        type="checkbox"
+                        name="keypad-toggle"
+                        autocomplete="off"
+                    />
+                    <label for="keypad-toggle">Enable on-screen keypad</label>
+                </div>
+            </div>
+        </dialog>
+        <script type="module" src="index.js"></script>
+        <script src="octachip.js" defer></script>
+    </body>
 </html>
