@@ -110,5 +110,4 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           INVALIDATION_PATHS="index.html octachip.data octachip.js octachip.wasm roms.json fonts/*"
-          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID_1}} --paths $INVALIDATION_PATHS
-          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID_2}} --paths $INVALIDATION_PATHS
+          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID}} --paths $INVALIDATION_PATHS
