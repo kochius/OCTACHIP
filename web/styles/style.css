@@ -1,169 +1,169 @@
 /* || Global variables and styles */
 :root {
-    --max-page-width: 1200px;
-    --global-space: 10px;
+  --max-page-width: 1200px;
+  --global-space: 10px;
 
-    --background-color: #0F0F0F;
-    --font-color: #FFFFFF;
-    --inverted-font-color: #0F0F0F;
-    --primary-accent-color: #606060;
-    --secondary-accent-color: #282828;
-    --highlight-color: #FCF75E;
-    --button-hover-color: #3D3D3D;
-    --button-active-color: #474747;
+  --background-color: #0f0f0f;
+  --font-color: #ffffff;
+  --inverted-font-color: #0f0f0f;
+  --primary-accent-color: #606060;
+  --secondary-accent-color: #282828;
+  --highlight-color: #fcf75e;
+  --button-hover-color: #3d3d3d;
+  --button-active-color: #474747;
 
-    font-size: 62.5%;
+  font-size: 62.5%;
 }
 
 body {
-    background-color: var(--background-color);
-    color: var(--font-color);
-    font-family: "Azeret Mono", "Courier New", serif;
-    font-size: 1.6rem;
-    font-weight: 400;
+  background-color: var(--background-color);
+  color: var(--font-color);
+  font-family: "Azeret Mono", "Courier New", serif;
+  font-size: 1.6rem;
+  font-weight: 400;
 }
 
 /* || Page layout */
 .page-header {
-    grid-area: page-header;
-    padding-top: calc(2 * var(--global-space));
+  grid-area: page-header;
+  padding-top: calc(2 * var(--global-space));
 }
 
 .main-content {
-    grid-area: main-content;
+  grid-area: main-content;
 }
 
 .page-footer {
-    grid-area: page-footer;
-    padding-bottom: calc(2 * var(--global-space));
+  grid-area: page-footer;
+  padding-bottom: calc(2 * var(--global-space));
 }
 
 .page-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    grid-template-areas:
-        "page-header"
-        "main-content"
-        "page-footer";
-    margin: 0 auto;
-    padding: 0 calc(2 * var(--global-space));
-    max-width: var(--max-page-width);
-    height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "page-header"
+    "main-content"
+    "page-footer";
+  margin: 0 auto;
+  padding: 0 calc(2 * var(--global-space));
+  max-width: var(--max-page-width);
+  height: 100%;
 }
 
 /* Main grid layout */
 #display {
-    grid-area: display;
+  grid-area: display;
 }
 
 #keypad {
-    grid-area: keypad;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
-    -webkit-user-select: none;
-    user-select: none;
+  grid-area: keypad;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #controls-card {
-    grid-area: controls;
+  grid-area: controls;
 }
 
 #about-rom-card {
-    grid-area: about-rom;
-    contain: size;
+  grid-area: about-rom;
+  contain: size;
 }
 
 #instructions-card {
-    grid-area: instructions;
-    height: 200px;
+  grid-area: instructions;
+  height: 200px;
 }
 
 #registers-card {
-    grid-area: registers;
+  grid-area: registers;
 }
 
 #stack-card {
-    grid-area: stack;
+  grid-area: stack;
 }
 
 .main-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas:
-        "display about-rom"
-        "controls stack"
-        "instructions stack"
-        "registers stack";
-    gap: var(--global-space);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "display about-rom"
+    "controls stack"
+    "instructions stack"
+    "registers stack";
+  gap: var(--global-space);
 }
 
 .main-grid.keypad-enabled {
-    grid-template-rows: auto auto auto 1fr;
-    grid-template-areas:
-        "display about-rom"
-        "keypad about-rom"
-        "controls stack"
-        "instructions stack"
-        "registers stack"; 
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas:
+    "display about-rom"
+    "keypad about-rom"
+    "controls stack"
+    "instructions stack"
+    "registers stack";
 }
 
 @media only screen and (min-width: 600px) and (max-width: 800px) {
-    #about-rom-card {
-        contain: revert;
-    }
+  #about-rom-card {
+    contain: revert;
+  }
 
-    .main-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
-        grid-template-areas:
-            "display display"
-            "controls controls"
-            "about-rom about-rom"
-            "instructions instructions"
-            "registers stack";
-    }
+  .main-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "display display"
+      "controls controls"
+      "about-rom about-rom"
+      "instructions instructions"
+      "registers stack";
+  }
 
-    .main-grid.keypad-enabled {
-        grid-template-areas:
-            "display display"
-            "keypad keypad"
-            "controls controls"
-            "about-rom about-rom"
-            "instructions instructions"
-            "registers stack"
-    }
+  .main-grid.keypad-enabled {
+    grid-template-areas:
+      "display display"
+      "keypad keypad"
+      "controls controls"
+      "about-rom about-rom"
+      "instructions instructions"
+      "registers stack";
+  }
 }
 
 @media only screen and (max-width: 600px) {
-    #about-rom-card {
-        contain: revert;
-    }
+  #about-rom-card {
+    contain: revert;
+  }
 
-    .main-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        grid-template-areas:
-            "display"
-            "controls"
-            "about-rom"
-            "instructions"
-            "registers"
-            "stack";
-    }
+  .main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "display"
+      "controls"
+      "about-rom"
+      "instructions"
+      "registers"
+      "stack";
+  }
 
-    .main-grid.keypad-enabled {
-        grid-template-areas:
-            "display"
-            "keypad"
-            "controls"
-            "about-rom"
-            "instructions"
-            "registers"
-            "stack";
-    }
+  .main-grid.keypad-enabled {
+    grid-template-areas:
+      "display"
+      "keypad"
+      "controls"
+      "about-rom"
+      "instructions"
+      "registers"
+      "stack";
+  }
 }
 
 /* || General typography */
@@ -171,273 +171,273 @@ body {
 .page-description,
 .page-footer-text,
 .card-heading {
-    text-align: center;
+  text-align: center;
 }
 
 .page-title {
-    margin-bottom: var(--global-space);
-    color: var(--highlight-color);
-    font-size: 3.2rem;
-    font-weight: 700;
+  margin-bottom: var(--global-space);
+  color: var(--highlight-color);
+  font-size: 3.2rem;
+  font-weight: 700;
 }
 
 .card-heading {
-    font-size: 1.6rem;
-    font-weight: 400;
+  font-size: 1.6rem;
+  font-weight: 400;
 }
 
 .modal-heading {
-    font-size: 2rem;
-    font-weight: 700;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 /* || Hyperlink */
 a {
-    text-decoration: underline;
-    color: var(--highlight-color);
+  text-decoration: underline;
+  color: var(--highlight-color);
 }
 
 @media (hover: hover) {
-    a:hover {
-        text-decoration: none;
-        background-color: var(--highlight-color);
-        color: var(--inverted-font-color);
-    }
+  a:hover {
+    text-decoration: none;
+    background-color: var(--highlight-color);
+    color: var(--inverted-font-color);
+  }
 }
 
 /* || Horizontal rule */
 hr {
-    margin-top: calc(2 * var(--global-space));
-    margin-bottom: calc(2 * var(--global-space));
-    border: 1px dashed var(--primary-accent-color);
+  margin-top: calc(2 * var(--global-space));
+  margin-bottom: calc(2 * var(--global-space));
+  border: 1px dashed var(--primary-accent-color);
 }
 
 /* || Input elements */
 .main-button,
 .keypad-button,
 select {
-    border: none;
-    padding: calc(var(--global-space) / 2) var(--global-space);
-    background-color: var(--secondary-accent-color);
-    color: var(--font-color);
+  border: none;
+  padding: calc(var(--global-space) / 2) var(--global-space);
+  background-color: var(--secondary-accent-color);
+  color: var(--font-color);
 }
 
 @media (hover: hover) {
-    .main-button:hover:enabled,
-    .icon-button:hover:enabled,
-    .keypad-button:hover:enabled,
-    select:hover:enabled {
-        cursor: pointer;
-    }
-    
-    .main-button:hover:enabled,
-    .keypad-button:hover:enabled {
-        background-color: var(--button-hover-color);
-    }
+  .main-button:hover:enabled,
+  .icon-button:hover:enabled,
+  .keypad-button:hover:enabled,
+  select:hover:enabled {
+    cursor: pointer;
+  }
+
+  .main-button:hover:enabled,
+  .keypad-button:hover:enabled {
+    background-color: var(--button-hover-color);
+  }
 }
 
 .main-button:active:enabled,
 .keypad-button.active:enabled {
-    background-color: var(--button-active-color);
+  background-color: var(--button-active-color);
 }
 
 .main-button:disabled,
 .keypad-button:disabled,
 select:disabled {
-    opacity: 0.5;
-    cursor: auto;
+  opacity: 0.5;
+  cursor: auto;
 }
 
 .main-button,
 .keypad-button {
-    -webkit-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .icon-button {
-    background-color: transparent;
-    border: none;
-    padding: calc(var(--global-space) / 2);
+  background-color: transparent;
+  border: none;
+  padding: calc(var(--global-space) / 2);
 }
 
 .button-group,
 .select-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--global-space);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--global-space);
 }
 
-.button-group>.main-button {
-    flex: 1 1 105px;
+.button-group > .main-button {
+  flex: 1 1 105px;
 }
 
-.select-container>label {
-    flex: none;
+.select-container > label {
+  flex: none;
 }
 
-.select-container>select {
-    flex: auto;
+.select-container > select {
+  flex: auto;
 }
 
 /* || Table */
 table {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 table,
 td,
 th {
-    border: 1px dashed var(--primary-accent-color);
+  border: 1px dashed var(--primary-accent-color);
 }
 
 td,
 th {
-    padding: calc(var(--global-space) / 2) var(--global-space);
+  padding: calc(var(--global-space) / 2) var(--global-space);
 }
 
 th {
-    text-align: center;
-    font-weight: 400;
+  text-align: center;
+  font-weight: 400;
 }
 
 /* || Display */
 .display-border {
-    border: 1px solid var(--primary-accent-color);
+  border: 1px solid var(--primary-accent-color);
 }
 
 .emscripten {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    padding-right: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 0;
 }
 
 /* the canvas *must not* have any border or padding, or mouse coords will be  */
 /* wrong */
 canvas.emscripten {
-    border: 0px none;
-    background-color: black;
+  border: 0px none;
+  background-color: black;
 }
 
 /* || Card */
 .card {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--primary-accent-color);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--primary-accent-color);
 }
 
 .card-header {
-    padding: calc(var(--global-space) / 2) var(--global-space);
-    background-color: var(--primary-accent-color);
+  padding: calc(var(--global-space) / 2) var(--global-space);
+  background-color: var(--primary-accent-color);
 }
 
 .card-body {
-    padding: var(--global-space);
-    overflow: auto;
+  padding: var(--global-space);
+  overflow: auto;
 }
 
 /* || Controls card */
 #controls-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--global-space);
+  display: flex;
+  flex-direction: column;
+  gap: var(--global-space);
 }
 
 /* || Instructions card */
 .current-instruction {
-    background-color: var(--highlight-color);
-    color: var(--inverted-font-color);
+  background-color: var(--highlight-color);
+  color: var(--inverted-font-color);
 }
 
 /* || Registers card */
 .registers-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: var(--global-space);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--global-space);
 }
 
 .register-output {
-    display: block;
-    padding: calc(var(--global-space) / 2) var(--global-space);
-    background-color: var(--secondary-accent-color);
+  display: block;
+  padding: calc(var(--global-space) / 2) var(--global-space);
+  background-color: var(--secondary-accent-color);
 }
 
 /* || Stack card */
 #stack-table {
-    border: none;
-    height: 100%;
+  border: none;
+  height: 100%;
 }
 
 #stack-table {
-    width: 100%;
+  width: 100%;
 }
 
 #stack-level-col {
-    width: 25%;
+  width: 25%;
 }
 
 .stack-top {
-    color: var(--highlight-color);
+  color: var(--highlight-color);
 }
 
 /* || Modal */
 .modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    border: none;
-    padding: 0;
-    width: 500px;
-    background-color: var(--primary-accent-color);
-    color: var(--font-color);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  border: none;
+  padding: 0;
+  width: 500px;
+  background-color: var(--primary-accent-color);
+  color: var(--font-color);
 }
 
 .modal[open] {
-    opacity: 1;
-    animation: fadein  0.2s forwards;
+  opacity: 1;
+  animation: fadein 0.2s forwards;
 }
 
 .modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.8);
-    animation: fadein 0.2s forwards;
+  background-color: rgba(0, 0, 0, 0.8);
+  animation: fadein 0.2s forwards;
 }
 
 .modal.close[open] {
-    animation: fadeout 0.2s forwards;
+  animation: fadeout 0.2s forwards;
 }
 
 .modal.close::backdrop {
-    animation: fadeout 0.2s forwards;
+  animation: fadeout 0.2s forwards;
 }
 
 .modal-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    padding: var(--global-space);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: var(--global-space);
 }
 
 .modal-body {
-    padding: var(--global-space);
+  padding: var(--global-space);
 }
 
 /* || Animations */
 @keyframes fadein {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeout {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
