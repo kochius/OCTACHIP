@@ -42,7 +42,7 @@ export const createMonitor = () => {
     };
 
     const updateData = (dataArr) => {
-        dataArr.forEach((item, index) => {
+        dataArr.forEach((item) => {
             let argTypes = item.arg !== null ? ["number"] : [];
             let args = item.arg !== null ? [item.arg] : [];
             const value = window.Module.ccall(item.getter, "number", argTypes, args);
