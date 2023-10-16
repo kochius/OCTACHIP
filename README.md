@@ -30,6 +30,10 @@ From [Wikipedia](https://en.wikipedia.org/wiki/CHIP-8):
     - [SDL2](https://github.com/libsdl-org/SDL) - Graphics and keyboard input library
 - _For building the web application_
   - [Emscripten SDK](https://emscripten.org/) - Compiler toolchain to WebAssembly
+  - [Node.js 18](https://nodejs.org/) - Package manager for the following development dependencies:
+    - [ESLint](https://eslint.org/) - Static analyzer
+    - [Prettier](https://prettier.io/) - Code formatter
+    - [webpack 5](https://webpack.js.org/) - Bundler
 
 ## Building the desktop program
 
@@ -69,30 +73,38 @@ emcmake cmake -B build -DCMAKE_BUILD_TYPE=<BUILD_TYPE>
 
 # Build the project with the given configuration
 cmake --build build --config <BUILD_TYPE>
+
+# Install all development dependencies
+npm install
+
+# Bundle web files and output to 'build/dist/'
+npm run build-dev
 ```
 
-If the build is successful, these commands will output the following files in the `./build/dist/` directory on Linux and MacOS, or the `./build/dist/<BUILD_TYPE>/` directory on Windows.
+If the build is successful, these commands will output the following files in the `./build/dist/` directory\* (excluding the files bundled from the `./web/` directory).
 
 - `octachip.data` - CHIP-8 ROM files packaged and preloaded for Emscripten's virtual filesystem
 - `octachip.js` - "Glue code" that provides API support for the compiled WebAssembly code
 - `octachip.wasm` - Compiled WebAssembly code
 
-In addition to the files emitted by Emscripten, the web application needs the files located in the `./web/` directory, which can be copied to the distribution directory using the `cp` command.
+In addition to the files emitted by Emscripten and bundled by webpack, the web application needs the `./web/roms.json` file which contains metadata about the roms. The file can be copied to the distribution directory using the `cp` command.
 
 ```bash
 # Consolidate the web application files
-cp web/* build/dist # build/dist/<BUILD_TYPE> on Windows
+cp web/roms.json build/dist
 ```
 
 Once all the files are consolidated, the web application can be served with a local web server, such as Python's built-in `http.server` module.
 
 ```bash
 # Enter the distribution directory
-cd build/dist # build/dist/<BUILD_TYPE> on Windows
+cd build/dist
 
 # Access the web application at http://localhost:8000/
 python3 -m http.server 8000
 ```
+
+\* _With Visual Studio's multi-config build generator, Emscripten outputs the generated files to a subdirectory based on the specified build type, e.g. `./build/dist/Release/` or `./build/dist/Debug/`._
 
 ## Testing
 
