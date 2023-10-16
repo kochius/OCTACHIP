@@ -4,7 +4,7 @@ export const createEmulatorController = () => {
             const encoder = new TextEncoder();
             const romPath = `roms/${filename}\0`;
             const encodedPath = encoder.encode(romPath);
-            Module.ccall("loadRom", null, ["array"], [encodedPath]);
+            window.Module.ccall("loadRom", null, ["array"], [encodedPath]);
         }
         catch (error) {
             console.error(`Failed to load ROM: ${error.message}`);
@@ -12,16 +12,16 @@ export const createEmulatorController = () => {
     };
 
     const getDisassembledInstructions = () => {
-        const instructionsText = Module.getDisassembledInstructions();
+        const instructionsText = window.Module.getDisassembledInstructions();
         return instructionsText.split("\n");
     };
     
     const setSpeed = (emulationSpeed) => {
-        Module.ccall("setSpeed", null, ["number"], [emulationSpeed]);
+        window.Module.ccall("setSpeed", null, ["number"], [emulationSpeed]);
     };
 
     const setQuirk = (method, isEnabled) => {
-        Module.ccall(method, null, ["number"], [isEnabled ? 1 : 0]);
+        window.Module.ccall(method, null, ["number"], [isEnabled ? 1 : 0]);
     }
     
     const startEmulator = (rom) => {
@@ -31,19 +31,19 @@ export const createEmulatorController = () => {
         setQuirk("setShiftQuirk", rom.shiftQuirk);
         setQuirk("setWrapQuirk", rom.wrapQuirk);
     
-        Module.ccall("main", "null", [], []);
+        window.Module.ccall("main", "null", [], []);
     };
     
     const stopEmulator = () => {
-        Module.ccall("stop", "null", [], []);
+        window.Module.ccall("stop", "null", [], []);
     };
     
     const pauseEmulator = () => {
-        Module.ccall("pause", "null", [], []);
+        window.Module.ccall("pause", "null", [], []);
     };
     
     const resumeEmulator = () => {
-        Module.ccall("resume", "null", [], []);
+        window.Module.ccall("resume", "null", [], []);
     };
 
     return {

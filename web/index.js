@@ -16,7 +16,7 @@ window.Module = {
     paused: false,
 };
 
-Module["onRuntimeInitialized"] = async () => {
+window.Module["onRuntimeInitialized"] = async () => {
     const octachipApp = createApp();
     octachipApp.init();
 };

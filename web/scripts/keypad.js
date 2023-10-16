@@ -30,7 +30,7 @@ export const createKeypad = () => {
     const onKeyEvent = (key, down) => {
         const keyCharCode = KEY_MAP.get(key).charCodeAt(0);
         const method = down ? "pushKeyDownEvent" : "pushKeyUpEvent"
-        Module.ccall(method, null, ["number"], [keyCharCode]);
+        window.Module.ccall(method, null, ["number"], [keyCharCode]);
     };
 
     const onKeyDown = (event) => {
