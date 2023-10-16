@@ -2,6 +2,11 @@ const path = require("path");
 const HtmlBundlerPlugin = require("html-bundler-webpack-plugin");
 
 module.exports = {
+  resolve: {
+    alias: {
+      "@fonts": path.join(__dirname, "web/styles/fonts"),
+    },
+  },
   plugins: [
     new HtmlBundlerPlugin({
       entry: {
@@ -15,6 +20,12 @@ module.exports = {
       css: {
         filename: "css/[name].[contenthash:8].css",
       },
+      preload: [
+        {
+          test: /\.(ttf)$/,
+          attributes: { as: "font", crossorigin: true },
+        },
+      ],
       minify: "auto",
       loaderOptions: {
         sources: [
@@ -43,6 +54,13 @@ module.exports = {
       {
         test: /\.(css|sass|scss)$/,
         use: ["css-loader", "sass-loader"],
+      },
+      {
+        test: /\.(ttf)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "fonts/[name][ext]",
+        },
       },
     ],
   },

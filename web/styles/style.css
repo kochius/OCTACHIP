@@ -1,3 +1,20 @@
+/* || Fonts */
+@font-face {
+  font-family: "Azeret Mono";
+  src:
+    local("Azeret Mono"),
+    url("@fonts/AzeretMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Azeret Mono";
+  src:
+    local("Azeret Mono"),
+    url("@fonts/AzeretMono-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
 /* || Global variables and styles */
 :root {
   --max-page-width: 1200px;
@@ -318,6 +335,8 @@ th {
 canvas.emscripten {
   border: 0px none;
   background-color: black;
+  aspect-ratio: auto 960/480;
+  width: 100%;
 }
 
 /* || Card */
