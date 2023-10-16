@@ -64,13 +64,16 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx eslint .
+        run: npm run lint
 
       - name: Run Prettier
-        run: npx prettier --check .
+        run: npm run check-format
 
-      - name: Combine distribution files
-        run: rsync -av ${{github.workspace}}/web/ ${{github.workspace}}/build/dist/
+      - name: Build web files
+        run: npm run build
+
+      - name: Copy roms.json to dist
+        run: rsync -av ${{github.workspace}}/web/roms.json ${{github.workspace}}/build/dist/
 
       - name: Upload distribution files
         uses: actions/upload-artifact@v3
@@ -102,4 +105,4 @@ jobs:
           aws-region: ${{env.AWS_REGION}}
 
       - name: Deploy website to S3 bucket
-        run: aws s3 sync ${{github.workspace}}/dist s3://www.octachip.com
+        run: aws s3 sync ${{github.workspace}}/dist s3://www.octachip.com --delete

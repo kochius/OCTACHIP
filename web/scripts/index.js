@@ -1,4 +1,4 @@
-import { createApp } from "./scripts/app.js";
+import { createApp } from "./app.js";
 
 window.Module = {
   noInitialRun: true,

@@ -9,7 +9,7 @@ module.exports = {
       env: {
         node: true,
       },
-      files: [".eslintrc.{js,cjs}"],
+      files: [".eslintrc.{js,cjs}", "webpack.config.js"],
       parserOptions: {
         sourceType: "script",
       },
