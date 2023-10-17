@@ -30,7 +30,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/CHIP-8):
     - [SDL2](https://github.com/libsdl-org/SDL) - Graphics and keyboard input library
 - _For building the web application_
   - [Emscripten SDK](https://emscripten.org/) - Compiler toolchain to WebAssembly
-  - [Node.js 18](https://nodejs.org/) - Package manager for the following development dependencies:
+  - [npm v9](https://nodejs.org/) - Package manager for the following development dependencies:
     - [ESLint](https://eslint.org/) - Static analyzer
     - [Prettier](https://prettier.io/) - Code formatter
     - [webpack 5](https://webpack.js.org/) - Bundler
