@@ -108,6 +108,4 @@ jobs:
         run: aws s3 sync ${{github.workspace}}/dist s3://www.octachip.com --delete
 
       - name: Invalidate CloudFront cache
-        run: |
-          INVALIDATION_PATHS="/index.html /octachip.data /octachip.js /octachip.wasm /roms.json /fonts/*"
-          aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID}} --paths $INVALIDATION_PATHS
+        run: aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID}} --paths "/*"
