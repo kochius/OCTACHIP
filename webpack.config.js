@@ -31,16 +31,7 @@ module.exports = {
         sources: [
           {
             tag: "script",
-            filter: ({ attributes }) => {
-              const emscriptenFileName = "octachip.js";
-              if (
-                "src" in attributes &&
-                attributes["src"] === emscriptenFileName
-              ) {
-                return false;
-              }
-              return true;
-            },
+            filter: ({ attributes }) => attributes?.src !== "octachip.js",
           },
         ],
       },
