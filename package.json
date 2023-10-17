@@ -10,6 +10,9 @@
     "build-dev": "webpack --mode=development"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "babel-loader": "^9.1.3",
     "css-loader": "^6.8.1",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
